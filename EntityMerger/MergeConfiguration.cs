@@ -20,6 +20,8 @@ public class MergeConfiguration
 
     public Merger CreateMerger()
     {
+        // TODO: validate configuration (Keys cannot be empty)
+
         return new Merger(this);
     }
 }

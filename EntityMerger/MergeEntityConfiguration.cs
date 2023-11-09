@@ -20,12 +20,14 @@ public class MergeEntityConfiguration<TEntityType>
 
     public MergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression)
     {
+        // TODO: can only be set once
         Configuration.Keys(keyExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
 
     public MergeEntityConfiguration<TEntityType> HasValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
     {
+        // TODO: check if value property has not been already registered
         Configuration.Values(valueExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
@@ -35,6 +37,7 @@ public class MergeEntityConfiguration<TEntityType>
         where TTargetEntity : PersistEntity
     {
         // TODO: must be a of type List<T>
+        // TODO: check if navigation property has not been already registered
         Configuration.Many(navigationPropertyExpression.GetSimplePropertyAccess().Single());
         return this;
     }
@@ -43,6 +46,7 @@ public class MergeEntityConfiguration<TEntityType>
         Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : PersistEntity
     {
+        // TODO: check if navigation property has not been already registered
         Configuration.One(navigationPropertyExpression.GetSimplePropertyAccess().Single());
         return this;
     }
@@ -51,10 +55,10 @@ public class MergeEntityConfiguration<TEntityType>
 internal class MergeEntityConfiguration
 {
     public Type EntityType { get; }
-    public IReadOnlyCollection<PropertyInfo> KeyProperties { get; private set; }
-    public List<PropertyInfo> ValueProperties { get; private set; }
-    public List<PropertyInfo> NavigationManyProperties { get; private set; }
-    public List<PropertyInfo> NavigationOneProperties { get; private set; }
+    public IReadOnlyCollection<PropertyInfo> KeyProperties { get; private set; } = null!;
+    public List<PropertyInfo> ValueProperties { get; private set; } = new List<PropertyInfo>();
+    public List<PropertyInfo> NavigationManyProperties { get; private set; } = new List<PropertyInfo>();
+    public List<PropertyInfo> NavigationOneProperties { get; private set; } = new List<PropertyInfo>();
 
     public MergeEntityConfiguration(Type entityType)
     {
@@ -68,19 +72,16 @@ internal class MergeEntityConfiguration
 
     public void Values(IEnumerable<PropertyInfo> valueProperties)
     {
-        ValueProperties = ValueProperties ?? new List<PropertyInfo>();
         ValueProperties.AddRange(valueProperties);
     }
 
     public void Many(PropertyInfo navigationProperty)
     {
-        NavigationManyProperties = NavigationManyProperties ?? new List<PropertyInfo>();
         NavigationManyProperties.Add(navigationProperty);
     }
 
     public void One(PropertyInfo navigationProperty)
     {
-        NavigationOneProperties = NavigationOneProperties ?? new List<PropertyInfo>();
         NavigationOneProperties.Add(navigationProperty);
     }
 }
