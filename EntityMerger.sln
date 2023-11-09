@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityMerger", "EntityMerger\EntityMerger.csproj", "{EDE95E06-E308-4701-AD50-1318C039A029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{978D922C-944C-4A85-81AF-DEEC52D9404F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{978D922C-944C-4A85-81AF-DEEC52D9404F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMerger.UnitTest", "EntityMerger.UnitTest\EntityMerger.UnitTest.csproj", "{7540A163-3543-4C75-BE5B-E89D1355C996}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{978D922C-944C-4A85-81AF-DEEC52D9404F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{978D922C-944C-4A85-81AF-DEEC52D9404F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{978D922C-944C-4A85-81AF-DEEC52D9404F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7540A163-3543-4C75-BE5B-E89D1355C996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7540A163-3543-4C75-BE5B-E89D1355C996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7540A163-3543-4C75-BE5B-E89D1355C996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7540A163-3543-4C75-BE5B-E89D1355C996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
