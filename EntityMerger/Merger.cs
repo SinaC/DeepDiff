@@ -16,8 +16,8 @@ public class Merger
     // for each existing
     //      if found in calculated (based on keys)
     //          if values not the same
-    //              copy values
-    //          merge existing.Many  TODO
+    //              copy values TODO: additional values to copy which are not included in valueProperties
+    //          merge existing.Many
     //          merge existing.One   TODO
     //          if values not the same or something modified when merging Many and One
     //              mark existing as Updated
@@ -60,8 +60,13 @@ public class Merger
                     if (!areValuesEquals) // values are different -> it's an update
                     {
                         CopyValuesFromCalculatedToExistingByPropertyInfos(mergeEntityConfiguration.ValueProperties, existingEntity, calculatedEntity);
-                        // TODO: move out of if and don't yield return yet, detect if merge navigation has modified something and yield return if !areValuesEquals or something modified in navigation
-                        MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
+                    }
+
+                    // TODO: move out of if and don't yield return yet, detect if merge navigation has modified something and yield return if !areValuesEquals or something modified in navigation
+                    var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
+
+                    if (!areValuesEquals || mergeModificationsFound)
+                    {
                         existingEntity.PersistChange = PersistChange.Update;
                         yield return existingEntity;
                     }
@@ -102,56 +107,62 @@ public class Merger
         }
     }
 
-    private void MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, PersistEntity existingEntity, PersistEntity calculatedEntity)
     {
+        var modificationsDetected = false;
         if (mergeEntityConfiguration.NavigationManyProperties != null)
         {
             foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyProperties)
-                MergeUsingNavigationMany(navigationManyProperty, existingEntity, calculatedEntity);
+                modificationsDetected |= MergeUsingNavigationMany(navigationManyProperty, existingEntity, calculatedEntity);
         }
         if (mergeEntityConfiguration.NavigationOneProperties != null)
         {
             foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneProperties)
-                MergeUsingNavigationOne(navigationOneProperty, existingEntity, calculatedEntity);
+                modificationsDetected |= MergeUsingNavigationOne(navigationOneProperty, existingEntity, calculatedEntity);
         }
+        return modificationsDetected;
     }
 
-    private void MergeUsingNavigationMany(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private bool MergeUsingNavigationMany(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
     {
         if (navigationProperty == null)
-            return;
-        var childType = GetChildType(navigationProperty);
+            return false;
+        var childType = GetNavigationDestinationType(navigationProperty);
         if (childType == null)
-            return;
+            return false;
 
         if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
-            return; // TODO: exception
+            return false; // TODO: exception
 
         var existingEntityChildren = navigationProperty.GetValue(existingEntity);
         var calculatedEntityChildren = navigationProperty.GetValue(calculatedEntity);
 
         // merge children
-        var mergedChildren = Merge(childMergeEntityConfiguration, (IEnumerable<PersistEntity>)existingEntityChildren, (IEnumerable<PersistEntity>)calculatedEntityChildren);
+        var mergedChildren = Merge(childMergeEntityConfiguration, (IEnumerable<PersistEntity>)existingEntityChildren, (IEnumerable<PersistEntity>)calculatedEntityChildren); // TODO: remove warning
 
         // convert children from List<PersistEntity> to List<EnityType>
         var listType = typeof(List<>).MakeGenericType(childType);
-        var list = (IList)Activator.CreateInstance(listType);
+        var list = (IList)Activator.CreateInstance(listType); // TODO: remove warning
         foreach (var mergedChild in mergedChildren)
             list.Add(mergedChild);
         if (list.Count > 0)
+        {
             navigationProperty.SetValue(existingEntity, list);
+            return true;
+        }
+        return false;
     }
 
-    private void MergeUsingNavigationOne(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private bool MergeUsingNavigationOne(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
     {
         if (navigationProperty == null)
-            return;
-        var childType = GetChildType(navigationProperty);
+            return false;
+        var childType = GetNavigationDestinationType(navigationProperty);
         if (childType == null)
-            return;
+            return false;
 
         if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
-            return; // TODO: exception
+            return false; // TODO: exception
 
         var existingEntityChild = navigationProperty.GetValue(existingEntity);
         var calculatedEntityChild = navigationProperty.GetValue(calculatedEntity);
@@ -163,6 +174,7 @@ public class Merger
             navigationProperty.SetValue(existingEntity, calculatedEntityChild);
         }
         // TODO
+        return false;
     }
 
     private void CopyValuesFromCalculatedToExistingByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
@@ -215,6 +227,8 @@ public class Merger
 
     private bool AreEqualByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
     {
+        if (propertyInfos == null)
+            return true;
         foreach (var propertyInfo in propertyInfos)
         {
             var existingValue = propertyInfo.GetValue(existingEntity);
@@ -226,16 +240,16 @@ public class Merger
         return true;
     }
 
-    private Type GetChildType(PropertyInfo childrenProperty)
+    private Type GetNavigationDestinationType(PropertyInfo navigationProperty)
     {
-        Type type = childrenProperty.PropertyType;
+        Type type = navigationProperty.PropertyType;
         // check List<>
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
         {
             return type.GetGenericArguments()[0];
         }
         // check IList<>
-        var interfaceTest = new Func<Type, Type>(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IList<>) ? i.GetGenericArguments().Single() : null);
+        var interfaceTest = new Func<Type, Type>(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IList<>) ? i.GetGenericArguments().Single() : null); // TODO: remove warning
         var innerType = interfaceTest(type);
         if (innerType != null)
             return innerType;
