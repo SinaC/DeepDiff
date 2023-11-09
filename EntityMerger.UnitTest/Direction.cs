@@ -1,4 +1,4 @@
-﻿namespace TestApp;
+﻿namespace EntityMerger.UnitTest;
 
 public enum Direction
 {

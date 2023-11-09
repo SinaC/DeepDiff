@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EntityMerger.EntityMerger;
@@ -37,6 +34,7 @@ public class MergeEntityConfiguration<TEntityType>
         Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : PersistEntity
     {
+        // TODO: must be a of type List<T>
         Configuration.Many(navigationPropertyExpression.GetSimplePropertyAccess().Single());
         return this;
     }
