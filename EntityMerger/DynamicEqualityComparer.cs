@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EntityMerger.EntityMerger;
+﻿namespace EntityMerger.EntityMerger;
 
 internal sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
     where T : class
