@@ -21,14 +21,14 @@ public class MergeEntityConfiguration<TEntityType>
     public MergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression)
     {
         // TODO: can only be set once
-        Configuration.Keys(keyExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
+        Configuration.Key(keyExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> HasValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
+    public MergeEntityConfiguration<TEntityType> HasCalculatedValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
     {
         // TODO: check if value property has not been already registered
-        Configuration.Values(valueExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
+        Configuration.CalculatedValue(valueExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
 
@@ -43,7 +43,7 @@ public class MergeEntityConfiguration<TEntityType>
     }
 
     public MergeEntityConfiguration<TEntityType> HasOne<TTargetEntity>(
-        Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
+        Expression<Func<TEntityType, TTargetEntity>> navigationPropertyExpression)
         where TTargetEntity : PersistEntity
     {
         // TODO: check if navigation property has not been already registered
@@ -56,7 +56,7 @@ internal class MergeEntityConfiguration
 {
     public Type EntityType { get; }
     public IReadOnlyCollection<PropertyInfo> KeyProperties { get; private set; } = null!;
-    public List<PropertyInfo> ValueProperties { get; private set; } = new List<PropertyInfo>();
+    public List<PropertyInfo> CalculatedValueProperties { get; private set; } = new List<PropertyInfo>();
     public List<PropertyInfo> NavigationManyProperties { get; private set; } = new List<PropertyInfo>();
     public List<PropertyInfo> NavigationOneProperties { get; private set; } = new List<PropertyInfo>();
 
@@ -65,14 +65,14 @@ internal class MergeEntityConfiguration
         EntityType = entityType;
     }
 
-    public void Keys(IEnumerable<PropertyInfo> keyProperties)
+    public void Key(IEnumerable<PropertyInfo> keyProperties)
     {
         KeyProperties = keyProperties.ToArray();
     }
 
-    public void Values(IEnumerable<PropertyInfo> valueProperties)
+    public void CalculatedValue(IEnumerable<PropertyInfo> valueProperties)
     {
-        ValueProperties.AddRange(valueProperties);
+        CalculatedValueProperties.AddRange(valueProperties);
     }
 
     public void Many(PropertyInfo navigationProperty)

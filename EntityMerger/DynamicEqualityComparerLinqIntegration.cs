@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace EntityMerger.EntityMerger;
+﻿namespace EntityMerger.EntityMerger;
 
 internal static class DynamicEqualityComparerLinqIntegration
 {
