@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityMerger", "EntityMerge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{978D922C-944C-4A85-81AF-DEEC52D9404F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMerger.UnitTest", "EntityMerger.UnitTest\EntityMerger.UnitTest.csproj", "{7540A163-3543-4C75-BE5B-E89D1355C996}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityMerger.UnitTest", "EntityMerger.UnitTest\EntityMerger.UnitTest.csproj", "{7540A163-3543-4C75-BE5B-E89D1355C996}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A270A11D-1904-4D02-B5CB-5ADBC751ECC7}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

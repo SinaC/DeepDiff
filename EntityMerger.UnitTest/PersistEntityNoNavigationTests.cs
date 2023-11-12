@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EntityMerger.UnitTest;
 
-public class NoNavigationTests
+public class PersistEntityNoNavigationTests
 {
     [Fact]
     public void Identical()
@@ -36,7 +36,7 @@ public class NoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty });
 
@@ -75,7 +75,7 @@ public class NoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty });
 
@@ -116,7 +116,7 @@ public class NoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty });
 
@@ -158,7 +158,7 @@ public class NoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty });
 

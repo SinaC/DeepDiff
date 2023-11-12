@@ -10,7 +10,7 @@ public class MergeConfiguration
     }
 
     public virtual MergeEntityConfiguration<TEntityType> Entity<TEntityType>()
-        where TEntityType : PersistEntity
+        where TEntityType : class
     {
         MergeEntityConfiguration mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntityType));
         MergeEntityConfigurations.Add(typeof(TEntityType), mergeEntityConfiguration);
@@ -20,7 +20,7 @@ public class MergeConfiguration
 
     public Merger CreateMerger()
     {
-        // TODO: validate configuration (Keys cannot be empty)
+        // TODO: validate configuration (Keys cannot be empty + InsertAssignValue/UpdateAssignValue/DeleteAssignValue cannot be null, ...)
 
         return new Merger(this);
     }

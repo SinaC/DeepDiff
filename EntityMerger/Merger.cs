@@ -31,7 +31,7 @@ public class Merger
     //          mark calculated.Many as Inserted
     //          mark calculated.One as Inserted
     public IEnumerable<TEntity> Merge<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> calculatedEntities)
-        where TEntity : PersistEntity
+        where TEntity : class
     {
         if (!Configuration.MergeEntityConfigurations.TryGetValue(typeof(TEntity), out var mergeEntityConfiguration))
             yield break; // TODO: exception
@@ -43,7 +43,7 @@ public class Merger
         }
     }
 
-    private IEnumerable<PersistEntity> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<PersistEntity> existingEntities, IEnumerable<PersistEntity> calculatedEntities)
+    private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
     {
         // search if every existing entity is found in calculated entities -> this will detect update and delete
         foreach (var existingEntity in existingEntities)
@@ -64,7 +64,7 @@ public class Merger
 
                     if (!areCalculatedValuesEquals || mergeModificationsFound)
                     {
-                        existingEntity.PersistChange = PersistChange.Update;
+                        MarkEntity(mergeEntityConfiguration, existingEntity, EntityMergeOperation.Update);
                         yield return existingEntity;
                     }
 
@@ -75,8 +75,7 @@ public class Merger
             // existing entity not found in calculated entities -> it's a delete
             if (!existingEntityFoundInCalculatedEntities)
             {
-                existingEntity.PersistChange = PersistChange.Delete;
-                PropagatePersistChangeUsingNavigation(mergeEntityConfiguration, existingEntity, PersistChange.Delete); // once an entity is deleted, it's children will also be deleted
+                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, existingEntity, EntityMergeOperation.Delete); // once an entity is deleted, it's children will also be deleted
                 yield return existingEntity;
             }
         }
@@ -97,14 +96,26 @@ public class Merger
             // calculated entity not found in existing entity -> it's an insert
             if (!calculatedEntityFoundInExistingEntities)
             {
-                calculatedEntity.PersistChange = PersistChange.Insert;
-                PropagatePersistChangeUsingNavigation(mergeEntityConfiguration, calculatedEntity, PersistChange.Insert); // once an entity is inserted, it's children will also be inserted
+                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, calculatedEntity, EntityMergeOperation.Insert); // once an entity is inserted, it's children will also be inserted
                 yield return calculatedEntity;
             }
         }
     }
 
-    private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private void MarkEntity(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
+    {
+        var assignValue = mergeEntityConfiguration.AssignValueByOperation[operation];
+        if (assignValue != null)
+            assignValue.DestinationProperty.SetValue(entity, assignValue.Value);
+    }
+
+    private void MarkEntityAndPropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
+    {
+        MarkEntity(mergeEntityConfiguration, entity, operation);
+        PropagateUsingNavigation(mergeEntityConfiguration, entity, operation);
+    }
+
+    private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object existingEntity, object calculatedEntity)
     {
         var modificationsDetected = false;
         if (mergeEntityConfiguration.NavigationManyProperties != null)
@@ -120,7 +131,7 @@ public class Merger
         return modificationsDetected;
     }
 
-    private bool MergeUsingNavigationMany(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private bool MergeUsingNavigationMany(PropertyInfo navigationProperty, object existingEntity, object calculatedEntity)
     {
         if (navigationProperty == null)
             return false;
@@ -135,9 +146,9 @@ public class Merger
         var calculatedEntityChildren = navigationProperty.GetValue(calculatedEntity);
 
         // merge children
-        var mergedChildren = Merge(childMergeEntityConfiguration, (IEnumerable<PersistEntity>)existingEntityChildren, (IEnumerable<PersistEntity>)calculatedEntityChildren); // TODO: remove warning
+        var mergedChildren = Merge(childMergeEntityConfiguration, (IEnumerable<object>)existingEntityChildren, (IEnumerable<object>)calculatedEntityChildren); // TODO: remove warning
 
-        // convert children from List<PersistEntity> to List<EnityType>
+        // convert children from List<object> to List<EnityType>
         var listType = typeof(List<>).MakeGenericType(childType);
         var list = (IList)Activator.CreateInstance(listType); // TODO: remove warning
         foreach (var mergedChild in mergedChildren)
@@ -150,7 +161,7 @@ public class Merger
         return false;
     }
 
-    private bool MergeUsingNavigationOne(PropertyInfo navigationProperty, PersistEntity existingEntity, PersistEntity calculatedEntity)
+    private bool MergeUsingNavigationOne(PropertyInfo navigationProperty, object existingEntity, object calculatedEntity)
     {
         if (navigationProperty == null)
             return false;
@@ -168,15 +179,13 @@ public class Merger
         if (existingEntityChild == null && calculatedEntityChild != null)
         {
             navigationProperty.SetValue(existingEntity, calculatedEntityChild);
-            ((PersistEntity)calculatedEntityChild).PersistChange = PersistChange.Insert;
-            PropagatePersistChangeUsingNavigation(childMergeEntityConfiguration, calculatedEntityChild, PersistChange.Insert);
+            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, calculatedEntityChild, EntityMergeOperation.Insert);
             return true;
         }
         // was existing and is not calculated -> it's a delete
         if (existingEntityChild != null && calculatedEntityChild == null)
         {
-            ((PersistEntity)existingEntityChild).PersistChange = PersistChange.Delete;
-            PropagatePersistChangeUsingNavigation(childMergeEntityConfiguration, existingEntityChild, PersistChange.Delete);
+            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, existingEntityChild, EntityMergeOperation.Delete);
             return true;
         }
         // was existing and is calculated -> maybe an update
@@ -190,11 +199,11 @@ public class Merger
             if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                 CopyValuesFromCalculatedToExistingByPropertyInfos(childMergeEntityConfiguration.CalculatedValueProperties, existingEntityChild, calculatedEntityChild);
 
-            var mergeModificationsFound = MergeUsingNavigation(childMergeEntityConfiguration, (PersistEntity)existingEntityChild, (PersistEntity)calculatedEntityChild);
+            var mergeModificationsFound = MergeUsingNavigation(childMergeEntityConfiguration, existingEntityChild, calculatedEntityChild);
 
             if (!areKeysEqual || !areCalculatedValuesEquals || mergeModificationsFound)
             {
-                ((PersistEntity)existingEntityChild).PersistChange = PersistChange.Update;
+                MarkEntity(childMergeEntityConfiguration, existingEntityChild, EntityMergeOperation.Update);
                 return true;
             }
         }
@@ -210,43 +219,52 @@ public class Merger
         }
     }
 
-    private void PropagatePersistChangeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, PersistChange persistChange)
+    private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
     {
         if (mergeEntityConfiguration.NavigationManyProperties != null)
         {
             foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyProperties)
-                PropagatePersistChangeUsingNavigationMany(navigationManyProperty, entity, persistChange);
+                PropagateUsingNavigationMany(navigationManyProperty, entity, operation);
         }
         if (mergeEntityConfiguration.NavigationOneProperties != null)
         {
             foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneProperties)
-                PropagatePersistChangeUsingNavigationOne(navigationOneProperty, entity, persistChange);
+                PropagateUsingNavigationOne(navigationOneProperty, entity, operation);
         }
     }
 
-    private void PropagatePersistChangeUsingNavigationMany(PropertyInfo navigationProperty, object entity, PersistChange persistChange)
+    private void PropagateUsingNavigationMany(PropertyInfo navigationProperty, object entity, EntityMergeOperation operation)
     {
         if (navigationProperty == null)
             return;
         var childrenValue = navigationProperty.GetValue(entity);
         if (childrenValue == null)
             return;
-        var children = (IEnumerable<PersistEntity>)childrenValue;
-        foreach (var child in children)
+        var childType = GetNavigationManyDestinationType(navigationProperty);
+        if (childType == null)
+            return;
+        var assignValue = Configuration.MergeEntityConfigurations[childType].AssignValueByOperation[operation];
+        if (assignValue != null)
         {
-            child.PersistChange = persistChange;
+            var children = (IEnumerable<object>)childrenValue;
+            foreach (var child in children)
+                assignValue.DestinationProperty.SetValue(child, assignValue.Value);
         }
     }
 
-    private void PropagatePersistChangeUsingNavigationOne(PropertyInfo navigationProperty, object entity, PersistChange persistChange)
+    private void PropagateUsingNavigationOne(PropertyInfo navigationProperty, object entity, EntityMergeOperation operation)
     {
         if (navigationProperty == null)
             return;
         var childValue = navigationProperty.GetValue(entity);
         if (childValue == null)
             return;
-        var child = (PersistEntity)childValue;
-        child.PersistChange = persistChange;
+        var childType = navigationProperty.PropertyType;
+        if (childType == null)
+            return;
+        var assignValue = Configuration.MergeEntityConfigurations[childType].AssignValueByOperation[operation];
+        if (assignValue != null)
+            assignValue.DestinationProperty.SetValue(childValue, assignValue.Value);
     }
 
     private bool AreEqualByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
