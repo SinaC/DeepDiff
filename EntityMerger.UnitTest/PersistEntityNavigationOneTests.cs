@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EntityMerger.UnitTest;
 
-public class NavigationOneTests
+public class PersistEntityNavigationOneTests
 {
     [Fact]
     public void NotInExisting()
@@ -49,13 +49,13 @@ public class NavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.Entity<SubEntity>()
-           .HasKey(x => x.Timestamp)
-           .HasCalculatedValue(x => new { x.Power });
+        mergeConfiguration.PersistEntity<SubEntity>()
+            .HasKey(x => x.Timestamp)
+            .HasCalculatedValue(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
         var results = merger.Merge(existing, calculated).ToArray();
@@ -106,13 +106,13 @@ public class NavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.Entity<SubEntity>()
-           .HasKey(x => x.Timestamp)
-           .HasCalculatedValue(x => new { x.Power });
+        mergeConfiguration.PersistEntity<SubEntity>()
+            .HasKey(x => x.Timestamp)
+            .HasCalculatedValue(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
         var results = merger.Merge(existing, calculated).ToArray();
@@ -172,13 +172,13 @@ public class NavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.Entity<SubEntity>()
-           .HasKey(x => x.Timestamp)
-           .HasCalculatedValue(x => new { x.Power });
+        mergeConfiguration.PersistEntity<SubEntity>()
+            .HasKey(x => x.Timestamp)
+            .HasCalculatedValue(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
         var results = merger.Merge(existing, calculated).ToArray();
@@ -236,13 +236,13 @@ public class NavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.Entity<SubEntity>()
-           .HasKey(x => x.Timestamp)
-           .HasCalculatedValue(x => new { x.Power });
+        mergeConfiguration.PersistEntity<SubEntity>()
+            .HasKey(x => x.Timestamp)
+            .HasCalculatedValue(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
         var results = merger.Merge(existing, calculated).ToArray();
@@ -303,13 +303,13 @@ public class NavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.Entity<SubEntity>()
-           .HasKey(x => x.Timestamp)
-           .HasCalculatedValue(x => new { x.Power });
+        mergeConfiguration.PersistEntity<SubEntity>()
+            .HasKey(x => x.Timestamp)
+            .HasCalculatedValue(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
         var results = merger.Merge(existing, calculated).ToArray();

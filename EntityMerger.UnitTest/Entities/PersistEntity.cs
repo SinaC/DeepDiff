@@ -1,4 +1,4 @@
-﻿namespace EntityMerger;
+﻿namespace EntityMerger.UnitTest.Entities;
 
 public abstract class PersistEntity
 {

@@ -7,7 +7,7 @@ using EntityMerger.UnitTest.Entities;
 
 namespace EntityMerger.UnitTest;
 
-public class NavigationManyTests
+public class PersistEntityNavigationManyTests
 {
     [Fact]
     public void OneChildDelete()
@@ -50,11 +50,11 @@ public class NavigationManyTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.Entity<SubEntity>()
+        mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
             .HasCalculatedValue(x => new { x.Power });
 
@@ -110,11 +110,11 @@ public class NavigationManyTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.Entity<SubEntity>()
+        mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
             .HasCalculatedValue(x => new { x.Power });
 

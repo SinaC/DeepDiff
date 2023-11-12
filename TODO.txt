@@ -1,0 +1,3 @@
+Remove PersistEntity from constraint
+Add extension method to MergeConfiguration
+	.PersistEntity() which will add .OnInsert, .OnUpdate, .OnDelete automatically

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EntityMerger.UnitTest;
 
-public partial class MergerTests
+public partial class PersistEntityMergerTests
 {
     [Fact]
     public void Test1()
@@ -56,11 +56,11 @@ public partial class MergerTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.Entity<Entity>()
+        mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.Entity<SubEntity>()
+        mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
             .HasCalculatedValue(x => new { x.Power, x.Price });
 
@@ -72,5 +72,4 @@ public partial class MergerTests
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Delete));
         Assert.Equal(9, results.Count(x => x.PersistChange == PersistChange.Update));
     }
-
 }
