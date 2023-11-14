@@ -14,11 +14,11 @@ public class Merger
     }
 
     // for each existing
-    //      if found in calculated (based on keys)
+    //      if entity found with same keys in existing
     //          if values not the same
     //              copy values TODO: additional values to copy which are not included in valueProperties
     //          merge existing.Many
-    //          merge existing.One   TODO
+    //          merge existing.One
     //          if values not the same or something modified when merging Many and One
     //              mark existing as Updated
     //      else
@@ -26,7 +26,7 @@ public class Merger
     //          mark existing.Many as Deleted
     //          mark existing.One as Deleted
     //  for each calculated
-    //      if not found in existing
+    //      if entity with same keys not found in existing
     //          mark calculated as Inserted
     //          mark calculated.Many as Inserted
     //          mark calculated.One as Inserted
@@ -51,23 +51,29 @@ public class Merger
             var existingEntityFoundInCalculatedEntities = false;
             foreach (var calculatedEntity in calculatedEntities)
             {
-                var areKeysEqual = AreEqualByPropertyInfos(mergeEntityConfiguration.KeyProperties, existingEntity, calculatedEntity);
-                // existing entity found in calculated entities -> if values are different it's an update
-                if (areKeysEqual)
+                if (mergeEntityConfiguration.KeyProperties != null)
                 {
-                    var areCalculatedValuesEquals = AreEqualByPropertyInfos(mergeEntityConfiguration.CalculatedValueProperties, existingEntity, calculatedEntity);
-                    if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
-                        CopyValuesFromCalculatedToExistingByPropertyInfos(mergeEntityConfiguration.CalculatedValueProperties, existingEntity, calculatedEntity);
-
-                    var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
-                    if (!areCalculatedValuesEquals || mergeModificationsFound)
+                    var areKeysEqual = mergeEntityConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    // existing entity found in calculated entities -> if values are different it's an update
+                    if (areKeysEqual)
                     {
-                        MarkEntity(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Update);
-                        yield return existingEntity;
-                    }
+                        if (mergeEntityConfiguration.CalculatedValueProperties != null)
+                        {
+                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
+                            if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
+                                mergeEntityConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
 
-                    existingEntityFoundInCalculatedEntities = true;
-                    break; // don't need to check other calculated entities
+                            var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
+                            if (!areCalculatedValuesEquals || mergeModificationsFound)
+                            {
+                                MarkEntity(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Update);
+                                yield return existingEntity;
+                            }
+
+                            existingEntityFoundInCalculatedEntities = true;
+                            break; // don't need to check other calculated entities
+                        }
+                    }
                 }
             }
             // existing entity not found in calculated entities -> it's a delete
@@ -84,11 +90,14 @@ public class Merger
             var calculatedEntityFoundInExistingEntities = false;
             foreach (var existingEntity in existingEntities)
             {
-                var areKeysEqual = AreEqualByPropertyInfos(mergeEntityConfiguration.KeyProperties, existingEntity, calculatedEntity);
-                if (areKeysEqual)
+                if (mergeEntityConfiguration.KeyProperties != null)
                 {
-                    calculatedEntityFoundInExistingEntities = true;
-                    break; // don't need to check other existing entities
+                    var areKeysEqual = mergeEntityConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    if (areKeysEqual)
+                    {
+                        calculatedEntityFoundInExistingEntities = true;
+                        break; // don't need to check other existing entities
+                    }
                 }
             }
             // calculated entity not found in existing entity -> it's an insert
@@ -178,13 +187,21 @@ public class Merger
         // was existing and is calculated -> maybe an update
         if (existingEntityChild != null && calculatedEntityChild != null)
         {
-            var areKeysEqual = AreEqualByPropertyInfos(childMergeEntityConfiguration.KeyProperties, existingEntityChild, calculatedEntityChild);
-            if (!areKeysEqual) // keys are different -> copy keys
-                CopyValuesFromCalculatedToExistingByPropertyInfos(childMergeEntityConfiguration.KeyProperties, existingEntityChild, calculatedEntityChild);
+            bool areKeysEqual = false;
+            if (childMergeEntityConfiguration.KeyProperties != null)
+            {
+                areKeysEqual = childMergeEntityConfiguration.KeyProperties.Equals(existingEntityChild, calculatedEntityChild);
+                if (!areKeysEqual) // keys are different -> copy keys
+                    childMergeEntityConfiguration.KeyProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
+            }
 
-            var areCalculatedValuesEquals = AreEqualByPropertyInfos(childMergeEntityConfiguration.CalculatedValueProperties, existingEntityChild, calculatedEntityChild);
-            if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
-                CopyValuesFromCalculatedToExistingByPropertyInfos(childMergeEntityConfiguration.CalculatedValueProperties, existingEntityChild, calculatedEntityChild);
+            bool areCalculatedValuesEquals = false;
+            if (childMergeEntityConfiguration.CalculatedValueProperties != null)
+            {
+                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueProperties.Equals(existingEntityChild, calculatedEntityChild);
+                if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
+                    childMergeEntityConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
+            }
 
             var mergeModificationsFound = MergeUsingNavigation(childMergeEntityConfiguration, existingEntityChild, calculatedEntityChild);
 
@@ -208,15 +225,6 @@ public class Merger
     {
         MarkEntity(mergeEntityConfiguration, entity, operation);
         PropagateUsingNavigation(mergeEntityConfiguration, entity, operation);
-    }
-
-    private void CopyValuesFromCalculatedToExistingByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
-    {
-        foreach (var propertyInfo in propertyInfos)
-        {
-            var calculatedValue = propertyInfo.GetValue(calculatedEntity);
-            propertyInfo.SetValue(existingEntity, calculatedValue);
-        }
     }
 
     private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
@@ -267,21 +275,6 @@ public class Merger
             assignValue.DestinationProperty.SetValue(childValue, assignValue.Value);
     }
 
-    private bool AreEqualByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
-    {
-        if (propertyInfos == null)
-            return true;
-        foreach (var propertyInfo in propertyInfos)
-        {
-            var existingValue = propertyInfo.GetValue(existingEntity);
-            var calculatedValue = propertyInfo.GetValue(calculatedEntity);
-
-            if (!Equals(existingValue, calculatedValue))
-                return false;
-        }
-        return true;
-    }
-
     private Type GetNavigationManyDestinationType(PropertyInfo navigationProperty)
     {
         Type type = navigationProperty.PropertyType;
@@ -302,7 +295,7 @@ public class Merger
         return null; // TODO: throw exception
     }
 
-    private Type CheckIfIListAndGetGenericType(Type t)
+    private Type CheckIfIListAndGetGenericType(Type t) // TODO: remove warning
         => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>)
             ? t.GetGenericArguments().Single()
             : null;
