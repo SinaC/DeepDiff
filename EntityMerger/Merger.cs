@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace EntityMerger;
 
-public class Merger
+public class Merger : IMerger
 {
     private MergeConfiguration Configuration { get; }
 
@@ -38,9 +38,7 @@ public class Merger
 
         var mergedEntities = Merge(mergeEntityConfiguration, existingEntities, calculatedEntities);
         foreach (var mergedEntity in mergedEntities)
-        {
             yield return (TEntity)mergedEntity;
-        }
     }
 
     private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
@@ -281,22 +279,7 @@ public class Merger
         // check List<>
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             return type.GetGenericArguments()[0];
-        // check IList<>
-        var innerType = CheckIfIListAndGetGenericType(type);
-        if (innerType != null)
-            return innerType;
-        foreach (var i in type.GetInterfaces())
-        {
-            innerType = CheckIfIListAndGetGenericType(i);
-            if (innerType != null)
-                return innerType;
-        }
         //
         return null; // TODO: throw exception
     }
-
-    private Type CheckIfIListAndGetGenericType(Type t) // TODO: remove warning
-        => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>)
-            ? t.GetGenericArguments().Single()
-            : null;
 }
