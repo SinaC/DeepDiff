@@ -52,7 +52,6 @@ public class Merger
             foreach (var calculatedEntity in calculatedEntities)
             {
                 var areKeysEqual = AreEqualByPropertyInfos(mergeEntityConfiguration.KeyProperties, existingEntity, calculatedEntity);
-
                 // existing entity found in calculated entities -> if values are different it's an update
                 if (areKeysEqual)
                 {
@@ -61,10 +60,9 @@ public class Merger
                         CopyValuesFromCalculatedToExistingByPropertyInfos(mergeEntityConfiguration.CalculatedValueProperties, existingEntity, calculatedEntity);
 
                     var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
-
                     if (!areCalculatedValuesEquals || mergeModificationsFound)
                     {
-                        MarkEntity(mergeEntityConfiguration, existingEntity, EntityMergeOperation.Update);
+                        MarkEntity(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Update);
                         yield return existingEntity;
                     }
 
@@ -75,7 +73,7 @@ public class Merger
             // existing entity not found in calculated entities -> it's a delete
             if (!existingEntityFoundInCalculatedEntities)
             {
-                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, existingEntity, EntityMergeOperation.Delete); // once an entity is deleted, it's children will also be deleted
+                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Delete); // once an entity is deleted, it's children will also be deleted
                 yield return existingEntity;
             }
         }
@@ -96,23 +94,10 @@ public class Merger
             // calculated entity not found in existing entity -> it's an insert
             if (!calculatedEntityFoundInExistingEntities)
             {
-                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, calculatedEntity, EntityMergeOperation.Insert); // once an entity is inserted, it's children will also be inserted
+                MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, calculatedEntity, MergeEntityOperation.Insert); // once an entity is inserted, it's children will also be inserted
                 yield return calculatedEntity;
             }
         }
-    }
-
-    private void MarkEntity(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
-    {
-        var assignValue = mergeEntityConfiguration.AssignValueByOperation[operation];
-        if (assignValue != null)
-            assignValue.DestinationProperty.SetValue(entity, assignValue.Value);
-    }
-
-    private void MarkEntityAndPropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
-    {
-        MarkEntity(mergeEntityConfiguration, entity, operation);
-        PropagateUsingNavigation(mergeEntityConfiguration, entity, operation);
     }
 
     private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object existingEntity, object calculatedEntity)
@@ -146,11 +131,13 @@ public class Merger
         var calculatedEntityChildren = navigationProperty.GetValue(calculatedEntity);
 
         // merge children
-        var mergedChildren = Merge(childMergeEntityConfiguration, (IEnumerable<object>)existingEntityChildren, (IEnumerable<object>)calculatedEntityChildren); // TODO: remove warning
+        var existingChildren = (IEnumerable<object>)existingEntityChildren!;
+        var calculatedChildren = (IEnumerable<object>)calculatedEntityChildren!;
+        var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren);
 
-        // convert children from List<object> to List<EnityType>
+        // convert children from IEnumerable<object> to List<EnityType>
         var listType = typeof(List<>).MakeGenericType(childType);
-        var list = (IList)Activator.CreateInstance(listType); // TODO: remove warning
+        var list = (IList)Activator.CreateInstance(listType)!;
         foreach (var mergedChild in mergedChildren)
             list.Add(mergedChild);
         if (list.Count > 0)
@@ -179,13 +166,13 @@ public class Merger
         if (existingEntityChild == null && calculatedEntityChild != null)
         {
             navigationProperty.SetValue(existingEntity, calculatedEntityChild);
-            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, calculatedEntityChild, EntityMergeOperation.Insert);
+            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, calculatedEntityChild, MergeEntityOperation.Insert);
             return true;
         }
         // was existing and is not calculated -> it's a delete
         if (existingEntityChild != null && calculatedEntityChild == null)
         {
-            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, existingEntityChild, EntityMergeOperation.Delete);
+            MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, existingEntityChild, MergeEntityOperation.Delete);
             return true;
         }
         // was existing and is calculated -> maybe an update
@@ -203,11 +190,24 @@ public class Merger
 
             if (!areKeysEqual || !areCalculatedValuesEquals || mergeModificationsFound)
             {
-                MarkEntity(childMergeEntityConfiguration, existingEntityChild, EntityMergeOperation.Update);
+                MarkEntity(childMergeEntityConfiguration, existingEntityChild, MergeEntityOperation.Update);
                 return true;
             }
         }
         return false;
+    }
+
+    private void MarkEntity(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
+    {
+        var assignValue = mergeEntityConfiguration.AssignValueByOperation[operation];
+        if (assignValue != null)
+            assignValue.DestinationProperty.SetValue(entity, assignValue.Value);
+    }
+
+    private void MarkEntityAndPropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
+    {
+        MarkEntity(mergeEntityConfiguration, entity, operation);
+        PropagateUsingNavigation(mergeEntityConfiguration, entity, operation);
     }
 
     private void CopyValuesFromCalculatedToExistingByPropertyInfos(IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
@@ -219,7 +219,7 @@ public class Merger
         }
     }
 
-    private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, EntityMergeOperation operation)
+    private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
     {
         if (mergeEntityConfiguration.NavigationManyProperties != null)
         {
@@ -233,7 +233,7 @@ public class Merger
         }
     }
 
-    private void PropagateUsingNavigationMany(PropertyInfo navigationProperty, object entity, EntityMergeOperation operation)
+    private void PropagateUsingNavigationMany(PropertyInfo navigationProperty, object entity, MergeEntityOperation operation)
     {
         if (navigationProperty == null)
             return;
@@ -252,7 +252,7 @@ public class Merger
         }
     }
 
-    private void PropagateUsingNavigationOne(PropertyInfo navigationProperty, object entity, EntityMergeOperation operation)
+    private void PropagateUsingNavigationOne(PropertyInfo navigationProperty, object entity, MergeEntityOperation operation)
     {
         if (navigationProperty == null)
             return;
@@ -287,21 +287,23 @@ public class Merger
         Type type = navigationProperty.PropertyType;
         // check List<>
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-        {
             return type.GetGenericArguments()[0];
-        }
         // check IList<>
-        var interfaceTest = new Func<Type, Type>(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IList<>) ? i.GetGenericArguments().Single() : null); // TODO: remove warning
-        var innerType = interfaceTest(type);
+        var innerType = CheckIfIListAndGetGenericType(type);
         if (innerType != null)
             return innerType;
         foreach (var i in type.GetInterfaces())
         {
-            innerType = interfaceTest(i);
+            innerType = CheckIfIListAndGetGenericType(i);
             if (innerType != null)
                 return innerType;
         }
         //
-        return null;
+        return null; // TODO: throw exception
     }
+
+    private Type CheckIfIListAndGetGenericType(Type t)
+        => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IList<>)
+            ? t.GetGenericArguments().Single()
+            : null;
 }

@@ -76,11 +76,6 @@ public class MergeEntityConfiguration<TEntityType>
     }
 }
 
-public interface IMemberConfigurationExpression<TSource, TMember> //: IProjectionMemberConfiguration<TSource, TDestination, TMember>
-{
-    void MapFrom<TSourceMember>(Expression<Func<TSource, TSourceMember>> mapExpression);
-}
-
 internal class MergeEntityConfiguration
 {
     public Type EntityType { get; }
@@ -88,7 +83,7 @@ internal class MergeEntityConfiguration
     public List<PropertyInfo> CalculatedValueProperties { get; private set; } = new List<PropertyInfo>();
     public List<PropertyInfo> NavigationManyProperties { get; private set; } = new List<PropertyInfo>();
     public List<PropertyInfo> NavigationOneProperties { get; private set; } = new List<PropertyInfo>();
-    public Dictionary<EntityMergeOperation, AssignValue> AssignValueByOperation { get; private set; } = new Dictionary<EntityMergeOperation, AssignValue>();
+    public Dictionary<MergeEntityOperation, AssignValue> AssignValueByOperation { get; private set; } = new Dictionary<MergeEntityOperation, AssignValue>();
 
     public MergeEntityConfiguration(Type entityType)
     {
@@ -117,17 +112,17 @@ internal class MergeEntityConfiguration
 
     public void AssignValueForInsert(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[EntityMergeOperation.Insert] = new AssignValue(destinationProperty, value);
+        AssignValueByOperation[MergeEntityOperation.Insert] = new AssignValue(destinationProperty, value);
     }
 
     public void AssignValueForUpdate(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[EntityMergeOperation.Update] = new AssignValue(destinationProperty, value);
+        AssignValueByOperation[MergeEntityOperation.Update] = new AssignValue(destinationProperty, value);
     }
 
     public void AssignValueForDelete(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[EntityMergeOperation.Delete] = new AssignValue(destinationProperty, value);
+        AssignValueByOperation[MergeEntityOperation.Delete] = new AssignValue(destinationProperty, value);
     }
 
     internal record AssignValue
@@ -137,7 +132,7 @@ internal class MergeEntityConfiguration
     );
 }
 
-internal enum EntityMergeOperation
+internal enum MergeEntityOperation
 {
     None = 0,
     Insert = 1,
