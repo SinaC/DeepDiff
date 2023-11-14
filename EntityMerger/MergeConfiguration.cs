@@ -1,6 +1,6 @@
 ﻿namespace EntityMerger.EntityMerger;
 
-public class MergeConfiguration
+public class MergeConfiguration : IMergeConfiguration
 {
     internal Dictionary<Type, MergeEntityConfiguration> MergeEntityConfigurations { get; private set; }
 
@@ -9,16 +9,16 @@ public class MergeConfiguration
         MergeEntityConfigurations = new Dictionary<Type, MergeEntityConfiguration>();
     }
 
-    public virtual MergeEntityConfiguration<TEntityType> Entity<TEntityType>()
+    public virtual IMergeEntityConfiguration<TEntityType> Entity<TEntityType>()
         where TEntityType : class
     {
-        MergeEntityConfiguration mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntityType));
+        var mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntityType));
         MergeEntityConfigurations.Add(typeof(TEntityType), mergeEntityConfiguration);
 
         return new MergeEntityConfiguration<TEntityType>(mergeEntityConfiguration);
     }
 
-    public Merger CreateMerger()
+    public IMerger CreateMerger()
     {
         // TODO: validate configuration (Keys cannot be empty + InsertAssignValue/UpdateAssignValue/DeleteAssignValue cannot be null, ...)
 

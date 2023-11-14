@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace EntityMerger.EntityMerger;
 
-public class MergeEntityConfiguration<TEntityType>
+public class MergeEntityConfiguration<TEntityType> : IMergeEntityConfiguration<TEntityType>
     where TEntityType : class
 {
     internal MergeEntityConfiguration Configuration { get; private set; }
@@ -18,22 +18,21 @@ public class MergeEntityConfiguration<TEntityType>
         Configuration = mergeEntityConfiguration;
     }
 
-    public MergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression)
+    public IMergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression)
     {
         // TODO: can only be set once
         Configuration.Key(keyExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> HasCalculatedValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
+    public IMergeEntityConfiguration<TEntityType> HasCalculatedValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
     {
         // TODO: check if value property has not been already registered
         Configuration.CalculatedValue(valueExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> HasMany<TTargetEntity>(
-        Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
+    public IMergeEntityConfiguration<TEntityType> HasMany<TTargetEntity>(Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : class
     {
         // TODO: must be a of type List<T>
@@ -42,8 +41,7 @@ public class MergeEntityConfiguration<TEntityType>
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> HasOne<TTargetEntity>(
-        Expression<Func<TEntityType, TTargetEntity>> navigationPropertyExpression)
+    public IMergeEntityConfiguration<TEntityType> HasOne<TTargetEntity>(Expression<Func<TEntityType, TTargetEntity>> navigationPropertyExpression)
         where TTargetEntity : class
     {
         // TODO: check if navigation property has not been already registered
@@ -51,25 +49,20 @@ public class MergeEntityConfiguration<TEntityType>
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> OnInsert<TMember>(
-        Expression<Func<TEntityType, TMember>> destinationMember,
+    public IMergeEntityConfiguration<TEntityType> OnInsert<TMember>(Expression<Func<TEntityType, TMember>> destinationMember,
         TMember value)
     {
         Configuration.AssignValueForInsert(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> OnUpdate<TMember>(
-        Expression<Func<TEntityType, TMember>> destinationMember,
-        TMember value)
+    public IMergeEntityConfiguration<TEntityType> OnUpdate<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value)
     {
         Configuration.AssignValueForUpdate(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;
     }
 
-    public MergeEntityConfiguration<TEntityType> OnDelete<TMember>(
-        Expression<Func<TEntityType, TMember>> destinationMember,
-        TMember value)
+    public IMergeEntityConfiguration<TEntityType> OnDelete<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value)
     {
         Configuration.AssignValueForDelete(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;

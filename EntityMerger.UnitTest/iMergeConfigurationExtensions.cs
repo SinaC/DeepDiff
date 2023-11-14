@@ -3,9 +3,9 @@ using EntityMerger.UnitTest.Entities;
 
 namespace EntityMerger.UnitTest;
 
-public static class MergeConfigurationExtensions
+public static class IMergeConfigurationExtensions
 {
-    public static MergeEntityConfiguration<TEntityType> PersistEntity<TEntityType>(this MergeConfiguration mergeConfiguration)
+    public static IMergeEntityConfiguration<TEntityType> PersistEntity<TEntityType>(this IMergeConfiguration mergeConfiguration)
         where TEntityType : PersistEntity
     {
         return mergeConfiguration.Entity<TEntityType>()
