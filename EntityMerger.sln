@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMerger.Benchmark", "EntityMerger.Benchmark\EntityMerger.Benchmark.csproj", "{042BCDB0-D034-4CB5-8943-9246DB1112A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7540A163-3543-4C75-BE5B-E89D1355C996}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7540A163-3543-4C75-BE5B-E89D1355C996}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7540A163-3543-4C75-BE5B-E89D1355C996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
