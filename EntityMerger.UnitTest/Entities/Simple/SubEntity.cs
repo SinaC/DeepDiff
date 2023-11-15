@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EntityMerger.UnitTest.Entities;
+namespace EntityMerger.UnitTest.Entities.Simple;
 
 internal class SubEntity : PersistEntity
 {

@@ -1,12 +1,13 @@
 ﻿using EntityMerger.EntityMerger;
 using EntityMerger.UnitTest.Entities;
+using EntityMerger.UnitTest.Entities.Simple;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace EntityMerger.UnitTest;
+namespace EntityMerger.UnitTest.Simple;
 
-public class PersistEntityNoNavigationTests
+public class SimpleEntityNoNavigationTests
 {
     [Fact]
     public void Identical()
@@ -19,7 +20,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
         }).ToArray();
 
@@ -31,7 +32,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
         }).ToArray();
 
@@ -57,7 +58,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
         }).ToArray();
 
@@ -70,7 +71,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
         }).ToArray();
 
@@ -98,7 +99,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
         }).ToArray();
 
@@ -111,7 +112,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
         }).ToArray();
 
@@ -139,7 +140,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
         }).ToArray();
 
@@ -153,7 +154,7 @@ public class PersistEntityNoNavigationTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
         }).ToArray();
 

@@ -1,12 +1,13 @@
 using EntityMerger.EntityMerger;
 using EntityMerger.UnitTest.Entities;
+using EntityMerger.UnitTest.Entities.Simple;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace EntityMerger.UnitTest;
+namespace EntityMerger.UnitTest.Simple;
 
-public partial class PersistEntityMergerTests
+public partial class SimpleEntityMergerTests
 {
     [Fact]
     public void Test1()
@@ -19,7 +20,7 @@ public partial class PersistEntityMergerTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 2,
+            Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
             SubEntities = Enumerable.Range(0, 5).Select(y => new SubEntity
             {
@@ -28,7 +29,7 @@ public partial class PersistEntityMergerTests
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.Today.AddHours(x).AddMinutes(y),
                 Power = y,
-                Price = y % 2 == 0 ? (decimal?)null : y * 3,
+                Price = y % 2 == 0 ? null : y * 3,
                 Comment = $"Existing{x}_{y}",
             }).ToList(),
         }).ToArray();
@@ -41,7 +42,7 @@ public partial class PersistEntityMergerTests
             StartsOn = DateTime.Today.AddHours(x),
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
-            Penalty = x % 3 == 0 ? (decimal?)null : x * 3,
+            Penalty = x % 3 == 0 ? null : x * 3,
             Comment = $"Calculated{x}",
             SubEntities = Enumerable.Range(1, 5).Select(y => new SubEntity
             {
@@ -50,7 +51,7 @@ public partial class PersistEntityMergerTests
                 Id = Guid.NewGuid(),
                 Timestamp = DateTime.Today.AddHours(x).AddMinutes(y),
                 Power = y,
-                Price = y % 2 == 0 ? (decimal?)null : y * 3,
+                Price = y % 2 == 0 ? null : y * 3,
                 Comment = $"Calculated{x}_{y}",
             }).ToList(),
         }).ToArray();

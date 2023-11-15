@@ -1,4 +1,4 @@
-﻿namespace EntityMerger.UnitTest.Entities;
+﻿namespace EntityMerger.UnitTest.Entities.Simple;
 
 internal enum Direction
 {
