@@ -32,12 +32,12 @@ public class LoadNoNavigation
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoCalculated, DataGenerationOptions.Random)]
-    public DataGenerationOptions Opt { get; set; }
+    public DataGenerationOptions Option { get; set; }
 
     [GlobalSetup]
     public void GlobalSetup()
     {
-        switch (Opt)
+        switch (Option)
         {
             case DataGenerationOptions.Identical:
                 GenerateIdentical();
@@ -52,6 +52,12 @@ public class LoadNoNavigation
                 GenerateRandom();
                 break;
         }
+    }
+
+    [Benchmark]
+    public void Merge()
+    {
+        var results = Merger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     private void GenerateIdentical()
@@ -130,12 +136,6 @@ public class LoadNoNavigation
                 Penalty = 2 * (Random.Next() % 10),
                 Volume = Random.Next() % 10
             }).ToArray();
-    }
-
-    [Benchmark]
-    public void Merge()
-    {
-        Merger.Merge(ExistingEntities, CalculatedEntities);
     }
 
     public enum DataGenerationOptions
