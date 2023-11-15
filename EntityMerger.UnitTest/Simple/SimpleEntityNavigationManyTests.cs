@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using EntityMerger.UnitTest.Entities;
+using EntityMerger.UnitTest.Entities.Simple;
 
-namespace EntityMerger.UnitTest;
+namespace EntityMerger.UnitTest.Simple;
 
-public class PersistEntityNavigationManyTests
+public class SimpleEntityNavigationManyTests
 {
     [Fact]
     public void OneChildDelete()

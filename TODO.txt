@@ -1,1 +1,7 @@
 more tests
+	complex scenario (see aFRR Activation Control)
+	performance wuth a lot of data
+
+check existing and calculated collection before iterating
+throw exception where needed
+check parameters where needed

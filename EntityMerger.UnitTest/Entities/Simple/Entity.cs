@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EntityMerger.UnitTest.Entities;
+namespace EntityMerger.UnitTest.Entities.Simple;
 
 //
 internal class Entity : PersistEntity

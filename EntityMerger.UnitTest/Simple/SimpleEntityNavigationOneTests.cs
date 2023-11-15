@@ -1,12 +1,13 @@
 ﻿using EntityMerger.EntityMerger;
 using EntityMerger.UnitTest.Entities;
+using EntityMerger.UnitTest.Entities.Simple;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace EntityMerger.UnitTest;
+namespace EntityMerger.UnitTest.Simple;
 
-public class PersistEntityNavigationOneTests
+public class SimpleEntityNavigationOneTests
 {
     [Fact]
     public void NotInExisting()
