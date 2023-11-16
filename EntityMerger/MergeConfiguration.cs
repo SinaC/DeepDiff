@@ -24,11 +24,4 @@ public class MergeConfiguration : IMergeConfiguration
 
         return new Merger(this);
     }
-
-    public IHashMerger CreateHashMerger()
-    {
-        // TODO: validate configuration (Keys cannot be empty + InsertAssignValue/UpdateAssignValue/DeleteAssignValue cannot be null, ...)
-
-        return new HashMerger(this);
-    }
 }

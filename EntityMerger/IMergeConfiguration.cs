@@ -6,5 +6,4 @@ public interface IMergeConfiguration
         where TEntity : class;
 
     IMerger CreateMerger();
-    IHashMerger CreateHashMerger();
 }
