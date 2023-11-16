@@ -44,11 +44,24 @@ public class Merger : IMerger
     public bool Equals<TEntity>(TEntity entity1, TEntity entity2)
     {
         var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
-        return mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(entity1, entity2);
+        return mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
+                        ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(entity1, entity2)
+                        : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(entity1, entity2);
     }
+
+    //public Hashtable TestHashing<TEntity>(IEnumerable<TEntity> entities)
+    //{
+    //    var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
+
+    //    var hashtable = new Hashtable(mergeEntityConfiguration.KeyConfiguration.EqualityComparer);
+    //    foreach (var entity in entities)
+    //        hashtable.Add(entity, entity);
+    //    return hashtable;
+    //}
 
     private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
     {
+        // TODO: initialize and use hashtable
         // search if every existing entity is found in calculated entities -> this will detect update and delete
         foreach (var existingEntity in existingEntities)
         {
@@ -57,13 +70,17 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
+                        ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
+                        : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
                     // existing entity found in calculated entities -> if values are different it's an update
                     if (areKeysEqual)
                     {
                         if (mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
                         {
-                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
+                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompileEqualityComparer
+                                ? mergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
+                                : mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
                             if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                                 mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
 
@@ -96,7 +113,9 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
+                       ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
+                       : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
                     if (areKeysEqual)
                     {
                         calculatedEntityFoundInExistingEntities = true;
@@ -116,14 +135,14 @@ public class Merger : IMerger
     private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object existingEntity, object calculatedEntity)
     {
         var modificationsDetected = false;
-        if (mergeEntityConfiguration.NavigationManyProperties != null)
+        if (mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties != null)
         {
-            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyProperties)
+            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties)
                 modificationsDetected |= MergeUsingNavigationMany(navigationManyProperty, existingEntity, calculatedEntity);
         }
-        if (mergeEntityConfiguration.NavigationOneProperties != null)
+        if (mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties != null)
         {
-            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneProperties)
+            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties)
                 modificationsDetected |= MergeUsingNavigationOne(navigationOneProperty, existingEntity, calculatedEntity);
         }
         return modificationsDetected;
@@ -194,7 +213,9 @@ public class Merger : IMerger
             bool areKeysEqual = false;
             if (childMergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
+                    ? childMergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
+                    : childMergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areKeysEqual) // keys are different -> copy keys
                     childMergeEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }
@@ -202,7 +223,9 @@ public class Merger : IMerger
             bool areCalculatedValuesEquals = false;
             if (childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
             {
-                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompileEqualityComparer
+                    ? childMergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
+                    : childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                     childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }
@@ -233,14 +256,14 @@ public class Merger : IMerger
 
     private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
     {
-        if (mergeEntityConfiguration.NavigationManyProperties != null)
+        if (mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties != null)
         {
-            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyProperties)
+            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties)
                 PropagateUsingNavigationMany(navigationManyProperty, entity, operation);
         }
-        if (mergeEntityConfiguration.NavigationOneProperties != null)
+        if (mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties != null)
         {
-            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneProperties)
+            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties)
                 PropagateUsingNavigationOne(navigationOneProperty, entity, operation);
         }
     }

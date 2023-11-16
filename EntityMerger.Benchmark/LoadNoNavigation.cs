@@ -11,26 +11,33 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> ExistingEntities { get; set; } = null!;
     private IReadOnlyCollection<NoNavigationEntity> CalculatedEntities { get; set; } = null!;
 
+    private IMerger NoHashMerger { get; }
     private IMerger Merger { get; }
-    private IHashMerger HashMerger { get; }
 
     public LoadNoNavigation()
     {
-        Random = new Random();
+        var noHashMergeConfiguration = new MergeConfiguration();
+        noHashMergeConfiguration
+            .Entity<NoNavigationEntity>()
+            .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
+            .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
+            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+        NoHashMerger = noHashMergeConfiguration.CreateMerger();
 
         var mergeConfiguration = new MergeConfiguration();
         mergeConfiguration
             .Entity<NoNavigationEntity>()
-            .HasKey(x => new {x.Date, x.ContractReference})
-            .HasCalculatedValue(x => new {x.Penalty, x.Volume, x.Price})
+            .HasKey(x => new { x.Date, x.ContractReference })
+            .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price })
             .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
             .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
             .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
         Merger = mergeConfiguration.CreateMerger();
-        HashMerger = mergeConfiguration.CreateHashMerger();
     }
 
-    [Params(10, 1000, 1000000)]
+    [Params(10, 1000, 100000)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoCalculated, DataGenerationOptions.Random)]
@@ -57,15 +64,15 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void Merge()
+    public void NoHashMerge()
     {
-        var results = Merger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = NoHashMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     [Benchmark]
-    public void HashMerge()
+    public void Merge()
     {
-        var results = HashMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = Merger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     private void GenerateIdentical()

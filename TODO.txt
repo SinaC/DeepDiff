@@ -8,10 +8,13 @@ initialize and use hashtable in HashMerger.Merge
 add merge options
 	HashtableThreshold(int) (when #entities > UseHashtableThreshold -> use hashtable)
 add WithMany options
-	UseHashtable(bool)
+	DisableHashtable()
 OnUpdate should also be able to change other fields
 	-> Action instead of property ?
 multiple OnUpdate ?
+multiple key -> evaluate IEqualityComparer on CreateMerger
+multiple calculated value -> evaluate IEqualityComparer on CreateMerger
+
 
 more tests
 	complex scenario (see aFRR Activation Control)
