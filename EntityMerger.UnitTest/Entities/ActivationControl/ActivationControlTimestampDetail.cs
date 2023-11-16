@@ -28,10 +28,10 @@ public class ActivationControlTimestampDetail : PersistEntity, IAuditEntity<stri
     public bool IsMeasurementExcluded { get; set; }
 
     //
-    public ActivationControlDetail ActivationControlDetail { get; set; }
+    public ActivationControlDetail ActivationControlDetail { get; set; } = null!;
 
     // technical fields
-    public string AuditedBy { get; set; }
+    public string AuditedBy { get; set; } = null!;
     public DateTime AuditedOn { get; set; }
 
     //

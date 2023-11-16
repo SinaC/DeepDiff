@@ -23,11 +23,11 @@ public class ActivationControlDetail : PersistEntity
     public bool HasJump { get; set; }
 
     // one-to-many
-    public List<ActivationControlTimestampDetail> TimestampDetails { get; set; }
-    public List<ActivationControlDpDetail> DpDetails { get; set; }
+    public List<ActivationControlTimestampDetail> TimestampDetails { get; set; } = null!;
+    public List<ActivationControlDpDetail> DpDetails { get; set; } = null!;
 
     //
-    public ActivationControl ActivationControl { get; set; }
+    public ActivationControl ActivationControl { get; set; } = null!;
 
     private string DebuggerDisplay => $"{StartsOn} OVU:{OfferedVolumeUp} OVD:{OfferedVolumeDown} OVRdU:{OfferedVolumeForRedispatchingUp} OVRdD:{OfferedVolumeForRedispatchingDown} PDeU:{PermittedDeviationUp} PDeD:{PermittedDeviationDown} RR:{RampingRate} J?:{HasJump} {ActivationControlId}";
 }

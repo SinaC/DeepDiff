@@ -1,16 +1,17 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EntityMerger.EntityMerger;
 
-public class MergeEntityConfiguration<TEntityType> : IMergeEntityConfiguration<TEntityType>
-    where TEntityType : class
+public class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEntity>
+    where TEntity : class
 {
     internal MergeEntityConfiguration Configuration { get; private set; }
 
     public MergeEntityConfiguration()
     {
-        Configuration = new MergeEntityConfiguration(typeof(TEntityType));
+        Configuration = new MergeEntityConfiguration(typeof(TEntity));
     }
 
     internal MergeEntityConfiguration(MergeEntityConfiguration mergeEntityConfiguration)
@@ -18,53 +19,58 @@ public class MergeEntityConfiguration<TEntityType> : IMergeEntityConfiguration<T
         Configuration = mergeEntityConfiguration;
     }
 
-    public IMergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression)
+    public IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
     {
         // TODO: can only be set once
-        Configuration.Key(keyExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
+        var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(keyProperties);
+
+        Configuration.SetKey(keyProperties, equalityComparerByProperties);
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> HasCalculatedValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression)
+    public IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression)
     {
         // TODO: check if value property has not been already registered
-        Configuration.CalculatedValue(valueExpression.GetSimplePropertyAccessList().Select(p => p.Single()));
+        var calculatedValueProperties = calculatedValueExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(calculatedValueProperties);
+        Configuration.AddCalculatedValue(calculatedValueProperties, equalityComparerByProperties);
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> HasMany<TTargetEntity>(Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
+    public IMergeEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, ICollection<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : class
     {
         // TODO: must be a of type List<T>
         // TODO: check if navigation property has not been already registered
-        Configuration.Many(navigationPropertyExpression.GetSimplePropertyAccess().Single());
+        Configuration.AddNavigationMany(navigationPropertyExpression.GetSimplePropertyAccess().Single());
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> HasOne<TTargetEntity>(Expression<Func<TEntityType, TTargetEntity>> navigationPropertyExpression)
+    public IMergeEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
         where TTargetEntity : class
     {
         // TODO: check if navigation property has not been already registered
-        Configuration.One(navigationPropertyExpression.GetSimplePropertyAccess().Single());
+        Configuration.AddNavigationOne(navigationPropertyExpression.GetSimplePropertyAccess().Single());
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> OnInsert<TMember>(Expression<Func<TEntityType, TMember>> destinationMember,
+    public IMergeEntityConfiguration<TEntity> MarkAsInserted<TMember>(Expression<Func<TEntity, TMember>> destinationMember,
         TMember value)
     {
-        Configuration.AssignValueForInsert(destinationMember.GetSimplePropertyAccess().Single(), value!);
+        Configuration.SetMarkAsInserted(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> OnUpdate<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value)
+    public IMergeEntityConfiguration<TEntity> MarkAsUpdated<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
     {
-        Configuration.AssignValueForUpdate(destinationMember.GetSimplePropertyAccess().Single(), value!);
+        Configuration.SetMarkAsUpdated(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntityType> OnDelete<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value)
+    public IMergeEntityConfiguration<TEntity> MarkAsDeleted<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
     {
-        Configuration.AssignValueForDelete(destinationMember.GetSimplePropertyAccess().Single(), value!);
+        Configuration.SetMarkAsDeleted(destinationMember.GetSimplePropertyAccess().Single(), value!);
         return this;
     }
 }
@@ -72,57 +78,77 @@ public class MergeEntityConfiguration<TEntityType> : IMergeEntityConfiguration<T
 internal class MergeEntityConfiguration
 {
     public Type EntityType { get; }
-    public IReadOnlyCollection<PropertyInfo> KeyProperties { get; private set; } = null!;
-    public List<PropertyInfo> CalculatedValueProperties { get; private set; } = new List<PropertyInfo>();
+    public KeyConfiguration KeyConfiguration { get; private set; }
+    public CalculatedValueConfiguration CalculatedValueConfiguration { get; private set; }
     public List<PropertyInfo> NavigationManyProperties { get; private set; } = new List<PropertyInfo>();
     public List<PropertyInfo> NavigationOneProperties { get; private set; } = new List<PropertyInfo>();
-    public Dictionary<MergeEntityOperation, AssignValue> AssignValueByOperation { get; private set; } = new Dictionary<MergeEntityOperation, AssignValue>();
+    public Dictionary<MergeEntityOperation, MarkAs> MarkAsByOperation { get; private set; } = new Dictionary<MergeEntityOperation, MarkAs>();
 
     public MergeEntityConfiguration(Type entityType)
     {
         EntityType = entityType;
     }
 
-    public void Key(IEnumerable<PropertyInfo> keyProperties)
+    public void SetKey(IEnumerable<PropertyInfo> keyProperties, IEqualityComparer equalityComparer)
     {
-        KeyProperties = keyProperties.ToArray();
+        KeyConfiguration = new KeyConfiguration
+        {
+            KeyProperties = keyProperties.ToArray(),
+            EqualityComparer = equalityComparer
+        };
     }
 
-    public void CalculatedValue(IEnumerable<PropertyInfo> valueProperties)
+    public void AddCalculatedValue(IEnumerable<PropertyInfo> calculatedValueProperties, IEqualityComparer equalityComparer)
     {
-        CalculatedValueProperties.AddRange(valueProperties);
+        CalculatedValueConfiguration = new CalculatedValueConfiguration
+        {
+            CalculatedValueProperties = calculatedValueProperties.ToArray(),
+            EqualityComparer = equalityComparer
+        };
     }
 
-    public void Many(PropertyInfo navigationProperty)
+    public void AddNavigationMany(PropertyInfo navigationProperty)
     {
         NavigationManyProperties.Add(navigationProperty);
     }
 
-    public void One(PropertyInfo navigationProperty)
+    public void AddNavigationOne(PropertyInfo navigationProperty)
     {
         NavigationOneProperties.Add(navigationProperty);
     }
 
-    public void AssignValueForInsert(PropertyInfo destinationProperty, object value)
+    public void SetMarkAsInserted(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[MergeEntityOperation.Insert] = new AssignValue(destinationProperty, value);
+        MarkAsByOperation[MergeEntityOperation.Insert] = new MarkAs(destinationProperty, value);
     }
 
-    public void AssignValueForUpdate(PropertyInfo destinationProperty, object value)
+    public void SetMarkAsUpdated(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[MergeEntityOperation.Update] = new AssignValue(destinationProperty, value);
+        MarkAsByOperation[MergeEntityOperation.Update] = new MarkAs(destinationProperty, value);
     }
 
-    public void AssignValueForDelete(PropertyInfo destinationProperty, object value)
+    public void SetMarkAsDeleted(PropertyInfo destinationProperty, object value)
     {
-        AssignValueByOperation[MergeEntityOperation.Delete] = new AssignValue(destinationProperty, value);
+        MarkAsByOperation[MergeEntityOperation.Delete] = new MarkAs(destinationProperty, value);
     }
 
-    internal record AssignValue
+    internal record MarkAs
     (
         PropertyInfo DestinationProperty,
         object Value
     );
+}
+
+internal readonly struct KeyConfiguration
+{
+    public IReadOnlyCollection<PropertyInfo> KeyProperties { get; init; }
+    public IEqualityComparer EqualityComparer { get; init; }
+}
+
+internal readonly struct CalculatedValueConfiguration
+{
+    public IReadOnlyCollection<PropertyInfo> CalculatedValueProperties { get; init; }
+    public IEqualityComparer EqualityComparer { get; init; }
 }
 
 internal enum MergeEntityOperation

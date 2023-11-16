@@ -20,7 +20,7 @@ public class ActivationControlDpTimestampDetail : PersistEntity
     public decimal EnergySupplied { get; set; }
 
     //
-    public ActivationControlDpDetail ActivationControlDpDetail { get; set; }
+    public ActivationControlDpDetail ActivationControlDpDetail { get; set; } = null!;
 
     private string DebuggerDisplay => $"{Timestamp} PM:{PowerMeasured} PB:{PowerBaseline} FC:{FcrCorrection} ES:{EnergySupplied} {ActivationControlId}-{StartsOn}-{DeliveryPointEan}";
 }

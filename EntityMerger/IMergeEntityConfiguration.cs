@@ -2,23 +2,23 @@
 
 namespace EntityMerger.EntityMerger;
 
-public interface IMergeEntityConfiguration<TEntityType>
-    where TEntityType : class
+public interface IMergeEntityConfiguration<TEntity>
+    where TEntity : class
 {
 
-    IMergeEntityConfiguration<TEntityType> HasKey<TKey>(Expression<Func<TEntityType, TKey>> keyExpression);
+    IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression);
 
-    IMergeEntityConfiguration<TEntityType> HasCalculatedValue<TValue>(Expression<Func<TEntityType, TValue>> valueExpression);
+    IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> valueExpression);
 
-    IMergeEntityConfiguration<TEntityType> HasMany<TTargetEntity>(Expression<Func<TEntityType, ICollection<TTargetEntity>>> navigationPropertyExpression)
+    IMergeEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, ICollection<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : class;
 
-    IMergeEntityConfiguration<TEntityType> HasOne<TTargetEntity>(Expression<Func<TEntityType, TTargetEntity>> navigationPropertyExpression)
+    IMergeEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
         where TTargetEntity : class;
 
-    IMergeEntityConfiguration<TEntityType> OnInsert<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+    IMergeEntityConfiguration<TEntity> MarkAsInserted<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
 
-    IMergeEntityConfiguration<TEntityType> OnUpdate<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+    IMergeEntityConfiguration<TEntity> MarkAsUpdated<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
 
-    IMergeEntityConfiguration<TEntityType> OnDelete<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+    IMergeEntityConfiguration<TEntity> MarkAsDeleted<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
 }

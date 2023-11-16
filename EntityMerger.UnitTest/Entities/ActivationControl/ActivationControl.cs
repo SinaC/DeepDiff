@@ -21,7 +21,7 @@ public class ActivationControl : UpdateAuditEntity
     public string TsoComment { get; set; }
 
     // one-to-many
-    public List<ActivationControlDetail> ActivationControlDetails { get; set; }
+    public List<ActivationControlDetail> ActivationControlDetails { get; set; } = null!;
 
     private string DebuggerDisplay => $"{ContractReference} {Day} TER:{TotalEnergyRequested} TD:{TotalDiscrepancy} TETBS:{TotalEnergyToBeSupplied} FP:{FailedPercentage} MEC:{IsMeasurementExcludedCount} JEC:{IsJumpExcludedCount} {Id}";
 }

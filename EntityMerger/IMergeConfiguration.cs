@@ -2,8 +2,9 @@
 
 public interface IMergeConfiguration
 {
-    IMergeEntityConfiguration<TEntityType> Entity<TEntityType>()
-        where TEntityType : class;
+    IMergeEntityConfiguration<TEntity> Entity<TEntity>()
+        where TEntity : class;
 
     IMerger CreateMerger();
+    IHashMerger CreateHashMerger();
 }

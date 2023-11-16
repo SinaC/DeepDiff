@@ -1,16 +1,17 @@
 merge using hashtable using HasKey as hash function
+	http://www.dotnetframework.org/default.aspx/Dotnetfx_Win7_3@5@1/Dotnetfx_Win7_3@5@1/3@5@1/DEVDIV/depot/DevDiv/releases/whidbey/NetFXspW7/ndp/clr/src/BCL/System/Collections/CompatibleComparer@cs/1/CompatibleComparer@cs
+	https://stackoverflow.com/questions/38558795/how-are-equals-and-gethashcode-implemented-on-anonymous-types
+	https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
+	https://github.com/PeterHimschoot/U2U.ValueObjectComparers/blob/master/src/U2U.ValueObjectComparers/ValueObjectComparer.cs#L129
+
+initialize and use hashtable in HashMerger.Merge
 add merge options
-	HashThreshold(int) (when #entities > UseHasThreshold -> use hashtable)
+	HashtableThreshold(int) (when #entities > UseHashtableThreshold -> use hashtable)
 add WithMany options
-	UseHash(bool)
+	UseHashtable(bool)
 OnUpdate should also be able to change other fields
 	-> Action instead of property ?
 multiple OnUpdate ?
-
-change OnInsert/OnUpdate/OnDelete with
-	IMergeEntityConfiguration<TEntityType> MarkAsInserted<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
-	IMergeEntityConfiguration<TEntityType> MarkAsUpdated<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
-	IMergeEntityConfiguration<TEntityType> MarkAsDeleted<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
 
 more tests
 	complex scenario (see aFRR Activation Control)
@@ -20,20 +21,40 @@ check existing and calculated collection before iterating
 throw exception where needed
 check parameters where needed
 
-benchmark results
-
 LoadNoNavigation
-| Method | N       | Opt          | Mean             | Error         | StdDev        |
-|------- |-------- |------------- |-----------------:|--------------:|--------------:|
-| Merge  | 10      | Identical    |        15.761 us |     0.0727 us |     0.0680 us |
-| Merge  | 10      | NoExisting   |         2.216 us |     0.0090 us |     0.0080 us |
-| Merge  | 10      | NoCalculated |         2.287 us |     0.0050 us |     0.0047 us |
-| Merge  | 10      | Random       |        69.050 us |     0.1663 us |     0.1556 us |
-| Merge  | 1000    | Identical    |     1,552.928 us |     3.3692 us |     2.9867 us |
-| Merge  | 1000    | NoExisting   |       180.080 us |     0.6006 us |     0.5618 us |
-| Merge  | 1000    | NoCalculated |       184.304 us |     0.4306 us |     0.4028 us |
-| Merge  | 1000    | Random       |     9,856.013 us |    18.8199 us |    15.7155 us |
-| Merge  | 1000000 | Identical    | 1,720,177.233 us | 2,453.7515 us | 2,295.2407 us |
-| Merge  | 1000000 | NoExisting   |   186,262.324 us |   689.0298 us |   610.8069 us |
-| Merge  | 1000000 | NoCalculated |   189,302.843 us |   635.3674 us |   563.2366 us |
-| Merge  | 1000000 | Random       | 7,826,838.157 us | 7,469.6528 us | 6,621.6527 us |
+| Method    | N       | Option       | Mean               | Error             | StdDev            | Median             |
+|---------- |-------- |------------- |-------------------:|------------------:|------------------:|-------------------:|
+| Merge     | 10      | Identical    |        12,064.4 ns |         207.41 ns |         183.87 ns |        12,037.8 ns |
+| HashMerge | 10      | Identical    |           994.4 ns |          19.03 ns |          18.69 ns |           987.2 ns |
+| Merge     | 10      | NoExisting   |         1,932.4 ns |          38.09 ns |          74.28 ns |         1,923.6 ns |
+| HashMerge | 10      | NoExisting   |         1,872.0 ns |          33.90 ns |          74.42 ns |         1,849.2 ns |
+| Merge     | 10      | NoCalculated |         1,881.3 ns |          37.01 ns |          75.60 ns |         1,858.2 ns |
+| HashMerge | 10      | NoCalculated |         1,841.9 ns |          36.57 ns |          55.85 ns |         1,837.8 ns |
+| Merge     | 10      | Random       |        46,917.9 ns |         741.89 ns |         761.86 ns |        47,070.0 ns |
+| HashMerge | 10      | Random       |         5,392.4 ns |         104.91 ns |         163.34 ns |         5,348.2 ns |
+| Merge     | 1000    | Identical    |     1,349,444.1 ns |      48,287.97 ns |     137,768.30 ns |     1,296,657.0 ns |
+| HashMerge | 1000    | Identical    |        82,270.3 ns |       3,424.74 ns |       9,715.41 ns |        77,552.3 ns |
+| Merge     | 1000    | NoExisting   |       157,266.3 ns |       3,080.29 ns |       3,423.74 ns |       157,879.2 ns |
+| HashMerge | 1000    | NoExisting   |       150,520.4 ns |       1,125.71 ns |       1,052.99 ns |       150,483.1 ns |
+| Merge     | 1000    | NoCalculated |       164,369.9 ns |       2,977.71 ns |       8,201.46 ns |       162,011.2 ns |
+| HashMerge | 1000    | NoCalculated |       155,051.8 ns |       1,546.00 ns |       1,446.13 ns |       155,157.3 ns |
+| Merge     | 1000    | Random       |     6,548,917.6 ns |      90,519.50 ns |      80,243.18 ns |     6,527,191.0 ns |
+| HashMerge | 1000    | Random       |       440,829.8 ns |       2,727.07 ns |       2,417.47 ns |       441,343.5 ns |
+| Merge     | 1000000 | Identical    | 1,171,749,807.1 ns |   9,456,716.58 ns |   8,383,132.93 ns | 1,171,242,750.0 ns |
+| HashMerge | 1000000 | Identical    |    76,892,793.9 ns |   1,437,441.44 ns |   1,274,254.39 ns |    76,968,914.3 ns |
+| Merge     | 1000000 | NoExisting   |   156,571,606.7 ns |   1,362,391.09 ns |   1,274,381.47 ns |   156,603,150.0 ns |
+| HashMerge | 1000000 | NoExisting   |   158,997,495.0 ns |   1,460,118.10 ns |   1,365,795.38 ns |   159,033,200.0 ns |
+| Merge     | 1000000 | NoCalculated |   162,083,993.0 ns |   2,897,355.75 ns |   4,510,833.85 ns |   160,533,450.0 ns |
+| HashMerge | 1000000 | NoCalculated |   161,349,512.5 ns |   1,795,567.36 ns |   1,591,723.69 ns |   161,432,412.5 ns |
+| Merge     | 1000000 | Random       | 6,800,590,950.0 ns | 132,546,162.57 ns | 198,388,855.15 ns | 6,774,342,750.0 ns |
+| HashMerge | 1000000 | Random       |   369,084,146.7 ns |   6,031,516.27 ns |   5,641,884.06 ns |   370,075,600.0 ns |
+
+EntityComparer
+| Method       | N       | Mean             | Error           | StdDev          |
+|------------- |-------- |-----------------:|----------------:|----------------:|
+| EqualsHash   | 10      |         331.3 ns |         5.38 ns |         5.03 ns |
+| EqualsNoHash | 10      |       3,263.5 ns |        26.80 ns |        22.38 ns |
+| EqualsHash   | 1000    |      38,799.3 ns |       258.97 ns |       242.24 ns |
+| EqualsNoHash | 1000    |     322,393.3 ns |     4,445.76 ns |     4,158.57 ns |
+| EqualsHash   | 1000000 |  35,121,184.6 ns |   672,375.80 ns |   747,343.92 ns |
+| EqualsNoHash | 1000000 | 326,660,403.3 ns | 3,415,519.58 ns | 3,194,879.13 ns |
