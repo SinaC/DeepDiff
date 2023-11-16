@@ -1,3 +1,17 @@
+merge using hashtable using HasKey as hash function
+add merge options
+	HashThreshold(int) (when #entities > UseHasThreshold -> use hashtable)
+add WithMany options
+	UseHash(bool)
+OnUpdate should also be able to change other fields
+	-> Action instead of property ?
+multiple OnUpdate ?
+
+change OnInsert/OnUpdate/OnDelete with
+	IMergeEntityConfiguration<TEntityType> MarkAsInserted<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+	IMergeEntityConfiguration<TEntityType> MarkAsUpdated<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+	IMergeEntityConfiguration<TEntityType> MarkAsDeleted<TMember>(Expression<Func<TEntityType, TMember>> destinationMember, TMember value);
+
 more tests
 	complex scenario (see aFRR Activation Control)
 	performance wuth a lot of data
