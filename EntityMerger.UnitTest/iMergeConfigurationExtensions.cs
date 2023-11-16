@@ -5,12 +5,12 @@ namespace EntityMerger.UnitTest;
 
 public static class IMergeConfigurationExtensions
 {
-    public static IMergeEntityConfiguration<TEntityType> PersistEntity<TEntityType>(this IMergeConfiguration mergeConfiguration)
-        where TEntityType : PersistEntity
+    public static IMergeEntityConfiguration<TEntity> PersistEntity<TEntity>(this IMergeConfiguration mergeConfiguration)
+        where TEntity : PersistEntity
     {
-        return mergeConfiguration.Entity<TEntityType>()
-            .OnInsert(x => x.PersistChange, PersistChange.Insert)
-            .OnUpdate(x => x.PersistChange, PersistChange.Update)
-            .OnDelete(x => x.PersistChange, PersistChange.Delete);
+        return mergeConfiguration.Entity<TEntity>()
+            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
     }
 }

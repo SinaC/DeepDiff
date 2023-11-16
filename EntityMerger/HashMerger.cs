@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace EntityMerger;
 
-public class Merger : IMerger
+public class HashMerger : IHashMerger
 {
     private MergeConfiguration Configuration { get; }
 
-    internal Merger(MergeConfiguration configuration)
+    internal HashMerger(MergeConfiguration configuration)
     {
         Configuration = configuration;
     }
@@ -44,11 +44,22 @@ public class Merger : IMerger
     public bool Equals<TEntity>(TEntity entity1, TEntity entity2)
     {
         var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
-        return mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(entity1, entity2);
+        return mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(entity1, entity2);
     }
+
+    //public Hashtable TestHashing<TEntity>(IEnumerable<TEntity> entities)
+    //{
+    //    var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
+
+    //    var hashtable = new Hashtable(mergeEntityConfiguration.KeyConfiguration.EqualityComparer);
+    //    foreach (var entity in entities)
+    //        hashtable.Add(entity, entity);
+    //    return hashtable;
+    //}
 
     private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
     {
+        // TODO: initialize and use hashtable
         // search if every existing entity is found in calculated entities -> this will detect update and delete
         foreach (var existingEntity in existingEntities)
         {
@@ -57,13 +68,13 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity);
                     // existing entity found in calculated entities -> if values are different it's an update
                     if (areKeysEqual)
                     {
                         if (mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
                         {
-                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
+                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity);
                             if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                                 mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
 
@@ -96,7 +107,7 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity);
                     if (areKeysEqual)
                     {
                         calculatedEntityFoundInExistingEntities = true;
@@ -194,7 +205,7 @@ public class Merger : IMerger
             bool areKeysEqual = false;
             if (childMergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areKeysEqual) // keys are different -> copy keys
                     childMergeEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }
@@ -202,7 +213,7 @@ public class Merger : IMerger
             bool areCalculatedValuesEquals = false;
             if (childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
             {
-                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                     childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }

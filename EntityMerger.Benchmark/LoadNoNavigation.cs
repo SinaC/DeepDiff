@@ -11,7 +11,8 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> ExistingEntities { get; set; } = null!;
     private IReadOnlyCollection<NoNavigationEntity> CalculatedEntities { get; set; } = null!;
 
-    private IMerger Merger {get; }
+    private IMerger Merger { get; }
+    private IHashMerger HashMerger { get; }
 
     public LoadNoNavigation()
     {
@@ -22,10 +23,11 @@ public class LoadNoNavigation
             .Entity<NoNavigationEntity>()
             .HasKey(x => new {x.Date, x.ContractReference})
             .HasCalculatedValue(x => new {x.Penalty, x.Volume, x.Price})
-            .OnInsert(x => x.PersistChange, PersistChange.Insert)
-            .OnUpdate(x => x.PersistChange, PersistChange.Update)
-            .OnDelete(x => x.PersistChange, PersistChange.Delete);
+            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
         Merger = mergeConfiguration.CreateMerger();
+        HashMerger = mergeConfiguration.CreateHashMerger();
     }
 
     [Params(10, 1000, 1000000)]
@@ -58,6 +60,12 @@ public class LoadNoNavigation
     public void Merge()
     {
         var results = Merger.Merge(ExistingEntities, CalculatedEntities).ToList();
+    }
+
+    [Benchmark]
+    public void HashMerge()
+    {
+        var results = HashMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     private void GenerateIdentical()

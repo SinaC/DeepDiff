@@ -9,13 +9,13 @@ public class MergeConfiguration : IMergeConfiguration
         MergeEntityConfigurations = new Dictionary<Type, MergeEntityConfiguration>();
     }
 
-    public virtual IMergeEntityConfiguration<TEntityType> Entity<TEntityType>()
-        where TEntityType : class
+    public virtual IMergeEntityConfiguration<TEntity> Entity<TEntity>()
+        where TEntity : class
     {
-        var mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntityType));
-        MergeEntityConfigurations.Add(typeof(TEntityType), mergeEntityConfiguration);
+        var mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntity));
+        MergeEntityConfigurations.Add(typeof(TEntity), mergeEntityConfiguration);
 
-        return new MergeEntityConfiguration<TEntityType>(mergeEntityConfiguration);
+        return new MergeEntityConfiguration<TEntity>(mergeEntityConfiguration);
     }
 
     public IMerger CreateMerger()
@@ -23,5 +23,12 @@ public class MergeConfiguration : IMergeConfiguration
         // TODO: validate configuration (Keys cannot be empty + InsertAssignValue/UpdateAssignValue/DeleteAssignValue cannot be null, ...)
 
         return new Merger(this);
+    }
+
+    public IHashMerger CreateHashMerger()
+    {
+        // TODO: validate configuration (Keys cannot be empty + InsertAssignValue/UpdateAssignValue/DeleteAssignValue cannot be null, ...)
+
+        return new HashMerger(this);
     }
 }

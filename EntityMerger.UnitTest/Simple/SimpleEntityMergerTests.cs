@@ -10,7 +10,7 @@ namespace EntityMerger.UnitTest.Simple;
 public partial class SimpleEntityMergerTests
 {
     [Fact]
-    public void Test1()
+    public void TestMultipleChanges()
     {
         var existing = Enumerable.Range(0, 10).Select(x => new Entity
         {

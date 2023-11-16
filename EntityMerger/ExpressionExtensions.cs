@@ -122,5 +122,5 @@ internal static class ExpressionExtensions
         while (memberExpression.Expression != parameterExpression);
 
         return new PropertyPath(propertyInfos);
-    }
+    }   
 }
