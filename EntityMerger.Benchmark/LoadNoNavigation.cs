@@ -4,7 +4,6 @@ using EntityMerger.EntityMerger;
 
 namespace EntityMerger.Benchmark;
 
-[SimpleJob(RuntimeMoniker.Net60)]
 public class LoadNoNavigation
 {
     private Random Random { get; }
@@ -16,6 +15,7 @@ public class LoadNoNavigation
 
     public LoadNoNavigation()
     {
+        Random = new Random();
         var noHashMergeConfiguration = new MergeConfiguration();
         noHashMergeConfiguration
             .Entity<NoNavigationEntity>()
@@ -37,7 +37,7 @@ public class LoadNoNavigation
         Merger = mergeConfiguration.CreateMerger();
     }
 
-    [Params(10, 1000, 100000)]
+    [Params(10, 1000)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoCalculated, DataGenerationOptions.Random)]
@@ -81,7 +81,7 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
+                Date = DateTime.Today.AddDays(x),
                 ContractReference = "REF",
                 Price = x,
                 Penalty = 2 * x,
@@ -91,7 +91,7 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
+                Date = DateTime.Today.AddDays(x),
                 ContractReference = "REF",
                 Price = x,
                 Penalty = 2 * x,
@@ -106,7 +106,7 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
+                Date = DateTime.Today.AddDays(x),
                 ContractReference = "REF",
                 Price = x,
                 Penalty = 2 * x,
@@ -120,7 +120,7 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
+                Date = DateTime.Today.AddDays(x),
                 ContractReference = "REF",
                 Price = x,
                 Penalty = 2 * x,
@@ -135,8 +135,8 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
-                ContractReference = $"REF{Random.Next() % 10}",
+                Date = DateTime.Today.AddDays(x),
+                ContractReference = $"REF{Random.Next() % 4}",
                 Price = Random.Next() % 10,
                 Penalty = 2 * (Random.Next() % 10),
                 Volume = Random.Next() % 10
@@ -145,8 +145,8 @@ public class LoadNoNavigation
             .Select(x => new NoNavigationEntity
             {
                 Id = Guid.NewGuid(),
-                Date = DateTime.Today,
-                ContractReference = $"REF{Random.Next() % 10}",
+                Date = DateTime.Today.AddDays(x),
+                ContractReference = $"REF{Random.Next() % 4}",
                 Price = Random.Next() % 10,
                 Penalty = 2 * (Random.Next() % 10),
                 Volume = Random.Next() % 10

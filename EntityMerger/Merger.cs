@@ -1,5 +1,6 @@
 ﻿using EntityMerger.EntityMerger;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace EntityMerger;
@@ -44,24 +45,62 @@ public class Merger : IMerger
     public bool Equals<TEntity>(TEntity entity1, TEntity entity2)
     {
         var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
-        return mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
-                        ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(entity1, entity2)
-                        : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(entity1, entity2);
+        return mergeEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+            ? mergeEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(entity1, entity2)
+            : mergeEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(entity1, entity2);
     }
 
-    //public Hashtable TestHashing<TEntity>(IEnumerable<TEntity> entities)
+    //private IEnumerable<object> MergeWithHashtable(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
     //{
-    //    var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
+    //    var existingEntitiesHashtable = InitializeHashtable(mergeEntityConfiguration, existingEntities);
+    //    var calculatedEntitiesHashtable = InitializeHashtable(mergeEntityConfiguration, calculatedEntities);
+    //    // search if every existing entity is found in calculated entities -> this will detect update and delete
+    //    foreach (var existingEntity in existingEntities)
+    //    {
+    //        var calculatedEntity = calculatedEntitiesHashtable[existingEntity];
 
-    //    var hashtable = new Hashtable(mergeEntityConfiguration.KeyConfiguration.EqualityComparer);
-    //    foreach (var entity in entities)
-    //        hashtable.Add(entity, entity);
-    //    return hashtable;
+    //        // existing entity found in calculated entities -> if values are different it's an update
+    //        if (calculatedEntity != null)
+    //        {
+    //            if (mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
+    //            {
+    //                var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompileEqualityComparer
+    //                    ? mergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
+    //                    : mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
+    //                if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
+    //                    mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
+
+    //                var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
+    //                if (!areCalculatedValuesEquals || mergeModificationsFound)
+    //                {
+    //                    MarkEntity(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Update);
+    //                    yield return existingEntity;
+    //                }
+    //            }
+    //        }
+    //        // existing entity not found in calculated entities -> it's a delete
+    //        else
+    //        {
+    //            MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, existingEntity, MergeEntityOperation.Delete); // once an entity is deleted, it's children will also be deleted
+    //            yield return existingEntity;
+    //        }
+    //    }
+
+    //    // search if every calculated entity is found in existing entities -> this will detect insert
+    //    foreach (var calculatedEntity in calculatedEntities)
+    //    {
+    //        var calculatedEntityFoundInExistingEntities = existingEntitiesHashtable.ContainsKey(calculatedEntity);
+    //        // calculated entity not found in existing entity -> it's an insert
+    //        if (!calculatedEntityFoundInExistingEntities)
+    //        {
+    //            MarkEntityAndPropagateUsingNavigation(mergeEntityConfiguration, calculatedEntity, MergeEntityOperation.Insert); // once an entity is inserted, it's children will also be inserted
+    //            yield return calculatedEntity;
+    //        }
+    //    }
     //}
 
     private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
     {
-        // TODO: initialize and use hashtable
         // search if every existing entity is found in calculated entities -> this will detect update and delete
         foreach (var existingEntity in existingEntities)
         {
@@ -70,17 +109,17 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
-                        ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
-                        : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                        ? mergeEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, calculatedEntity)
+                        : mergeEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, calculatedEntity);
                     // existing entity found in calculated entities -> if values are different it's an update
                     if (areKeysEqual)
                     {
                         if (mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
                         {
-                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompileEqualityComparer
-                                ? mergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
-                                : mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntity, calculatedEntity);
+                            var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompiledEqualityComparer
+                                ? mergeEntityConfiguration.CalculatedValueConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, calculatedEntity)
+                                : mergeEntityConfiguration.CalculatedValueConfiguration.NaiveEqualityComparer.Equals(existingEntity, calculatedEntity);
                             if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                                 mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
 
@@ -113,9 +152,9 @@ public class Merger : IMerger
             {
                 if (mergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
-                       ? mergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntity, calculatedEntity)
-                       : mergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntity, calculatedEntity);
+                    var areKeysEqual = mergeEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                       ? mergeEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, calculatedEntity)
+                       : mergeEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, calculatedEntity);
                     if (areKeysEqual)
                     {
                         calculatedEntityFoundInExistingEntities = true;
@@ -131,6 +170,14 @@ public class Merger : IMerger
             }
         }
     }
+
+    //private Hashtable InitializeHashtable(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> entities)
+    //{
+    //    var hashtable = new Hashtable(mergeEntityConfiguration.KeyConfiguration.EqualityComparer);
+    //    foreach (var entity in entities)
+    //        hashtable.Add(entity, entity);
+    //    return hashtable;
+    //}
 
     private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object existingEntity, object calculatedEntity)
     {
@@ -213,9 +260,9 @@ public class Merger : IMerger
             bool areKeysEqual = false;
             if (childMergeEntityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.UsePrecompileEqualityComparer
-                    ? childMergeEntityConfiguration.KeyConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
-                    : childMergeEntityConfiguration.KeyConfiguration.KeyProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areKeysEqual = childMergeEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                    ? childMergeEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
+                    : childMergeEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areKeysEqual) // keys are different -> copy keys
                     childMergeEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }
@@ -223,9 +270,9 @@ public class Merger : IMerger
             bool areCalculatedValuesEquals = false;
             if (childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties != null)
             {
-                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompileEqualityComparer
-                    ? childMergeEntityConfiguration.CalculatedValueConfiguration.EqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
-                    : childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.Equals(existingEntityChild, calculatedEntityChild);
+                areCalculatedValuesEquals = childMergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompiledEqualityComparer
+                    ? childMergeEntityConfiguration.CalculatedValueConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, calculatedEntityChild)
+                    : childMergeEntityConfiguration.CalculatedValueConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, calculatedEntityChild);
                 if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
                     childMergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntityChild, calculatedEntityChild);
             }
@@ -302,7 +349,7 @@ public class Merger : IMerger
             assignValue.DestinationProperty.SetValue(childValue, assignValue.Value);
     }
 
-    private Type GetNavigationManyDestinationType(PropertyInfo navigationProperty)
+    private Type GetNavigationManyDestinationType(PropertyInfo navigationProperty) // TODO: pre calculate this when setting HasMany and HasOne (store in related configuration)
     {
         Type type = navigationProperty.PropertyType;
         // check List<>

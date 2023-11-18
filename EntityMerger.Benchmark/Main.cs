@@ -1,4 +1,7 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 
 namespace EntityMerger.Benchmark;
 
@@ -8,7 +11,15 @@ public class Program
     //  dotnet run -c Release
     public static void Main(string[] args)
     {
-        var summary = BenchmarkRunner.Run<LoadNoNavigation>();
-        //var summary = BenchmarkRunner.Run<EntityComparer>();
+        //https://stackoverflow.com/questions/73475521/benchmarkdotnet-inprocessemittoolchain-complete-sample
+        var config = DefaultConfig.Instance
+            .AddJob(
+                Job
+                .Default
+                .WithLaunchCount(1)
+                .WithToolchain(InProcessNoEmitToolchain.Instance));
+
+        var summary = BenchmarkRunner.Run<LoadNoNavigation>(config);
+        //var summary = BenchmarkRunner.Run<EntityComparer>(config);
     }
 }
