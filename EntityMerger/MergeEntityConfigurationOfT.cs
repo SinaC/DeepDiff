@@ -20,41 +20,49 @@ internal class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEn
     public IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
     {
         // TODO: can only be set once
-        var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(keyProperties);
-
-        var config = Configuration.SetKey(keyProperties, equalityComparerByProperties);
+        CreateKeyConfiguration(keyExpression);
         return this;
     }
 
     public IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction)
     {
-        // TODO: can only be set once
-        var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(keyProperties);
-
-        var config = Configuration.SetKey(keyProperties, equalityComparerByProperties);
+        var config = CreateKeyConfiguration(keyExpression);
         keyConfigurationAction?.Invoke(config);
         return this;
     }
 
+    private IKeyConfiguration CreateKeyConfiguration<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
+    {
+        // TODO: can only be set once
+        var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var precompiledEqualityComparerByProperties = new PrecompiledEqualityComparerByProperties<TEntity>(keyProperties);
+        var naiveEqualityComparerByProperties = new NaiveEqualityComparerByProperties<TEntity>(keyProperties);
+
+        var config = Configuration.SetKey(keyProperties, precompiledEqualityComparerByProperties, naiveEqualityComparerByProperties);
+        return config;
+    }
+
     public IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression)
     {
-        // TODO: check if value property has not been already registered
-        var calculatedValueProperties = calculatedValueExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(calculatedValueProperties);
-        var config = Configuration.SetCalculatedValue(calculatedValueProperties, equalityComparerByProperties);
+        CreateCalculatedValueConfiguration(calculatedValueExpression);
         return this;
     }
 
     public IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression, Action<ICalculatedValueConfiguration> calculatedValueConfigurationAction)
     {
-        // TODO: check if value property has not been already registered
-        var calculatedValueProperties = calculatedValueExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var equalityComparerByProperties = new EqualityComparerByProperties<TEntity>(calculatedValueProperties);
-        var config = Configuration.SetCalculatedValue(calculatedValueProperties, equalityComparerByProperties);
+        var config = CreateCalculatedValueConfiguration(calculatedValueExpression);
         calculatedValueConfigurationAction?.Invoke(config);
         return this;
+    }
+
+    private ICalculatedValueConfiguration CreateCalculatedValueConfiguration<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression)
+    {
+        // TODO: check if value property has not been already registered
+        var calculatedValueProperties = calculatedValueExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var precompiledEqualityComparerByProperties = new PrecompiledEqualityComparerByProperties<TEntity>(calculatedValueProperties);
+        var naiveEqualityComparerByProperties = new NaiveEqualityComparerByProperties<TEntity>(calculatedValueProperties);
+        var config = Configuration.SetCalculatedValue(calculatedValueProperties, precompiledEqualityComparerByProperties, naiveEqualityComparerByProperties);
+        return config;
     }
 
     public IMergeEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, ICollection<TTargetEntity>>> navigationPropertyExpression)

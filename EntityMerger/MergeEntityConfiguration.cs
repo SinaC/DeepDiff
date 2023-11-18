@@ -17,22 +17,24 @@ internal partial class MergeEntityConfiguration
         EntityType = entityType;
     }
 
-    public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties, IEqualityComparer equalityComparer)
+    public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
     {
         KeyConfiguration = new KeyConfiguration
         {
             KeyProperties = keyProperties.ToArray(),
-            EqualityComparer = equalityComparer
+            PrecompiledEqualityComparer = precompiledEqualityComparer,
+            NaiveEqualityComparer = naiveEqualityComparer
         };
         return KeyConfiguration;
     }
 
-    public CalculatedValueConfiguration SetCalculatedValue(IEnumerable<PropertyInfo> calculatedValueProperties, IEqualityComparer equalityComparer)
+    public CalculatedValueConfiguration SetCalculatedValue(IEnumerable<PropertyInfo> calculatedValueProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
     {
         CalculatedValueConfiguration = new CalculatedValueConfiguration
         {
             CalculatedValueProperties = calculatedValueProperties.ToArray(),
-            EqualityComparer = equalityComparer
+            PrecompiledEqualityComparer = precompiledEqualityComparer,
+            NaiveEqualityComparer = naiveEqualityComparer
         };
         return CalculatedValueConfiguration;
     }

@@ -1,4 +1,4 @@
-merge using hashtable using HasKey as hash function
+﻿merge using hashtable using HasKey as hash function
 	http://www.dotnetframework.org/default.aspx/Dotnetfx_Win7_3@5@1/Dotnetfx_Win7_3@5@1/3@5@1/DEVDIV/depot/DevDiv/releases/whidbey/NetFXspW7/ndp/clr/src/BCL/System/Collections/CompatibleComparer@cs/1/CompatibleComparer@cs
 	https://stackoverflow.com/questions/38558795/how-are-equals-and-gethashcode-implemented-on-anonymous-types
 	https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
@@ -25,32 +25,75 @@ throw exception where needed
 check parameters where needed
 
 LoadNoNavigation
-| Method    | N       | Option       | Mean               | Error             | StdDev            | Median             |
-|---------- |-------- |------------- |-------------------:|------------------:|------------------:|-------------------:|
-| Merge     | 10      | Identical    |        12,064.4 ns |         207.41 ns |         183.87 ns |        12,037.8 ns |
-| HashMerge | 10      | Identical    |           994.4 ns |          19.03 ns |          18.69 ns |           987.2 ns |
-| Merge     | 10      | NoExisting   |         1,932.4 ns |          38.09 ns |          74.28 ns |         1,923.6 ns |
-| HashMerge | 10      | NoExisting   |         1,872.0 ns |          33.90 ns |          74.42 ns |         1,849.2 ns |
-| Merge     | 10      | NoCalculated |         1,881.3 ns |          37.01 ns |          75.60 ns |         1,858.2 ns |
-| HashMerge | 10      | NoCalculated |         1,841.9 ns |          36.57 ns |          55.85 ns |         1,837.8 ns |
-| Merge     | 10      | Random       |        46,917.9 ns |         741.89 ns |         761.86 ns |        47,070.0 ns |
-| HashMerge | 10      | Random       |         5,392.4 ns |         104.91 ns |         163.34 ns |         5,348.2 ns |
-| Merge     | 1000    | Identical    |     1,349,444.1 ns |      48,287.97 ns |     137,768.30 ns |     1,296,657.0 ns |
-| HashMerge | 1000    | Identical    |        82,270.3 ns |       3,424.74 ns |       9,715.41 ns |        77,552.3 ns |
-| Merge     | 1000    | NoExisting   |       157,266.3 ns |       3,080.29 ns |       3,423.74 ns |       157,879.2 ns |
-| HashMerge | 1000    | NoExisting   |       150,520.4 ns |       1,125.71 ns |       1,052.99 ns |       150,483.1 ns |
-| Merge     | 1000    | NoCalculated |       164,369.9 ns |       2,977.71 ns |       8,201.46 ns |       162,011.2 ns |
-| HashMerge | 1000    | NoCalculated |       155,051.8 ns |       1,546.00 ns |       1,446.13 ns |       155,157.3 ns |
-| Merge     | 1000    | Random       |     6,548,917.6 ns |      90,519.50 ns |      80,243.18 ns |     6,527,191.0 ns |
-| HashMerge | 1000    | Random       |       440,829.8 ns |       2,727.07 ns |       2,417.47 ns |       441,343.5 ns |
-| Merge     | 1000000 | Identical    | 1,171,749,807.1 ns |   9,456,716.58 ns |   8,383,132.93 ns | 1,171,242,750.0 ns |
-| HashMerge | 1000000 | Identical    |    76,892,793.9 ns |   1,437,441.44 ns |   1,274,254.39 ns |    76,968,914.3 ns |
-| Merge     | 1000000 | NoExisting   |   156,571,606.7 ns |   1,362,391.09 ns |   1,274,381.47 ns |   156,603,150.0 ns |
-| HashMerge | 1000000 | NoExisting   |   158,997,495.0 ns |   1,460,118.10 ns |   1,365,795.38 ns |   159,033,200.0 ns |
-| Merge     | 1000000 | NoCalculated |   162,083,993.0 ns |   2,897,355.75 ns |   4,510,833.85 ns |   160,533,450.0 ns |
-| HashMerge | 1000000 | NoCalculated |   161,349,512.5 ns |   1,795,567.36 ns |   1,591,723.69 ns |   161,432,412.5 ns |
-| Merge     | 1000000 | Random       | 6,800,590,950.0 ns | 132,546,162.57 ns | 198,388,855.15 ns | 6,774,342,750.0 ns |
-| HashMerge | 1000000 | Random       |   369,084,146.7 ns |   6,031,516.27 ns |   5,641,884.06 ns |   370,075,600.0 ns |
+| Method      | Job       | Toolchain                | IterationCount | LaunchCount | WarmupCount | N    | Option       | Mean         | Error      | StdDev     |
+|------------ |---------- |------------------------- |--------------- |------------ |------------ |----- |------------- |-------------:|-----------:|-----------:|
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Identical    |    13.880 μs |  0.2310 μs |  0.2048 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Identical    |     3.848 μs |  0.0597 μs |  0.0558 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Identical    |    14.462 μs |  0.2710 μs |  0.2535 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Identical    |     3.923 μs |  0.0651 μs |  0.0609 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoExisting   |     3.219 μs |  0.0596 μs |  0.0528 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoExisting   |     3.249 μs |  0.0415 μs |  0.0389 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoExisting   |     4.108 μs |  0.0583 μs |  0.0545 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoExisting   |     4.064 μs |  0.0599 μs |  0.0561 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoCalculated |     3.237 μs |  0.0412 μs |  0.0386 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoCalculated |     3.258 μs |  0.0522 μs |  0.0489 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoCalculated |     4.134 μs |  0.0744 μs |  0.0696 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoCalculated |     4.133 μs |  0.0812 μs |  0.0759 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Random       |     9.598 μs |  0.1245 μs |  0.1039 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Random       |     6.314 μs |  0.1052 μs |  0.0933 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Random       |     8.648 μs |  0.1898 μs |  0.1775 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Random       |     6.341 μs |  0.0162 μs |  0.0135 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Identical    | 1,418.231 μs | 20.6345 μs | 19.3015 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Identical    |   404.303 μs |  5.8806 μs |  5.5008 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Identical    | 1,411.119 μs |  6.4777 μs |  5.7423 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Identical    |   420.288 μs |  9.8675 μs |  9.2300 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoExisting   |   321.165 μs |  4.0834 μs |  3.8196 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoExisting   |   312.518 μs |  5.2925 μs |  4.9506 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoExisting   |   389.410 μs |  4.3405 μs |  4.0601 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoExisting   |   386.963 μs |  4.0526 μs |  3.7908 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoCalculated |   318.386 μs |  4.1660 μs |  3.8969 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoCalculated |   315.659 μs |  3.9201 μs |  3.6668 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoCalculated |   381.465 μs |  3.7446 μs |  3.1269 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoCalculated |   382.589 μs |  3.1794 μs |  2.8185 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Random       |   873.015 μs | 15.9113 μs | 14.8834 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Random       |   628.443 μs |  7.1169 μs |  6.6572 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Random       | 1,000.303 μs | 16.2205 μs | 15.1726 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Random       |   743.859 μs | 11.8481 μs | 11.0827 μs |
+
+| Method      | Job       | Toolchain                | IterationCount | LaunchCount | WarmupCount | N    | Option       | Mean           | Error         | StdDev        |
+|------------ |---------- |------------------------- |--------------- |------------ |------------ |----- |------------- |---------------:|--------------:|--------------:|
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Identical    |      56.050 μs |     0.4432 μs |     0.3929 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Identical    |       3.189 μs |     0.0493 μs |     0.0461 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Identical    |      57.096 μs |     1.0634 μs |     0.9947 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Identical    |       3.326 μs |     0.0545 μs |     0.0510 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoExisting   |       2.112 μs |     0.0343 μs |     0.0321 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoExisting   |       2.117 μs |     0.0286 μs |     0.0267 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoExisting   |       2.235 μs |     0.0458 μs |     0.0429 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoExisting   |       2.221 μs |     0.0243 μs |     0.0215 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoCalculated |       2.138 μs |     0.0198 μs |     0.0176 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | NoCalculated |       2.142 μs |     0.0346 μs |     0.0323 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoCalculated |       2.258 μs |     0.0206 μs |     0.0182 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | NoCalculated |       2.248 μs |     0.0419 μs |     0.0392 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Random       |      64.523 μs |     1.0310 μs |     0.9644 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 10   | Random       |       6.940 μs |     0.0953 μs |     0.0892 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Random       |      73.739 μs |     1.0318 μs |     0.9652 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 10   | Random       |       5.672 μs |     0.0611 μs |     0.0542 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Identical    | 373,926.647 μs | 5,937.3085 μs | 5,553.7621 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Identical    |  17,547.741 μs |   179.4225 μs |   167.8319 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Identical    | 382,313.767 μs | 7,567.7128 μs | 7,078.8433 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Identical    |  17,573.043 μs |   174.3565 μs |   163.0932 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoExisting   |     181.823 μs |     3.3750 μs |     3.1570 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoExisting   |     197.929 μs |     2.1333 μs |     1.9955 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoExisting   |     182.568 μs |     2.9285 μs |     2.7394 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoExisting   |     186.148 μs |     1.7192 μs |     1.6081 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoCalculated |     185.816 μs |     1.5995 μs |     1.4961 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | NoCalculated |     183.952 μs |     2.5784 μs |     2.2857 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoCalculated |     191.230 μs |     2.9966 μs |     2.8031 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | NoCalculated |     194.563 μs |     3.1156 μs |     2.9144 μs |
+| NoHashMerge | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Random       | 612,572.967 μs | 8,806.1575 μs | 8,237.2852 μs |
+| Merge       | .NET 6.0  | Default                  | Default        | Default     | Default     | 1000 | Random       |  30,241.285 μs |   180.5054 μs |   168.8449 μs |
+| NoHashMerge | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Random       | 648,041.979 μs | 7,022.8134 μs | 6,225.5412 μs |
+| Merge       | MediumRun | InProcessNoEmitToolchain | 15             | 1           | 10          | 1000 | Random       |  31,000.837 μs |   131.1610 μs |   116.2708 μs |
 
 EntityComparer
 | Method       | N       | Mean             | Error           | StdDev          |

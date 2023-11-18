@@ -15,22 +15,6 @@ internal static class PropertyInfoExtensions
                     || otherPropertyInfo.DeclaringType.GetInterfaces().Contains(propertyInfo.DeclaringType)));
     }
 
-    // check if existingEntity is equal to calculatedEntity using propertyInfos
-    public static bool Equals(this IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
-    {
-        if (propertyInfos == null)
-            return false;
-        foreach (var propertyInfo in propertyInfos)
-        {
-            var existingValue = propertyInfo.GetValue(existingEntity);
-            var calculatedValue = propertyInfo.GetValue(calculatedEntity);
-
-            if (!Equals(existingValue, calculatedValue))
-                return false;
-        }
-        return true;
-    }
-
     public static void CopyPropertyValues(this IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
     {
         if (propertyInfos == null)

@@ -4,13 +4,13 @@ using System.Reflection;
 
 namespace EntityMerger;
 
-public sealed class EqualityComparerByProperties<T> : IEqualityComparer
+public sealed class PrecompiledEqualityComparerByProperties<T> : IEqualityComparer
     where T : class
 {
     private CompareFunc<T> Comparer { get; init; }
     private Func<T, int> Hasher { get; init; }
 
-    public EqualityComparerByProperties(IEnumerable<PropertyInfo> propertyInfos)
+    public PrecompiledEqualityComparerByProperties(IEnumerable<PropertyInfo> propertyInfos)
     {
         Comparer = ExpressionGenerater.GenerateComparer<T>(propertyInfos);
         Hasher = ExpressionGenerater.GenerateHasher<T>(propertyInfos);
