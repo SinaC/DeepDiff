@@ -15,7 +15,7 @@ public class Program
         var config = DefaultConfig.Instance
             .AddJob(
                 Job
-                .Default
+                .LongRun
                 .WithLaunchCount(1)
                 .WithToolchain(InProcessNoEmitToolchain.Instance));
 

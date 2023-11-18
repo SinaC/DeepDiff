@@ -2,12 +2,8 @@
 
 public class MergeConfiguration : IMergeConfiguration
 {
-    internal Dictionary<Type, MergeEntityConfiguration> MergeEntityConfigurations { get; private set; }
-
-    public MergeConfiguration()
-    {
-        MergeEntityConfigurations = new Dictionary<Type, MergeEntityConfiguration>();
-    }
+    internal Dictionary<Type, MergeEntityConfiguration> MergeEntityConfigurations { get; private set; } = new Dictionary<Type, MergeEntityConfiguration>();
+    internal bool UseHashtable { get; private set; } = true;
 
     public virtual IMergeEntityConfiguration<TEntity> Entity<TEntity>()
         where TEntity : class
@@ -16,6 +12,12 @@ public class MergeConfiguration : IMergeConfiguration
         MergeEntityConfigurations.Add(typeof(TEntity), mergeEntityConfiguration);
 
         return new MergeEntityConfiguration<TEntity>(mergeEntityConfiguration);
+    }
+
+    public IMergeConfiguration DisableHashtable()
+    {
+        UseHashtable = false;
+        return this;
     }
 
     public IMerger CreateMerger()

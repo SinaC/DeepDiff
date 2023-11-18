@@ -10,34 +10,59 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> ExistingEntities { get; set; } = null!;
     private IReadOnlyCollection<NoNavigationEntity> CalculatedEntities { get; set; } = null!;
 
-    private IMerger NoHashMerger { get; }
-    private IMerger Merger { get; }
+    private IMerger NoHashtableNoPrecompiledComparerMerger { get; }
+    private IMerger NoHastablePrecompileComparerMerger { get; }
+    private IMerger HastableNoPrecomileComparerMerger { get; }
+    private IMerger HashtableMerger { get; }
 
     public LoadNoNavigation()
     {
         Random = new Random();
-        var noHashMergeConfiguration = new MergeConfiguration();
-        noHashMergeConfiguration
-            .Entity<NoNavigationEntity>()
-            .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
-            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
-        NoHashMerger = noHashMergeConfiguration.CreateMerger();
 
-        var mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration
+        var noHashtableNoPrecompiledComparerMergeConfiguration = new MergeConfiguration();
+        noHashtableNoPrecompiledComparerMergeConfiguration
+            .DisableHashtable()
             .Entity<NoNavigationEntity>()
-            .HasKey(x => new { x.Date, x.ContractReference })
-            .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price })
-            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
-        Merger = mergeConfiguration.CreateMerger();
+                .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
+                .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
+                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+        NoHashtableNoPrecompiledComparerMerger = noHashtableNoPrecompiledComparerMergeConfiguration.CreateMerger();
+
+        var noHastablePrecompileComparerMergerConfiguration = new MergeConfiguration();
+        noHastablePrecompileComparerMergerConfiguration
+            .DisableHashtable()
+            .Entity<NoNavigationEntity>()
+                .HasKey(x => new { x.Date, x.ContractReference })
+                .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price })
+                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+        NoHastablePrecompileComparerMerger = noHastablePrecompileComparerMergerConfiguration.CreateMerger();
+
+        var hastableNoPrecomileComparerMergerConfiguration = new MergeConfiguration();
+        hastableNoPrecomileComparerMergerConfiguration
+            .Entity<NoNavigationEntity>()
+                .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
+                .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
+                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+        HastableNoPrecomileComparerMerger = hastableNoPrecomileComparerMergerConfiguration.CreateMerger();
+
+        var hashtableMergerConfiguration = new MergeConfiguration();
+        hashtableMergerConfiguration
+            .Entity<NoNavigationEntity>()
+                .HasKey(x => new { x.Date, x.ContractReference })
+                .HasCalculatedValue(x => new { x.Penalty, x.Volume, x.Price })
+                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
+                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
+                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+        HashtableMerger = hashtableMergerConfiguration.CreateMerger();
     }
 
-    [Params(10, 1000)]
+    [Params(10, 1000, 10000)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoCalculated, DataGenerationOptions.Random)]
@@ -64,15 +89,27 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void NoHashMerge()
+    public void NoHashtableNoPrecompiledComparerMerge()
     {
-        var results = NoHashMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = NoHashtableNoPrecompiledComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     [Benchmark]
-    public void Merge()
+    public void NoHastablePrecompileComparerMerge()
     {
-        var results = Merger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = NoHastablePrecompileComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+    }
+
+    [Benchmark]
+    public void HastableNoPrecomileComparerMerge()
+    {
+        var results = HastableNoPrecomileComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+    }
+
+    [Benchmark]
+    public void HashtableMerge()
+    {
+        var results = HashtableMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     private void GenerateIdentical()
