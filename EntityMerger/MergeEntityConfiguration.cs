@@ -8,8 +8,8 @@ internal partial class MergeEntityConfiguration
     public Type EntityType { get; }
     public KeyConfiguration KeyConfiguration { get; private set; } = null!;
     public CalculatedValueConfiguration CalculatedValueConfiguration { get; private set; } = null!;
-    public NavigationManyConfiguration NavigationManyConfiguration { get; private set; } = new NavigationManyConfiguration();
-    public NavigationOneConfiguration NavigationOneConfiguration { get; private set; } = new NavigationOneConfiguration();
+    public List<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
+    public List<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
     public Dictionary<MergeEntityOperation, MarkAsConfiguration> MarkAsByOperation { get; private set; } = new Dictionary<MergeEntityOperation, MarkAsConfiguration>();
 
     public MergeEntityConfiguration(Type entityType)
@@ -39,16 +39,25 @@ internal partial class MergeEntityConfiguration
         return CalculatedValueConfiguration;
     }
 
-    public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationProperty)
+    public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
     {
-        NavigationManyConfiguration.NavigationManyProperties.Add(navigationProperty);
-        return NavigationManyConfiguration;
+        var navigationManyConfiguration = new NavigationManyConfiguration
+        {
+            NavigationManyProperty = navigationManyProperty,
+            NavigationManyChildType = navigationManyDestinationType
+        };
+        NavigationManyConfigurations.Add(navigationManyConfiguration);
+        return navigationManyConfiguration;
     }
 
-    public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationProperty)
+    public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty)
     {
-        NavigationOneConfiguration.NavigationOneProperties.Add(navigationProperty);
-        return NavigationOneConfiguration;
+        var navigationOneConfiguration = new NavigationOneConfiguration
+        {
+            NavigationOneProperty = navigationOneProperty
+        };
+        NavigationOneConfigurations.Add(navigationOneConfiguration);
+        return navigationOneConfiguration;
     }
 
     public MarkAsConfiguration SetMarkAsInserted(PropertyInfo destinationProperty, object value)

@@ -3,27 +3,27 @@ using System.Reflection;
 
 namespace EntityMerger;
 
-public sealed class NaiveEqualityComparerByProperties<T> : IEqualityComparer
+public sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
     where T : class
 {
-    private IReadOnlyCollection<PropertyInfo>? PropertyInfos { get; }
+    private IReadOnlyCollection<PropertyInfo>? Properties { get; }
 
-    public NaiveEqualityComparerByProperties(IEnumerable<PropertyInfo> propertyInfos)
+    public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
     {
-        PropertyInfos = propertyInfos?.ToArray();
+        Properties = properties?.ToArray();
     }
 
     public new bool Equals(object? left, object? right)
     {
         if (object.ReferenceEquals(left, right))
             return true;
-        if (PropertyInfos == null)
+        if (Properties == null)
             return Equals(left, right);
         if (left is not T)
             return false;
         if (right is not T)
             return false;
-        foreach (var propertyInfo in PropertyInfos)
+        foreach (var propertyInfo in Properties)
         {
             var existingValue = propertyInfo.GetValue(left);
             var calculatedValue = propertyInfo.GetValue(right);
@@ -38,10 +38,10 @@ public sealed class NaiveEqualityComparerByProperties<T> : IEqualityComparer
     {
         if (obj is not T)
             return obj.GetHashCode();
-        if (PropertyInfos == null)
+        if (Properties == null)
             return obj.GetHashCode();
         var hashCode = new HashCode();
-        foreach (var propertyInfo in PropertyInfos)
+        foreach (var propertyInfo in Properties)
         {
             var existingValue = propertyInfo.GetValue(obj);
             hashCode.Add(existingValue);
