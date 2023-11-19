@@ -1,8 +1,7 @@
-﻿namespace EntityMerger
+﻿namespace EntityMerger;
+
+public interface IMerger
 {
-    public interface IMerger
-    {
-        IEnumerable<TEntity> Merge<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> calculatedEntities)
-            where TEntity : class;
-    }
+    IEnumerable<TEntity> Merge<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> calculatedEntities)
+        where TEntity : class;
 }

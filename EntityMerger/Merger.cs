@@ -1,10 +1,10 @@
-﻿using EntityMerger.EntityMerger;
+﻿using EntityMerger.Configuration;
+using EntityMerger.Extensions;
 using System.Collections;
-using System.Reflection;
 
 namespace EntityMerger;
 
-public class Merger : IMerger
+internal class Merger : IMerger
 {
     private MergeConfiguration Configuration { get; }
 
@@ -157,7 +157,7 @@ public class Merger : IMerger
         var calculatedChildren = (IEnumerable<object>)calculatedEntityChildren!;
         var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren, Configuration.UseHashtable && navigationManyConfiguration.UseHashtable);
 
-        // convert children from IEnumerable<object> to List<EnityType>
+        // convert children from IEnumerable<object> to List<ChildType>
         var listType = typeof(List<>).MakeGenericType(childType);
         var list = (IList)Activator.CreateInstance(listType)!;
         foreach (var mergedChild in mergedChildren)

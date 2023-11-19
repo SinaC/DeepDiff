@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Extensions;
 
 internal class PropertyPath : IEnumerable<PropertyInfo>
 {

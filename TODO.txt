@@ -1,4 +1,5 @@
-﻿add merge options
+﻿how to handle additional values to copy
+add merge options
 	HashtableThreshold(int) (when #entities > UseHashtableThreshold -> use hashtable)
 OnUpdate should also be able to change other fields
 	-> Action instead of propertyinfo ?

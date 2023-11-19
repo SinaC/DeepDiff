@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using EntityMerger.Comparer;
+using EntityMerger.Extensions;
+using System.Linq.Expressions;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Configuration;
 
 internal class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEntity>
     where TEntity : class

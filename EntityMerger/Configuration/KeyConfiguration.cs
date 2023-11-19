@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Configuration;
 
 internal class KeyConfiguration : IKeyConfiguration
 {
