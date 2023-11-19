@@ -1,4 +1,6 @@
-﻿namespace EntityMerger.EntityMerger;
+﻿using EntityMerger.Comparer;
+
+namespace EntityMerger.Extensions;
 
 internal static class DynamicEqualityComparerLinqIntegration
 {

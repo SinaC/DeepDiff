@@ -1,4 +1,4 @@
-﻿namespace EntityMerger.EntityMerger;
+﻿namespace EntityMerger.Configuration;
 
 public interface INavigationManyConfiguration
 {

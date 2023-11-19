@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Extensions;
 
 internal static class PropertyInfoExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace EntityMerger.EntityMerger;
+﻿namespace EntityMerger.Comparer;
 
 internal sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
     where T : class

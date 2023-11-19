@@ -13,11 +13,12 @@ public class Program
     {
         //https://stackoverflow.com/questions/73475521/benchmarkdotnet-inprocessemittoolchain-complete-sample
         var config = DefaultConfig.Instance
-            .AddJob(
-                Job
-                .LongRun
-                .WithLaunchCount(1)
-                .WithToolchain(InProcessNoEmitToolchain.Instance));
+            //.AddJob(
+            //    Job
+            //    .LongRun
+            //    .WithLaunchCount(1)
+            //    .WithToolchain(InProcessNoEmitToolchain.Instance));
+            .AddJob(Job.Default);
 
         var summary = BenchmarkRunner.Run<LoadNoNavigation>(config);
         //var summary = BenchmarkRunner.Run<EntityComparer>(config);

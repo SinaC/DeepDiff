@@ -1,7 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using EntityMerger.Configuration;
+using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Extensions;
 
 internal static class ExpressionExtensions
 {

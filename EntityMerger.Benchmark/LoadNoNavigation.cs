@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using EntityMerger.EntityMerger;
+using EntityMerger.Configuration;
 
 namespace EntityMerger.Benchmark;
 

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace EntityMerger.EntityMerger;
+namespace EntityMerger.Configuration;
 
 public interface IMergeEntityConfiguration<TEntity>
     where TEntity : class

@@ -1,4 +1,4 @@
-﻿using EntityMerger.EntityMerger;
+﻿using EntityMerger.Configuration;
 using EntityMerger.UnitTest.Entities;
 using EntityMerger.UnitTest.Entities.Simple;
 using System;
