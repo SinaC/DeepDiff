@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using EntityMerger.EntityMerger;
 
 namespace EntityMerger.Benchmark;
@@ -10,9 +9,9 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> ExistingEntities { get; set; } = null!;
     private IReadOnlyCollection<NoNavigationEntity> CalculatedEntities { get; set; } = null!;
 
-    private IMerger NoHashtableNoPrecompiledComparerMerger { get; }
+    private IMerger NoHashtableNaiveComparerMerger { get; }
     private IMerger NoHastablePrecompileComparerMerger { get; }
-    private IMerger HastableNoPrecomileComparerMerger { get; }
+    private IMerger HastableNaiveComparerMerger { get; }
     private IMerger HashtableMerger { get; }
 
     public LoadNoNavigation()
@@ -28,7 +27,7 @@ public class LoadNoNavigation
                 .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
                 .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
                 .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
-        NoHashtableNoPrecompiledComparerMerger = noHashtableNoPrecompiledComparerMergeConfiguration.CreateMerger();
+        NoHashtableNaiveComparerMerger = noHashtableNoPrecompiledComparerMergeConfiguration.CreateMerger();
 
         var noHastablePrecompileComparerMergerConfiguration = new MergeConfiguration();
         noHastablePrecompileComparerMergerConfiguration
@@ -49,7 +48,7 @@ public class LoadNoNavigation
                 .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
                 .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
                 .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
-        HastableNoPrecomileComparerMerger = hastableNoPrecomileComparerMergerConfiguration.CreateMerger();
+        HastableNaiveComparerMerger = hastableNoPrecomileComparerMergerConfiguration.CreateMerger();
 
         var hashtableMergerConfiguration = new MergeConfiguration();
         hashtableMergerConfiguration
@@ -89,9 +88,9 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void NoHashtableNoPrecompiledComparerMerge()
+    public void NoHashtableNaiveComparerMerge()
     {
-        var results = NoHashtableNoPrecompiledComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = NoHashtableNaiveComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     [Benchmark]
@@ -101,9 +100,9 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void HastableNoPrecomileComparerMerge()
+    public void HastableNaiveComparerMerge()
     {
-        var results = HastableNoPrecomileComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = HastableNaiveComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     [Benchmark]

@@ -1,24 +1,11 @@
-﻿merge using hashtable using HasKey as hash function
-	http://www.dotnetframework.org/default.aspx/Dotnetfx_Win7_3@5@1/Dotnetfx_Win7_3@5@1/3@5@1/DEVDIV/depot/DevDiv/releases/whidbey/NetFXspW7/ndp/clr/src/BCL/System/Collections/CompatibleComparer@cs/1/CompatibleComparer@cs
-	https://stackoverflow.com/questions/38558795/how-are-equals-and-gethashcode-implemented-on-anonymous-types
-	https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
-	https://github.com/PeterHimschoot/U2U.ValueObjectComparers/blob/master/src/U2U.ValueObjectComparers/ValueObjectComparer.cs#L129
-
-initialize and use hashtable in HashMerger.Merge
-add merge options
+﻿add merge options
 	HashtableThreshold(int) (when #entities > UseHashtableThreshold -> use hashtable)
-add WithMany options
-	DisableHashtable()
 OnUpdate should also be able to change other fields
-	-> Action instead of property ?
+	-> Action instead of propertyinfo ?
 multiple OnUpdate ?
-multiple key -> evaluate IEqualityComparer on CreateMerger
-multiple calculated value -> evaluate IEqualityComparer on CreateMerger
-
 
 more tests
 	complex scenario (see aFRR Activation Control)
-	performance wuth a lot of data
 
 check existing and calculated collection before iterating
 throw exception where needed

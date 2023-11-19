@@ -15,11 +15,11 @@ internal static class PropertyInfoExtensions
                     || otherPropertyInfo.DeclaringType.GetInterfaces().Contains(propertyInfo.DeclaringType)));
     }
 
-    public static void CopyPropertyValues(this IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object calculatedEntity)
+    public static void CopyPropertyValues(this IEnumerable<PropertyInfo> properties, object existingEntity, object calculatedEntity)
     {
-        if (propertyInfos == null)
+        if (properties == null)
             return;
-        foreach (var propertyInfo in propertyInfos)
+        foreach (var propertyInfo in properties)
         {
             var calculatedValue = propertyInfo.GetValue(calculatedEntity);
             propertyInfo.SetValue(existingEntity, calculatedValue);

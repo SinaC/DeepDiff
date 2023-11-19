@@ -4,6 +4,6 @@ namespace EntityMerger.EntityMerger;
 
 internal class MarkAsConfiguration
 {
-    public PropertyInfo DestinationProperty { get; set; }
-    public object Value { get; set; }
+    public PropertyInfo DestinationProperty { get; set; } = null!;
+    public object Value { get; set; } = null!;
 }

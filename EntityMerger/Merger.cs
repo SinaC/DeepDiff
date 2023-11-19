@@ -36,25 +36,17 @@ public class Merger : IMerger
         if (!Configuration.MergeEntityConfigurations.TryGetValue(typeof(TEntity), out var mergeEntityConfiguration))
             yield break; // TODO: exception
 
-        var mergedEntities = Merge(mergeEntityConfiguration, existingEntities, calculatedEntities);
+        var mergedEntities = Merge(mergeEntityConfiguration, existingEntities, calculatedEntities, Configuration.UseHashtable);
         foreach (var mergedEntity in mergedEntities)
             yield return (TEntity)mergedEntity;
     }
 
-    public bool Equals<TEntity>(TEntity entity1, TEntity entity2)
+    private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities, bool useHashtable)
     {
-        var mergeEntityConfiguration = Configuration.MergeEntityConfigurations[typeof(TEntity)];
-        return mergeEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
-            ? mergeEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(entity1, entity2)
-            : mergeEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(entity1, entity2);
-    }
-
-    private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities)
-    {
-        var existingEntitiesHashtable = Configuration.UseHashtable
+        var existingEntitiesHashtable = useHashtable
             ? InitializeHashtable(mergeEntityConfiguration.KeyConfiguration, existingEntities)
             : null;
-        var calculatedEntitiesHashtable = Configuration.UseHashtable
+        var calculatedEntitiesHashtable = useHashtable
             ? InitializeHashtable(mergeEntityConfiguration.KeyConfiguration, calculatedEntities)
             : null;
 
@@ -116,7 +108,7 @@ public class Merger : IMerger
             if (areKeysEqual)
                 return entity;
         }
-        return null;
+        return null!;
     }
 
     private Hashtable InitializeHashtable(KeyConfiguration keyConfiguration, IEnumerable<object> entities)
@@ -133,37 +125,37 @@ public class Merger : IMerger
     private bool MergeUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object existingEntity, object calculatedEntity)
     {
         var modificationsDetected = false;
-        if (mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties != null)
+        if (mergeEntityConfiguration.NavigationManyConfigurations != null)
         {
-            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties)
-                modificationsDetected |= MergeUsingNavigationMany(navigationManyProperty, existingEntity, calculatedEntity);
+            foreach (var navigationManyConfiguration in mergeEntityConfiguration.NavigationManyConfigurations)
+                modificationsDetected |= MergeUsingNavigationMany(navigationManyConfiguration, existingEntity, calculatedEntity);
         }
-        if (mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties != null)
+        if (mergeEntityConfiguration.NavigationOneConfigurations != null)
         {
-            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties)
-                modificationsDetected |= MergeUsingNavigationOne(navigationOneProperty, existingEntity, calculatedEntity);
+            foreach (var navigationOneConfiguration in mergeEntityConfiguration.NavigationOneConfigurations)
+                modificationsDetected |= MergeUsingNavigationOne(navigationOneConfiguration, existingEntity, calculatedEntity);
         }
         return modificationsDetected;
     }
 
-    private bool MergeUsingNavigationMany(PropertyInfo navigationProperty, object existingEntity, object calculatedEntity)
+    private bool MergeUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object existingEntity, object calculatedEntity)
     {
-        if (navigationProperty == null)
+        if (navigationManyConfiguration.NavigationManyProperty == null)
             return false;
-        var childType = GetNavigationManyDestinationType(navigationProperty);
+        var childType = navigationManyConfiguration.NavigationManyChildType;
         if (childType == null)
             return false;
 
         if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
             return false; // TODO: exception
 
-        var existingEntityChildren = navigationProperty.GetValue(existingEntity);
-        var calculatedEntityChildren = navigationProperty.GetValue(calculatedEntity);
+        var existingEntityChildren = navigationManyConfiguration.NavigationManyProperty.GetValue(existingEntity);
+        var calculatedEntityChildren = navigationManyConfiguration.NavigationManyProperty.GetValue(calculatedEntity);
 
         // merge children
         var existingChildren = (IEnumerable<object>)existingEntityChildren!;
         var calculatedChildren = (IEnumerable<object>)calculatedEntityChildren!;
-        var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren);
+        var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren, Configuration.UseHashtable && navigationManyConfiguration.UseHashtable);
 
         // convert children from IEnumerable<object> to List<EnityType>
         var listType = typeof(List<>).MakeGenericType(childType);
@@ -172,30 +164,30 @@ public class Merger : IMerger
             list.Add(mergedChild);
         if (list.Count > 0)
         {
-            navigationProperty.SetValue(existingEntity, list);
+            navigationManyConfiguration.NavigationManyProperty.SetValue(existingEntity, list);
             return true;
         }
         return false;
     }
 
-    private bool MergeUsingNavigationOne(PropertyInfo navigationProperty, object existingEntity, object calculatedEntity)
+    private bool MergeUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object calculatedEntity)
     {
-        if (navigationProperty == null)
+        if (navigationOneConfiguration.NavigationOneProperty == null)
             return false;
-        var childType = navigationProperty.PropertyType;
+        var childType = navigationOneConfiguration.NavigationOneProperty.PropertyType;
         if (childType == null)
             return false;
 
         if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
             return false; // TODO: exception
 
-        var existingEntityChild = navigationProperty.GetValue(existingEntity);
-        var calculatedEntityChild = navigationProperty.GetValue(calculatedEntity);
+        var existingEntityChild = navigationOneConfiguration.NavigationOneProperty.GetValue(existingEntity);
+        var calculatedEntityChild = navigationOneConfiguration.NavigationOneProperty.GetValue(calculatedEntity);
 
         // was not existing and is now calculated -> it's an insert
         if (existingEntityChild == null && calculatedEntityChild != null)
         {
-            navigationProperty.SetValue(existingEntity, calculatedEntityChild);
+            navigationOneConfiguration.NavigationOneProperty.SetValue(existingEntity, calculatedEntityChild);
             MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, calculatedEntityChild, MergeEntityOperation.Insert);
             return true;
         }
@@ -254,26 +246,26 @@ public class Merger : IMerger
 
     private void PropagateUsingNavigation(MergeEntityConfiguration mergeEntityConfiguration, object entity, MergeEntityOperation operation)
     {
-        if (mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties != null)
+        if (mergeEntityConfiguration.NavigationManyConfigurations != null)
         {
-            foreach (var navigationManyProperty in mergeEntityConfiguration.NavigationManyConfiguration.NavigationManyProperties)
-                PropagateUsingNavigationMany(navigationManyProperty, entity, operation);
+            foreach (var navigationManyConfiguration in mergeEntityConfiguration.NavigationManyConfigurations)
+                PropagateUsingNavigationMany(navigationManyConfiguration, entity, operation);
         }
-        if (mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties != null)
+        if (mergeEntityConfiguration.NavigationOneConfigurations != null)
         {
-            foreach (var navigationOneProperty in mergeEntityConfiguration.NavigationOneConfiguration.NavigationOneProperties)
-                PropagateUsingNavigationOne(navigationOneProperty, entity, operation);
+            foreach (var navigationOneConfiguration in mergeEntityConfiguration.NavigationOneConfigurations)
+                PropagateUsingNavigationOne(navigationOneConfiguration, entity, operation);
         }
     }
 
-    private void PropagateUsingNavigationMany(PropertyInfo navigationProperty, object entity, MergeEntityOperation operation)
+    private void PropagateUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object entity, MergeEntityOperation operation)
     {
-        if (navigationProperty == null)
+        if (navigationManyConfiguration.NavigationManyProperty == null)
             return;
-        var childrenValue = navigationProperty.GetValue(entity);
+        var childrenValue = navigationManyConfiguration.NavigationManyProperty.GetValue(entity);
         if (childrenValue == null)
             return;
-        var childType = GetNavigationManyDestinationType(navigationProperty);
+        var childType = navigationManyConfiguration.NavigationManyChildType;
         if (childType == null)
             return;
         var assignValue = Configuration.MergeEntityConfigurations[childType].MarkAsByOperation[operation];
@@ -285,28 +277,18 @@ public class Merger : IMerger
         }
     }
 
-    private void PropagateUsingNavigationOne(PropertyInfo navigationProperty, object entity, MergeEntityOperation operation)
+    private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object entity, MergeEntityOperation operation)
     {
-        if (navigationProperty == null)
+        if (navigationOneConfiguration.NavigationOneProperty == null)
             return;
-        var childValue = navigationProperty.GetValue(entity);
+        var childValue = navigationOneConfiguration.NavigationOneProperty.GetValue(entity);
         if (childValue == null)
             return;
-        var childType = navigationProperty.PropertyType;
+        var childType = navigationOneConfiguration.NavigationOneProperty.PropertyType;
         if (childType == null)
             return;
         var assignValue = Configuration.MergeEntityConfigurations[childType].MarkAsByOperation[operation];
         if (assignValue != null)
             assignValue.DestinationProperty.SetValue(childValue, assignValue.Value);
-    }
-
-    private Type GetNavigationManyDestinationType(PropertyInfo navigationProperty) // TODO: pre calculate this when setting HasMany and HasOne (store in related configuration)
-    {
-        Type type = navigationProperty.PropertyType;
-        // check List<>
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-            return type.GetGenericArguments()[0];
-        //
-        return null; // TODO: throw exception
     }
 }

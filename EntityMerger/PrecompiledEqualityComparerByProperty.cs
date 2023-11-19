@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace EntityMerger;
 
-public sealed class PrecompiledEqualityComparerByProperties<T> : IEqualityComparer
+public sealed class PrecompiledEqualityComparerByProperty<T> : IEqualityComparer
     where T : class
 {
     private CompareFunc<T> Comparer { get; init; }
     private Func<T, int> Hasher { get; init; }
 
-    public PrecompiledEqualityComparerByProperties(IEnumerable<PropertyInfo> propertyInfos)
+    public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
     {
-        Comparer = ExpressionGenerater.GenerateComparer<T>(propertyInfos);
-        Hasher = ExpressionGenerater.GenerateHasher<T>(propertyInfos);
+        Comparer = ExpressionGenerater.GenerateComparer<T>(properties);
+        Hasher = ExpressionGenerater.GenerateHasher<T>(properties);
     }
 
     public new bool Equals(object? left, object? right)
@@ -96,13 +96,13 @@ internal static class ExpressionGenerater
         }
     }
 
-    internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> propertyInfos)
+    internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties)
     {
         var comparers = new List<Expression>();
         ParameterExpression left = Expression.Parameter(typeof(T), "left");
         ParameterExpression right = Expression.Parameter(typeof(T), "right");
 
-        foreach (PropertyInfo propInfo in propertyInfos)
+        foreach (PropertyInfo propInfo in properties)
         {
             comparers.Add(GenerateEqualityExpression(left, right, propInfo));
         }
@@ -124,7 +124,7 @@ internal static class ExpressionGenerater
         return hashCode.ToHashCode();
     }
 
-    internal static Func<T, int> GenerateHasher<T>(IEnumerable<PropertyInfo> propertyInfos)
+    internal static Func<T, int> GenerateHasher<T>(IEnumerable<PropertyInfo> properties)
     {
         // Generates the equivalent of
         // var hash = new HashCode();
@@ -135,7 +135,7 @@ internal static class ExpressionGenerater
         ParameterExpression obj = Expression.Parameter(typeof(T), "obj");
         ParameterExpression hashCode = Expression.Variable(typeof(HashCode), "hashCode");
 
-        List<Expression> parts = GenerateAddToHashCodeExpressions(obj, hashCode, propertyInfos);
+        List<Expression> parts = GenerateAddToHashCodeExpressions(obj, hashCode, properties);
         parts.Insert(0, Expression.Assign(hashCode, Expression.New(typeof(HashCode))));
         parts.Add(Expression.Call(hashCode, ToHashCodeMethod));
         Expression[] body = parts.ToArray();
@@ -149,10 +149,10 @@ internal static class ExpressionGenerater
         return hasher;
     }
 
-    private static List<Expression> GenerateAddToHashCodeExpressions(ParameterExpression obj, ParameterExpression hashCode, IEnumerable<PropertyInfo> propertyInfos)
+    private static List<Expression> GenerateAddToHashCodeExpressions(ParameterExpression obj, ParameterExpression hashCode, IEnumerable<PropertyInfo> properties)
     {
         var adders = new List<Expression>();
-        foreach (PropertyInfo propInfo in propertyInfos)
+        foreach (PropertyInfo propInfo in properties)
         {
             MethodInfo boundAddMethod = AddHashCodeMethod.MakeGenericMethod(propInfo.PropertyType);
             adders.Add(Expression.Call(instance: hashCode, boundAddMethod, Expression.Property(obj, propInfo)));

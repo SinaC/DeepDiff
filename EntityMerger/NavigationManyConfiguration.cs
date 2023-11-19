@@ -2,7 +2,15 @@
 
 namespace EntityMerger.EntityMerger;
 
-internal class NavigationManyConfiguration
+internal class NavigationManyConfiguration : INavigationManyConfiguration
 {
-    public List<PropertyInfo> NavigationManyProperties { get; set; } = new List<PropertyInfo>();
+    public PropertyInfo NavigationManyProperty { get; set; } = null!;
+    public bool UseHashtable { get; private set; } = true;
+    public Type NavigationManyChildType { get; set; } = null!;
+
+    public INavigationManyConfiguration DisableHashtable()
+    {
+        UseHashtable = false;
+        return this;
+    }
 }
