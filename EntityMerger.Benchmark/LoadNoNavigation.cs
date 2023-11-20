@@ -12,7 +12,7 @@ public class LoadNoNavigation
     private IMerger NoHashtableNaiveComparerMerger { get; }
     private IMerger NoHastablePrecompileComparerMerger { get; }
     private IMerger HastableNaiveComparerMerger { get; }
-    private IMerger HashtableMerger { get; }
+    private IMerger HashtablePrecompileComparerMerger { get; }
 
     public LoadNoNavigation()
     {
@@ -58,7 +58,7 @@ public class LoadNoNavigation
                 .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
                 .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
                 .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
-        HashtableMerger = hashtableMergerConfiguration.CreateMerger();
+        HashtablePrecompileComparerMerger = hashtableMergerConfiguration.CreateMerger();
     }
 
     [Params(10, 100, 1000)]
@@ -106,9 +106,9 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void HashtableMerge()
+    public void HashtablePrecompileComparerMerge()
     {
-        var results = HashtableMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
+        var results = HashtablePrecompileComparerMerger.Merge(ExistingEntities, CalculatedEntities).ToList();
     }
 
     private void GenerateIdentical()
