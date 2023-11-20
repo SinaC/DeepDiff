@@ -22,6 +22,7 @@ public partial class SimpleEntityMergerTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
+            AdditionalValueToCopy = $"ExistingAdditionalValue{x}",
             SubEntities = Enumerable.Range(0, 5).Select(y => new SubEntity
             {
                 Index = y,
@@ -44,6 +45,7 @@ public partial class SimpleEntityMergerTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 3,
             Comment = $"Calculated{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
             SubEntities = Enumerable.Range(1, 5).Select(y => new SubEntity
             {
                 Index = y,
@@ -60,6 +62,7 @@ public partial class SimpleEntityMergerTests
         mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
+            .HasValueToCopy(x => new { x.AdditionalValueToCopy })
             .HasMany(x => x.SubEntities);
         mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
@@ -72,5 +75,8 @@ public partial class SimpleEntityMergerTests
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Delete));
         Assert.Equal(9, results.Count(x => x.PersistChange == PersistChange.Update));
+
+        Assert.All(results.Where(x => x.PersistChange != PersistChange.Insert), x => Assert.StartsWith("Existing", x.Comment)); // Comment is not copied
+        Assert.StartsWith("CalculatedAdditionalValue", results.Single(x => x.PersistChange == PersistChange.Insert).AdditionalValueToCopy); // AdditionalValueToCopy is copied
     }
 }

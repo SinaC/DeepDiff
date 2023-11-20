@@ -67,6 +67,14 @@ internal class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEn
         return config;
     }
 
+    public IMergeEntityConfiguration<TEntity> HasValueToCopy<TValue>(Expression<Func<TEntity, TValue>> valueToCopyExpression)
+    {
+        // TODO: check if value to ^copy property is not already set in CalculatedValue
+        var valueToCopyProperties = valueToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var config = Configuration.SetValueToCopy(valueToCopyProperties);
+        return this;
+    }
+
     public IMergeEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : class
     {

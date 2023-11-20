@@ -3,14 +3,15 @@ using System.Reflection;
 
 namespace EntityMerger.Configuration;
 
-internal partial class MergeEntityConfiguration
+internal class MergeEntityConfiguration
 {
     public Type EntityType { get; }
     public KeyConfiguration KeyConfiguration { get; private set; } = null!;
     public CalculatedValueConfiguration CalculatedValueConfiguration { get; private set; } = null!;
-    public List<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
-    public List<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
-    public Dictionary<MergeEntityOperation, MarkAsConfiguration> MarkAsByOperation { get; private set; } = new Dictionary<MergeEntityOperation, MarkAsConfiguration>();
+    public ValueToCopyConfiguration ValueToCopyConfiguration { get; private set; } = null!;
+    public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
+    public IList<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
+    public IDictionary<MergeEntityOperation, MarkAsConfiguration> MarkAsByOperation { get; private set; } = new Dictionary<MergeEntityOperation, MarkAsConfiguration>();
 
     public MergeEntityConfiguration(Type entityType)
     {
@@ -37,6 +38,15 @@ internal partial class MergeEntityConfiguration
             NaiveEqualityComparer = naiveEqualityComparer
         };
         return CalculatedValueConfiguration;
+    }
+
+    public ValueToCopyConfiguration SetValueToCopy(IEnumerable<PropertyInfo> copyValueProperties)
+    {
+        ValueToCopyConfiguration = new ValueToCopyConfiguration
+        {
+            CopyValueProperties = copyValueProperties.ToArray(),
+        };
+        return ValueToCopyConfiguration;
     }
 
     public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
