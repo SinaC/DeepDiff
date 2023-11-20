@@ -22,6 +22,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         var calculated = Enumerable.Range(0, 5).Select(x => new Entity
@@ -34,6 +35,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
@@ -60,6 +62,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         // index 2 is missing -> will be marked as deleted
@@ -73,6 +76,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
@@ -101,6 +105,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         // index 5 doesn't exist in existing collection -> will be marked as inserted
@@ -114,6 +119,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
@@ -142,6 +148,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         // index 2 is missing -> will be marked as deleted
@@ -156,6 +163,7 @@ public class SimpleEntityNoNavigationTests
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Calculated{x}",
+            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();

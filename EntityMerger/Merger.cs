@@ -41,12 +41,15 @@ internal class Merger : IMerger
             yield return (TEntity)mergedEntity;
     }
 
-    private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities, bool useHashtable)
+    private bool CheckIfHashtablesShouldBeUsedUsingThreshold(IEnumerable<object> existingEntities)
+        => existingEntities.Count() >= Configuration.HashtableThreshold;
+
+    private IEnumerable<object> Merge(MergeEntityConfiguration mergeEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> calculatedEntities, bool useHashtableForThatLevel)
     {
-        var existingEntitiesHashtable = useHashtable
+        var existingEntitiesHashtable = useHashtableForThatLevel && Configuration.UseHashtable && CheckIfHashtablesShouldBeUsedUsingThreshold(existingEntities)
             ? InitializeHashtable(mergeEntityConfiguration.KeyConfiguration, existingEntities)
             : null;
-        var calculatedEntitiesHashtable = useHashtable
+        var calculatedEntitiesHashtable = useHashtableForThatLevel && Configuration.UseHashtable && CheckIfHashtablesShouldBeUsedUsingThreshold(calculatedEntities)
             ? InitializeHashtable(mergeEntityConfiguration.KeyConfiguration, calculatedEntities)
             : null;
 
@@ -64,8 +67,13 @@ internal class Merger : IMerger
                     var areCalculatedValuesEquals = mergeEntityConfiguration.CalculatedValueConfiguration.UsePrecompiledEqualityComparer
                         ? mergeEntityConfiguration.CalculatedValueConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, calculatedEntity)
                         : mergeEntityConfiguration.CalculatedValueConfiguration.NaiveEqualityComparer.Equals(existingEntity, calculatedEntity);
-                    if (!areCalculatedValuesEquals) // calculated values are different -> copy calculated values
+                    // calculated values are different -> copy calculated values + value to copy
+                    if (!areCalculatedValuesEquals)
+                    {
                         mergeEntityConfiguration.CalculatedValueConfiguration.CalculatedValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
+                        if (mergeEntityConfiguration.ValueToCopyConfiguration != null)
+                            mergeEntityConfiguration.ValueToCopyConfiguration.CopyValueProperties.CopyPropertyValues(existingEntity, calculatedEntity);
+                    }
 
                     var mergeModificationsFound = MergeUsingNavigation(mergeEntityConfiguration, existingEntity, calculatedEntity);
                     if (!areCalculatedValuesEquals || mergeModificationsFound)
@@ -155,7 +163,7 @@ internal class Merger : IMerger
         // merge children
         var existingChildren = (IEnumerable<object>)existingEntityChildren!;
         var calculatedChildren = (IEnumerable<object>)calculatedEntityChildren!;
-        var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren, Configuration.UseHashtable && navigationManyConfiguration.UseHashtable);
+        var mergedChildren = Merge(childMergeEntityConfiguration, existingChildren, calculatedChildren, navigationManyConfiguration.UseHashtable);
 
         // convert children from IEnumerable<object> to List<ChildType>
         var listType = typeof(List<>).MakeGenericType(childType);
@@ -268,7 +276,9 @@ internal class Merger : IMerger
         var childType = navigationManyConfiguration.NavigationManyChildType;
         if (childType == null)
             return;
-        var assignValue = Configuration.MergeEntityConfigurations[childType].MarkAsByOperation[operation];
+        if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
+            return; // TODO: exception
+        var assignValue = childMergeEntityConfiguration.MarkAsByOperation[operation];
         if (assignValue != null)
         {
             var children = (IEnumerable<object>)childrenValue;
@@ -287,7 +297,9 @@ internal class Merger : IMerger
         var childType = navigationOneConfiguration.NavigationOneProperty.PropertyType;
         if (childType == null)
             return;
-        var assignValue = Configuration.MergeEntityConfigurations[childType].MarkAsByOperation[operation];
+        if (!Configuration.MergeEntityConfigurations.TryGetValue(childType, out var childMergeEntityConfiguration))
+            return; // TODO: exception
+        var assignValue = childMergeEntityConfiguration.MarkAsByOperation[operation];
         if (assignValue != null)
             assignValue.DestinationProperty.SetValue(childValue, assignValue.Value);
     }

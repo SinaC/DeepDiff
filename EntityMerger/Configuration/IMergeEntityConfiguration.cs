@@ -9,8 +9,10 @@ public interface IMergeEntityConfiguration<TEntity>
     IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression);
     IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction);
 
-    IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> valueExpression);
-    IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> valueExpression, Action<ICalculatedValueConfiguration> calculatedValueConfigurationAction);
+    IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression);
+    IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression, Action<ICalculatedValueConfiguration> calculatedValueConfigurationAction);
+
+    IMergeEntityConfiguration<TEntity> HasValueToCopy<TValue>(Expression<Func<TEntity, TValue>> valueToCopyExpression);
 
     IMergeEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
         where TTargetEntity : class;

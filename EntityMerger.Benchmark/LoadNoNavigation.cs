@@ -61,7 +61,7 @@ public class LoadNoNavigation
         HashtableMerger = hashtableMergerConfiguration.CreateMerger();
     }
 
-    [Params(10, 1000, 10000)]
+    [Params(10, 100, 1000)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoCalculated, DataGenerationOptions.Random)]

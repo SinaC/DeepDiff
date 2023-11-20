@@ -6,6 +6,7 @@ public sealed class MergeConfiguration : IMergeConfiguration
 {
     internal Dictionary<Type, MergeEntityConfiguration> MergeEntityConfigurations { get; private set; } = new Dictionary<Type, MergeEntityConfiguration>();
     internal bool UseHashtable { get; private set; } = true;
+    internal int HashtableThreshold { get; private set; } = 15;
 
     public IMergeEntityConfiguration<TEntity> Entity<TEntity>()
         where TEntity : class
@@ -43,6 +44,12 @@ public sealed class MergeConfiguration : IMergeConfiguration
     public IMergeConfiguration DisableHashtable()
     {
         UseHashtable = false;
+        return this;
+    }
+
+    public IMergeConfiguration SetHashtableThreshold(int threshold)
+    {
+        HashtableThreshold = threshold;
         return this;
     }
 

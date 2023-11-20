@@ -13,6 +13,7 @@ internal class Entity : PersistEntity
     public decimal RequestedPower { get; set; }
     public decimal? Penalty { get; set; }
 
+    public string AdditionalValueToCopy { get; set; } = null!;
     public string Comment { get; set; } = null!;
 
     // one-to-one

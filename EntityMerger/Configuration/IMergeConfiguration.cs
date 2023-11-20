@@ -11,6 +11,7 @@ public interface IMergeConfiguration
     IMergeConfiguration AddProfiles(params Assembly[] assembliesToScan);
 
     IMergeConfiguration DisableHashtable();
+    IMergeConfiguration SetHashtableThreshold(int threshold);
 
     IMerger CreateMerger();
 }
