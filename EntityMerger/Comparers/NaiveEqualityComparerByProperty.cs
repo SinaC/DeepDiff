@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 
-namespace EntityMerger.Comparer;
+namespace EntityMerger.Comparers;
 
 public sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
     where T : class

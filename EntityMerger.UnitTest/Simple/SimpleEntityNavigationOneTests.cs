@@ -14,7 +14,7 @@ public class SimpleEntityNavigationOneTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -28,7 +28,7 @@ public class SimpleEntityNavigationOneTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -38,7 +38,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -50,11 +50,11 @@ public class SimpleEntityNavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -71,7 +71,7 @@ public class SimpleEntityNavigationOneTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -81,7 +81,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -94,7 +94,7 @@ public class SimpleEntityNavigationOneTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -107,11 +107,11 @@ public class SimpleEntityNavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -128,7 +128,7 @@ public class SimpleEntityNavigationOneTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -138,7 +138,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -151,7 +151,7 @@ public class SimpleEntityNavigationOneTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -161,7 +161,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -173,11 +173,11 @@ public class SimpleEntityNavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -192,7 +192,7 @@ public class SimpleEntityNavigationOneTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -202,7 +202,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -215,7 +215,7 @@ public class SimpleEntityNavigationOneTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -225,7 +225,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -237,11 +237,11 @@ public class SimpleEntityNavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -259,7 +259,7 @@ public class SimpleEntityNavigationOneTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -269,7 +269,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -282,7 +282,7 @@ public class SimpleEntityNavigationOneTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 1,
 
@@ -292,7 +292,7 @@ public class SimpleEntityNavigationOneTests
                 RequestedPower = 1,
                 Penalty = 1,
 
-                SubEntity = new SubEntity
+                SubEntity = new EntityLevel1
                 {
                     Index = 1,
 
@@ -304,11 +304,11 @@ public class SimpleEntityNavigationOneTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 

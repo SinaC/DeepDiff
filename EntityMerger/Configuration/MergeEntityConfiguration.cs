@@ -60,11 +60,12 @@ internal sealed class MergeEntityConfiguration
         return navigationManyConfiguration;
     }
 
-    public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty)
+    public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty, Type navigationOneChildType)
     {
         var navigationOneConfiguration = new NavigationOneConfiguration
         {
-            NavigationOneProperty = navigationOneProperty
+            NavigationOneProperty = navigationOneProperty,
+            NavigationOneChildType = navigationOneChildType
         };
         NavigationOneConfigurations.Add(navigationOneConfiguration);
         return navigationOneConfiguration;

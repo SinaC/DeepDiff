@@ -1,4 +1,4 @@
-﻿using EntityMerger.Comparer;
+﻿using EntityMerger.Comparers;
 using EntityMerger.Extensions;
 using System.Linq.Expressions;
 
@@ -21,7 +21,6 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
 
     public IMergeEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
     {
-        // TODO: can only be set once
         SetKeyConfiguration(keyExpression);
         return this;
     }
@@ -59,7 +58,7 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
 
     private IValuesConfiguration SetValuesConfiguration<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
     {
-        // TODO: check if value property has not been already registered
+        // TODO: can only be set once
         var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
         var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties);
         var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties);
@@ -69,7 +68,7 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
 
     public IMergeEntityConfiguration<TEntity> HasAdditionalValuesToCopy<TValue>(Expression<Func<TEntity, TValue>> additionalValuesToCopyExpression)
     {
-        // TODO: check if value to ^copy property is not already set in Values
+        // TODO: can only be set once
         var additionalValuesToCopyProperties = additionalValuesToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
         var config = Configuration.SetAdditionalValuesToCopy(additionalValuesToCopyProperties);
         return this;
@@ -102,7 +101,8 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
     public IMergeEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
         where TTargetEntity : class
     {
-        var config = Configuration.AddNavigationOne(navigationPropertyExpression.GetSimplePropertyAccess().Single());
+        var navigationOneDestinationType = typeof(TTargetEntity);
+        var config = Configuration.AddNavigationOne(navigationPropertyExpression.GetSimplePropertyAccess().Single(), navigationOneDestinationType);
         return this;
     }
 

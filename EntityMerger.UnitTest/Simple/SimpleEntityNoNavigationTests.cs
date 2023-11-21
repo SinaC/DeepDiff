@@ -12,7 +12,7 @@ public class SimpleEntityNoNavigationTests
     [Fact]
     public void Identical()
     {
-        var existingEntities = Enumerable.Range(0, 5).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -25,7 +25,7 @@ public class SimpleEntityNoNavigationTests
             AdditionalValueToCopy = $"ExistingAdditionalValue{x}",
         }).ToArray();
 
-        var newEntities = Enumerable.Range(0, 5).Select(x => new Entity
+        var newEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -39,7 +39,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -52,7 +52,7 @@ public class SimpleEntityNoNavigationTests
     [Fact]
     public void OneDelete()
     {
-        var existingEntities = Enumerable.Range(0, 5).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -66,7 +66,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         // index 2 is missing -> will be marked as deleted
-        var newEntities = Enumerable.Range(0, 5).Except(new[] { 2 }).Select(x => new Entity
+        var newEntities = Enumerable.Range(0, 5).Except(new[] { 2 }).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -80,7 +80,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -95,7 +95,7 @@ public class SimpleEntityNoNavigationTests
     [Fact]
     public void OneInsert()
     {
-        var existingEntities = Enumerable.Range(0, 5).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -109,7 +109,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         // index 5 doesn't exist in existing collection -> will be marked as inserted
-        var newEntities = Enumerable.Range(0, 6).Select(x => new Entity
+        var newEntities = Enumerable.Range(0, 6).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -123,7 +123,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -138,7 +138,7 @@ public class SimpleEntityNoNavigationTests
     [Fact]
     public void OneDelete_OneInsert()
     {
-        var existingEntities = Enumerable.Range(0, 5).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -153,7 +153,7 @@ public class SimpleEntityNoNavigationTests
 
         // index 2 is missing -> will be marked as deleted
         // index 5 doesn't exist in existing collection -> will be marked as inserted
-        var newEntities = Enumerable.Range(0, 6).Except(new[] { 2 }).Select(x => new Entity
+        var newEntities = Enumerable.Range(0, 6).Except(new[] { 2 }).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -167,7 +167,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 

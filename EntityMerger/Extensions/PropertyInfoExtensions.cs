@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 
 namespace EntityMerger.Extensions;
 
@@ -24,5 +25,12 @@ internal static class PropertyInfoExtensions
             var newValue = propertyInfo.GetValue(newEntity);
             propertyInfo.SetValue(existingEntity, newValue);
         }
+    }
+
+    public static bool IsEnumerable(this PropertyInfo propertyInfo)
+    {
+        if (propertyInfo.PropertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType))
+            return true;
+        return false;
     }
 }
