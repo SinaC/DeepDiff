@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace EntityMerger.Configuration;
 
-internal class KeyConfiguration : IKeyConfiguration
+internal sealed class KeyConfiguration : IKeyConfiguration
 {
     public IReadOnlyCollection<PropertyInfo> KeyProperties { get; set; } = null!;
     public IEqualityComparer PrecompiledEqualityComparer { get; set; } = null!;

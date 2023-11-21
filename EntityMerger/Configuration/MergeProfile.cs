@@ -4,7 +4,7 @@
     {
         internal Dictionary<Type, MergeEntityConfiguration> MergeEntityConfigurations { get; private set; } = new Dictionary<Type, MergeEntityConfiguration>();
 
-        protected IMergeEntityConfiguration<TEntity> AddMergeEntityConfiguration<TEntity>()
+        protected IMergeEntityConfiguration<TEntity> CreateMergeEntityConfiguration<TEntity>()
             where TEntity : class
         {
             var mergeEntityConfiguration = new MergeEntityConfiguration(typeof(TEntity));

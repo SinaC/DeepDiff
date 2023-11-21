@@ -28,7 +28,7 @@ public class CapacityAvailabilityTests
         }).ToArray();
         AssignFK(existingCapacityAvailabilities, true);
 
-        var calculatedCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
+        var newCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
         {
             Day = startDate.AddDays(x),
             CapacityMarketUnitId = existingCmuId,
@@ -47,10 +47,10 @@ public class CapacityAvailabilityTests
                 }
             }
         ).ToArray();
-        AssignFK(calculatedCapacityAvailabilities, false);
+        AssignFK(newCapacityAvailabilities, false);
 
         var merger = CreateMerger();
-        var results = merger.Merge(existingCapacityAvailabilities, calculatedCapacityAvailabilities).ToArray();
+        var results = merger.Merge(existingCapacityAvailabilities, newCapacityAvailabilities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
@@ -87,11 +87,11 @@ public class CapacityAvailabilityTests
         var mergeConfiguration = new MergeConfiguration();
         mergeConfiguration.PersistEntity<Entities.CapacityAvailability.CapacityAvailability>()
             .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
-            .HasCalculatedValue(x => x.IsEnergyContrained)
+            .HasValues(x => x.IsEnergyContrained)
             .HasMany(x => x.CapacityAvailabilityDetails);
         mergeConfiguration.PersistEntity<CapacityAvailabilityDetail>()
             .HasKey(x => x.StartsOn)
-            .HasCalculatedValue(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume });
+            .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume });
 
         var merger = mergeConfiguration.CreateMerger();
         return merger;

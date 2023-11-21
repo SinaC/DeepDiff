@@ -1,6 +1,6 @@
 ﻿namespace EntityMerger.Configuration;
 
-public interface ICalculatedValueConfiguration
+public interface IValuesConfiguration
 {
     void DisablePrecompiledEqualityComparer();
 }

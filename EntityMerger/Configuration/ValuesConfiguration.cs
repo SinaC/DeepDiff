@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace EntityMerger.Configuration;
 
-internal class CalculatedValueConfiguration: ICalculatedValueConfiguration
+internal sealed class ValuesConfiguration : IValuesConfiguration
 {
-    public IReadOnlyCollection<PropertyInfo> CalculatedValueProperties { get; set; } = null!;
+    public IReadOnlyCollection<PropertyInfo> ValuesProperties { get; set; } = null!;
     public IEqualityComparer PrecompiledEqualityComparer { get; set; } = null!;
     public IEqualityComparer NaiveEqualityComparer { get; set; } = null!;
 

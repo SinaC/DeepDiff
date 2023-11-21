@@ -1,63 +1,61 @@
-﻿how to handle additional values to copy
-OnUpdate should also be able to change other fields
+﻿OnUpdate should also be able to change other fields
 	-> Action instead of propertyinfo ?
 multiple OnUpdate ?
 
 more tests
 	complex scenario (see aFRR Activation Control)
 
-check existing and calculated collection before iterating
 throw exception where needed
 check parameters where needed
 
 LoadNoNavigation
-| Method                            | N    | Option       | Mean           | Error         | StdDev        |
-|---------------------------------- |----- |------------- |---------------:|--------------:|--------------:|
-| NoHashtableNaiveComparerMerge     | 10   | Identical    |      86.503 μs |     1.6366 μs |     1.5309 μs |
-| NoHastablePrecompileComparerMerge | 10   | Identical    |       3.756 μs |     0.0750 μs |     0.0737 μs |
-| HastableNaiveComparerMerge        | 10   | Identical    |      84.572 μs |     1.1077 μs |     0.9820 μs |
-| HashTablePrecompileComparer       | 10   | Identical    |       3.646 μs |     0.0494 μs |     0.0462 μs |
-| NoHashtableNaiveComparerMerge     | 10   | NoExisting   |       2.613 μs |     0.0329 μs |     0.0307 μs |
-| NoHastablePrecompileComparerMerge | 10   | NoExisting   |       3.087 μs |     0.0607 μs |     0.0568 μs |
-| HastableNaiveComparerMerge        | 10   | NoExisting   |       2.639 μs |     0.0499 μs |     0.0467 μs |
-| HashTablePrecompileComparer       | 10   | NoExisting   |       2.851 μs |     0.0563 μs |     0.0553 μs |
-| NoHashtableNaiveComparerMerge     | 10   | NoCalculated |       2.623 μs |     0.0452 μs |     0.0400 μs |
-| NoHastablePrecompileComparerMerge | 10   | NoCalculated |       2.651 μs |     0.0063 μs |     0.0056 μs |
-| HastableNaiveComparerMerge        | 10   | NoCalculated |       2.564 μs |     0.0078 μs |     0.0069 μs |
-| HashTablePrecompileComparer       | 10   | NoCalculated |       2.673 μs |     0.0026 μs |     0.0023 μs |
-| NoHashtableNaiveComparerMerge     | 10   | Random       |      81.499 μs |     0.2602 μs |     0.2434 μs |
-| NoHastablePrecompileComparerMerge | 10   | Random       |       7.002 μs |     0.1106 μs |     0.1035 μs |
-| HastableNaiveComparerMerge        | 10   | Random       |      81.518 μs |     0.5830 μs |     0.4868 μs |
-| HashTablePrecompileComparer       | 10   | Random       |       5.302 μs |     0.0311 μs |     0.0291 μs |
-| NoHashtableNaiveComparerMerge     | 100  | Identical    |   7,849.357 μs |   155.0934 μs |   165.9482 μs |
-| NoHastablePrecompileComparerMerge | 100  | Identical    |     189.270 μs |     2.1530 μs |     1.9086 μs |
-| HastableNaiveComparerMerge        | 100  | Identical    |     291.833 μs |     5.6940 μs |     6.0925 μs |
-| HashTablePrecompileComparer       | 100  | Identical    |      45.250 μs |     0.5138 μs |     0.4806 μs |
-| NoHashtableNaiveComparerMerge     | 100  | NoExisting   |      25.045 μs |     0.3045 μs |     0.2849 μs |
-| NoHastablePrecompileComparerMerge | 100  | NoExisting   |      23.841 μs |     0.0759 μs |     0.0710 μs |
-| HastableNaiveComparerMerge        | 100  | NoExisting   |      66.186 μs |     0.2438 μs |     0.2281 μs |
-| HashTablePrecompileComparer       | 100  | NoExisting   |      33.582 μs |     0.2575 μs |     0.2408 μs |
-| NoHashtableNaiveComparerMerge     | 100  | NoCalculated |      24.091 μs |     0.0872 μs |     0.0773 μs |
-| NoHastablePrecompileComparerMerge | 100  | NoCalculated |      28.263 μs |     0.1057 μs |     0.0989 μs |
-| HastableNaiveComparerMerge        | 100  | NoCalculated |      66.907 μs |     1.0116 μs |     0.9462 μs |
-| HashTablePrecompileComparer       | 100  | NoCalculated |      34.453 μs |     0.3077 μs |     0.2878 μs |
-| NoHashtableNaiveComparerMerge     | 100  | Random       |   8,035.954 μs |    56.3941 μs |    52.7511 μs |
-| NoHastablePrecompileComparerMerge | 100  | Random       |     344.918 μs |     0.8387 μs |     0.7004 μs |
-| HastableNaiveComparerMerge        | 100  | Random       |     229.476 μs |     0.7927 μs |     0.7027 μs |
-| HashTablePrecompileComparer       | 100  | Random       |      66.689 μs |     0.1003 μs |     0.0838 μs |
-| NoHashtableNaiveComparerMerge     | 1000 | Identical    | 776,838.150 μs | 2,372.6502 μs | 2,103.2926 μs |
-| NoHastablePrecompileComparerMerge | 1000 | Identical    |  17,280.625 μs |    37.0356 μs |    32.8311 μs |
-| HastableNaiveComparerMerge        | 1000 | Identical    |   2,969.012 μs |    16.1851 μs |    15.1395 μs |
-| HashTablePrecompileComparer       | 1000 | Identical    |     467.140 μs |     3.2029 μs |     2.9960 μs |
-| NoHashtableNaiveComparerMerge     | 1000 | NoExisting   |     236.809 μs |     0.6735 μs |     0.5624 μs |
-| NoHastablePrecompileComparerMerge | 1000 | NoExisting   |     232.242 μs |     0.7564 μs |     0.6705 μs |
-| HastableNaiveComparerMerge        | 1000 | NoExisting   |     705.393 μs |     3.3580 μs |     3.1411 μs |
-| HashTablePrecompileComparer       | 1000 | NoExisting   |     347.681 μs |     1.4155 μs |     1.3241 μs |
-| NoHashtableNaiveComparerMerge     | 1000 | NoCalculated |     261.219 μs |     2.5027 μs |     2.3410 μs |
-| NoHastablePrecompileComparerMerge | 1000 | NoCalculated |     239.737 μs |     2.6951 μs |     2.5210 μs |
-| HastableNaiveComparerMerge        | 1000 | NoCalculated |     717.324 μs |     7.8779 μs |     7.3690 μs |
-| HashTablePrecompileComparer       | 1000 | NoCalculated |     354.402 μs |     5.1115 μs |     4.7813 μs |
-| NoHashtableNaiveComparerMerge     | 1000 | Random       | 802,235.879 μs | 4,486.1809 μs | 3,976.8825 μs |
-| NoHastablePrecompileComparerMerge | 1000 | Random       |  29,902.694 μs |    98.4783 μs |    82.2339 μs |
-| HastableNaiveComparerMerge        | 1000 | Random       |   2,298.273 μs |     4.6336 μs |     3.8693 μs |
-| HashTablePrecompileComparer       | 1000 | Random       |     702.490 μs |     1.5668 μs |     1.3083 μs |
+| Method                            | N    | Option     | Mean           | Error         | StdDev        |
+|---------------------------------- |----- |----------- |---------------:|--------------:|--------------:|
+| NoHashtableNaiveComparerMerge     | 10   | Identical  |      57.857 μs |     0.9556 μs |     0.8939 μs |
+| NoHastablePrecompileComparerMerge | 10   | Identical  |       3.820 μs |     0.0649 μs |     0.0607 μs |
+| HastableNaiveComparerMerge        | 10   | Identical  |      56.277 μs |     0.2903 μs |     0.2424 μs |
+| HashtablePrecompileComparerMerge  | 10   | Identical  |       3.815 μs |     0.0757 μs |     0.0872 μs |
+| NoHashtableNaiveComparerMerge     | 10   | NoExisting |       2.416 μs |     0.0400 μs |     0.0334 μs |
+| NoHastablePrecompileComparerMerge | 10   | NoExisting |       2.436 μs |     0.0372 μs |     0.0348 μs |
+| HastableNaiveComparerMerge        | 10   | NoExisting |       2.481 μs |     0.0377 μs |     0.0353 μs |
+| HashtablePrecompileComparerMerge  | 10   | NoExisting |       2.517 μs |     0.0472 μs |     0.0484 μs |
+| NoHashtableNaiveComparerMerge     | 10   | NoNew      |       2.556 μs |     0.0353 μs |     0.0331 μs |
+| NoHastablePrecompileComparerMerge | 10   | NoNew      |       2.600 μs |     0.0520 μs |     0.0599 μs |
+| HastableNaiveComparerMerge        | 10   | NoNew      |       2.408 μs |     0.0138 μs |     0.0129 μs |
+| HashtablePrecompileComparerMerge  | 10   | NoNew      |       2.458 μs |     0.0240 μs |     0.0213 μs |
+| NoHashtableNaiveComparerMerge     | 10   | Random     |      56.041 μs |     0.2804 μs |     0.2622 μs |
+| NoHastablePrecompileComparerMerge | 10   | Random     |       7.644 μs |     0.1071 μs |     0.1002 μs |
+| HastableNaiveComparerMerge        | 10   | Random     |      66.015 μs |     1.2802 μs |     1.1975 μs |
+| HashtablePrecompileComparerMerge  | 10   | Random     |       8.402 μs |     0.0386 μs |     0.0343 μs |
+| NoHashtableNaiveComparerMerge     | 100  | Identical  |   5,059.279 μs |    80.6210 μs |    71.4684 μs |
+| NoHastablePrecompileComparerMerge | 100  | Identical  |     189.215 μs |     3.6980 μs |     3.7976 μs |
+| HastableNaiveComparerMerge        | 100  | Identical  |     292.730 μs |     5.5237 μs |     5.1669 μs |
+| HashtablePrecompileComparerMerge  | 100  | Identical  |      41.554 μs |     0.4361 μs |     0.4079 μs |
+| NoHashtableNaiveComparerMerge     | 100  | NoExisting |      21.729 μs |     0.3913 μs |     0.3843 μs |
+| NoHastablePrecompileComparerMerge | 100  | NoExisting |      21.270 μs |     0.0974 μs |     0.0760 μs |
+| HastableNaiveComparerMerge        | 100  | NoExisting |      21.531 μs |     0.3052 μs |     0.2855 μs |
+| HashtablePrecompileComparerMerge  | 100  | NoExisting |      21.331 μs |     0.1380 μs |     0.1153 μs |
+| NoHashtableNaiveComparerMerge     | 100  | NoNew      |      21.626 μs |     0.2880 μs |     0.2694 μs |
+| NoHastablePrecompileComparerMerge | 100  | NoNew      |      22.374 μs |     0.4472 μs |     0.4183 μs |
+| HastableNaiveComparerMerge        | 100  | NoNew      |      22.195 μs |     0.0542 μs |     0.0423 μs |
+| HashtablePrecompileComparerMerge  | 100  | NoNew      |      21.638 μs |     0.1798 μs |     0.1594 μs |
+| NoHashtableNaiveComparerMerge     | 100  | Random     |   5,051.980 μs |    72.3996 μs |    64.1803 μs |
+| NoHastablePrecompileComparerMerge | 100  | Random     |     332.835 μs |     3.5425 μs |     3.3136 μs |
+| HastableNaiveComparerMerge        | 100  | Random     |     231.367 μs |     2.5622 μs |     2.3966 μs |
+| HashtablePrecompileComparerMerge  | 100  | Random     |      64.721 μs |     0.3028 μs |     0.2528 μs |
+| NoHashtableNaiveComparerMerge     | 1000 | Identical  | 486,889.143 μs | 2,058.5237 μs | 1,824.8276 μs |
+| NoHastablePrecompileComparerMerge | 1000 | Identical  |  16,962.713 μs |    90.5246 μs |    80.2477 μs |
+| HastableNaiveComparerMerge        | 1000 | Identical  |   2,708.702 μs |    24.9565 μs |    22.1233 μs |
+| HashtablePrecompileComparerMerge  | 1000 | Identical  |     452.160 μs |     2.4716 μs |     2.3120 μs |
+| NoHashtableNaiveComparerMerge     | 1000 | NoExisting |     212.928 μs |     3.6909 μs |     3.2719 μs |
+| NoHastablePrecompileComparerMerge | 1000 | NoExisting |     213.290 μs |     2.2212 μs |     2.0777 μs |
+| HastableNaiveComparerMerge        | 1000 | NoExisting |     210.897 μs |     3.0660 μs |     2.5603 μs |
+| HashtablePrecompileComparerMerge  | 1000 | NoExisting |     213.912 μs |     4.1410 μs |     3.8735 μs |
+| NoHashtableNaiveComparerMerge     | 1000 | NoNew      |     222.500 μs |     3.6906 μs |     3.4522 μs |
+| NoHastablePrecompileComparerMerge | 1000 | NoNew      |     208.243 μs |     0.9431 μs |     0.7875 μs |
+| HastableNaiveComparerMerge        | 1000 | NoNew      |     216.653 μs |     3.0527 μs |     2.8555 μs |
+| HashtablePrecompileComparerMerge  | 1000 | NoNew      |     211.198 μs |     2.4319 μs |     2.2748 μs |
+| NoHashtableNaiveComparerMerge     | 1000 | Random     | 501,612.273 μs | 4,906.4287 μs | 4,589.4765 μs |
+| NoHastablePrecompileComparerMerge | 1000 | Random     |  29,787.496 μs |   182.8020 μs |   162.0492 μs |
+| HastableNaiveComparerMerge        | 1000 | Random     |   2,341.555 μs |    45.1728 μs |    42.2547 μs |
+| HashtablePrecompileComparerMerge  | 1000 | Random     |     702.991 μs |    11.5891 μs |    10.8405 μs |

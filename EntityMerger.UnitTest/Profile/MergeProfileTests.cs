@@ -17,10 +17,12 @@ namespace EntityMerger.UnitTest.Profile
             mergeConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var merger = mergeConfiguration.CreateMerger();
 
-            var results = merger.Merge(entities.existing, entities.calculated);
-            Assert.Single(results);
-            Assert.Equal(Entities.PersistChange.Insert, results.Single().PersistChange);
-            Assert.Equal("CMUIDNew", results.Single().CapacityMarketUnitId);
+            var results = merger.Merge(entities.existingEntities, entities.newEntities).ToArray();
+
+            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
+            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
+            Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
+            Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
         }
 
         [Fact]
@@ -32,13 +34,18 @@ namespace EntityMerger.UnitTest.Profile
             mergeConfiguration.AddProfiles(typeof(CapacityAvailabilityProfile).Assembly);
             var merger = mergeConfiguration.CreateMerger();
 
-            var results = merger.Merge(entities.existing, entities.calculated);
-            Assert.Single(results);
-            Assert.Equal(Entities.PersistChange.Insert, results.Single().PersistChange);
-            Assert.Equal("CMUIDNew", results.Single().CapacityMarketUnitId);
+            var results = merger.Merge(entities.existingEntities, entities.newEntities).ToArray();
+
+            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
+            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
+            Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
+            Assert.All(results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityAvailabilityDetails, x => Assert.Equal(Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x.Status));
+            Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
+            Assert.All(results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityAvailabilityDetails, x => Assert.Equal(Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x.Status));
         }
 
-        private (IEnumerable<Entities.CapacityAvailability.CapacityAvailability> existing, IEnumerable<Entities.CapacityAvailability.CapacityAvailability> calculated) GenerateCapacityAvailabilities()
+        // will generate 5 existing and 6 new (4 first are identical to existing, 5th top level is identical but details are different)
+        private (IEnumerable<Entities.CapacityAvailability.CapacityAvailability> existingEntities, IEnumerable<Entities.CapacityAvailability.CapacityAvailability> newEntities) GenerateCapacityAvailabilities()
         {
             var startDate = DateTime.Today;
             var dayCount = 5;
@@ -51,16 +58,16 @@ namespace EntityMerger.UnitTest.Profile
                 Day = startDate.AddDays(x),
                 CapacityMarketUnitId = existingCmuId,
                 IsEnergyContrained = isEnergyContrained,
-                CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
+                CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Validated, x, x).ToList()
             }).ToArray();
             AssignFK(existingCapacityAvailabilities, true);
 
-            var calculatedCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
+            var newCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
             {
                 Day = startDate.AddDays(x),
                 CapacityMarketUnitId = existingCmuId,
                 IsEnergyContrained = isEnergyContrained,
-                CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
+                CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x, x != 4 ? x : 7).ToList()
             }).Concat
             (
                 new[]
@@ -70,25 +77,26 @@ namespace EntityMerger.UnitTest.Profile
                     Day = startDate.AddDays(1),
                     CapacityMarketUnitId = newCmuId,
                     IsEnergyContrained = isEnergyContrained,
-                    CapacityAvailabilityDetails = GenerateDetails(startDate, 1).ToList()
+                    CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, 1, 1).ToList()
                 }
                 }
             ).ToArray();
-            AssignFK(calculatedCapacityAvailabilities, false);
+            AssignFK(newCapacityAvailabilities, false);
 
-            return (existingCapacityAvailabilities, calculatedCapacityAvailabilities);
+            return (existingCapacityAvailabilities, newCapacityAvailabilities);
         }
 
-        private static IEnumerable<Entities.CapacityAvailability.CapacityAvailabilityDetail> GenerateDetails(DateTime day, int dayShift)
-            => Enumerable.Range(0, 96).Select(y => GenerateDetail(day, dayShift, y));
+        private static IEnumerable<Entities.CapacityAvailability.CapacityAvailabilityDetail> GenerateDetails(DateTime day, Entities.CapacityAvailability.CapacityAvailabilityStatus status, int dayShift, int calculationShift)
+            => Enumerable.Range(0, 96).Select(y => GenerateDetail(day, status, dayShift, y, calculationShift));
 
-        private static Entities.CapacityAvailability.CapacityAvailabilityDetail GenerateDetail(DateTime day, int dayShift, int tick)
+        private static Entities.CapacityAvailability.CapacityAvailabilityDetail GenerateDetail(DateTime day, Entities.CapacityAvailability.CapacityAvailabilityStatus status, int dayShift, int tick, int calculationShift)
             => new()
             {
                 StartsOn = day.AddDays(dayShift).AddMinutes(15 * tick),
-                AvailableVolume = dayShift * tick,
-                MissingVolume = dayShift * tick,
-                ObligatedVolume = 2 * dayShift + tick
+                AvailableVolume = calculationShift * tick,
+                MissingVolume = calculationShift * tick,
+                ObligatedVolume = 2 * calculationShift + tick,
+                Status = status
             };
 
         private static void AssignFK(IEnumerable<Entities.CapacityAvailability.CapacityAvailability> capacityAvailabilities, bool assignNavigationProperty)

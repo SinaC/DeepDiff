@@ -26,9 +26,9 @@ public sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
         foreach (var propertyInfo in Properties)
         {
             var existingValue = propertyInfo.GetValue(left);
-            var calculatedValue = propertyInfo.GetValue(right);
+            var newValue = propertyInfo.GetValue(right);
 
-            if (!Equals(existingValue, calculatedValue))
+            if (!Equals(existingValue, newValue))
                 return false;
         }
         return true;
