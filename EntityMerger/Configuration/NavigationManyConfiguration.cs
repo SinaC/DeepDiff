@@ -2,7 +2,7 @@
 
 namespace EntityMerger.Configuration;
 
-internal class NavigationManyConfiguration : INavigationManyConfiguration
+internal sealed class NavigationManyConfiguration : INavigationManyConfiguration
 {
     public PropertyInfo NavigationManyProperty { get; set; } = null!;
     public bool UseHashtable { get; private set; } = true;

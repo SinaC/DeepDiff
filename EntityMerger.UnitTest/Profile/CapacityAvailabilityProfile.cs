@@ -6,15 +6,16 @@ namespace EntityMerger.UnitTest.Profile
     {
         public CapacityAvailabilityProfile()
         {
-            AddMergeEntityConfiguration<Entities.CapacityAvailability.CapacityAvailability>()
+            CreateMergeEntityConfiguration<Entities.CapacityAvailability.CapacityAvailability>()
                 .AsPersistEntity()
                 .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
-                .HasCalculatedValue(x => x.IsEnergyContrained)
+                .HasValues(x => x.IsEnergyContrained)
                 .HasMany(x => x.CapacityAvailabilityDetails);
-            AddMergeEntityConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>()
+            CreateMergeEntityConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>()
                 .AsPersistEntity()
                 .HasKey(x => x.StartsOn)
-                .HasCalculatedValue(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume });
+                .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
+                .HasAdditionalValuesToCopy(x => x.Status);
         }
     }
 }

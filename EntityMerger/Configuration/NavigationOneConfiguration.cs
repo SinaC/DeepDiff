@@ -2,7 +2,7 @@
 
 namespace EntityMerger.Configuration;
 
-internal class NavigationOneConfiguration
+internal sealed class NavigationOneConfiguration
 {
     public PropertyInfo NavigationOneProperty { get; set; } = null!;
 }

@@ -13,7 +13,7 @@ public class SimpleEntityNavigationManyTests
     [Fact]
     public void OneChildDelete()
     {
-        var existing = new[]
+        var existingEntities = new[]
         {
             new Entity
             {
@@ -36,7 +36,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        var calculated = new[]
+        var newEntities = new[]
         {
             new Entity
             {
@@ -53,27 +53,27 @@ public class SimpleEntityNavigationManyTests
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
         mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasCalculatedValue(x => new { x.RequestedPower })
+            .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
         mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
-            .HasCalculatedValue(x => new { x.Power });
+            .HasValues(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
-        var results = merger.Merge(existing, calculated).ToArray();
+        var results = merger.Merge(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Update, results.Single().PersistChange);
-        Assert.Same(existing.Single(), results.Single());
+        Assert.Same(existingEntities.Single(), results.Single());
         Assert.Single(results.Single().SubEntities);
         Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().PersistChange);
-        Assert.Same(existing.Single().SubEntities.Single(), results.Single().SubEntities.Single());
+        Assert.Same(existingEntities.Single().SubEntities.Single(), results.Single().SubEntities.Single());
     }
 
     [Fact]
     public void OneChildInsert()
     {
-        var existing = new[]
+        var existingEntities = new[]
         {
             new Entity
             {
@@ -87,7 +87,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        var calculated = new[]
+        var newEntities = new[]
         {
             new Entity
             {
@@ -113,20 +113,20 @@ public class SimpleEntityNavigationManyTests
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
         mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasCalculatedValue(x => new { x.RequestedPower })
+            .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
         mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
-            .HasCalculatedValue(x => new { x.Power });
+            .HasValues(x => new { x.Power });
 
         var merger = mergeConfiguration.CreateMerger();
-        var results = merger.Merge(existing, calculated).ToArray();
+        var results = merger.Merge(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Update, results.Single().PersistChange);
-        Assert.Same(existing.Single(), results.Single());
+        Assert.Same(existingEntities.Single(), results.Single());
         Assert.Single(results.Single().SubEntities);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntities.Single().PersistChange);
-        Assert.Same(calculated.Single().SubEntities.Single(), results.Single().SubEntities.Single());
+        Assert.Same(newEntities.Single().SubEntities.Single(), results.Single().SubEntities.Single());
     }
 }

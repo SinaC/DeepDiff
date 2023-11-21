@@ -3,12 +3,12 @@ using System.Reflection;
 
 namespace EntityMerger.Configuration;
 
-internal class MergeEntityConfiguration
+internal sealed class MergeEntityConfiguration
 {
     public Type EntityType { get; }
     public KeyConfiguration KeyConfiguration { get; private set; } = null!;
-    public CalculatedValueConfiguration CalculatedValueConfiguration { get; private set; } = null!;
-    public ValueToCopyConfiguration ValueToCopyConfiguration { get; private set; } = null!;
+    public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
+    public AdditionalValuesToCopyConfiguration AdditionalValuesToCopyConfiguration { get; private set; } = null!;
     public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
     public IList<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
     public IDictionary<MergeEntityOperation, MarkAsConfiguration> MarkAsByOperation { get; private set; } = new Dictionary<MergeEntityOperation, MarkAsConfiguration>();
@@ -29,24 +29,24 @@ internal class MergeEntityConfiguration
         return KeyConfiguration;
     }
 
-    public CalculatedValueConfiguration SetCalculatedValue(IEnumerable<PropertyInfo> calculatedValueProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
+    public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
     {
-        CalculatedValueConfiguration = new CalculatedValueConfiguration
+        ValuesConfiguration = new ValuesConfiguration
         {
-            CalculatedValueProperties = calculatedValueProperties.ToArray(),
+            ValuesProperties = valuesProperties.ToArray(),
             PrecompiledEqualityComparer = precompiledEqualityComparer,
             NaiveEqualityComparer = naiveEqualityComparer
         };
-        return CalculatedValueConfiguration;
+        return ValuesConfiguration;
     }
 
-    public ValueToCopyConfiguration SetValueToCopy(IEnumerable<PropertyInfo> copyValueProperties)
+    public AdditionalValuesToCopyConfiguration SetAdditionalValuesToCopy(IEnumerable<PropertyInfo> additionalValuesToCopyProperties)
     {
-        ValueToCopyConfiguration = new ValueToCopyConfiguration
+        AdditionalValuesToCopyConfiguration = new AdditionalValuesToCopyConfiguration
         {
-            CopyValueProperties = copyValueProperties.ToArray(),
+            AdditionalValuesToCopyProperties = additionalValuesToCopyProperties.ToArray(),
         };
-        return ValueToCopyConfiguration;
+        return AdditionalValuesToCopyConfiguration;
     }
 
     public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)

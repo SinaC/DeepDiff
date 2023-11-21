@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace EntityMerger.Configuration;
 
-internal class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEntity>
+internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEntity>
     where TEntity : class
 {
     public MergeEntityConfiguration Configuration { get; private set; }
@@ -44,34 +44,34 @@ internal class MergeEntityConfiguration<TEntity> : IMergeEntityConfiguration<TEn
         return config;
     }
 
-    public IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression)
+    public IMergeEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
     {
-        SetCalculatedValueConfiguration(calculatedValueExpression);
+        SetValuesConfiguration(valuesExpression);
         return this;
     }
 
-    public IMergeEntityConfiguration<TEntity> HasCalculatedValue<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression, Action<ICalculatedValueConfiguration> calculatedValueConfigurationAction)
+    public IMergeEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration> valuesConfigurationAction)
     {
-        var config = SetCalculatedValueConfiguration(calculatedValueExpression);
-        calculatedValueConfigurationAction?.Invoke(config);
+        var config = SetValuesConfiguration(valuesExpression);
+        valuesConfigurationAction?.Invoke(config);
         return this;
     }
 
-    private ICalculatedValueConfiguration SetCalculatedValueConfiguration<TValue>(Expression<Func<TEntity, TValue>> calculatedValueExpression)
+    private IValuesConfiguration SetValuesConfiguration<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
     {
         // TODO: check if value property has not been already registered
-        var calculatedValueProperties = calculatedValueExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(calculatedValueProperties);
-        var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(calculatedValueProperties);
-        var config = Configuration.SetCalculatedValue(calculatedValueProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
+        var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties);
+        var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties);
+        var config = Configuration.SetValues(valueProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
         return config;
     }
 
-    public IMergeEntityConfiguration<TEntity> HasValueToCopy<TValue>(Expression<Func<TEntity, TValue>> valueToCopyExpression)
+    public IMergeEntityConfiguration<TEntity> HasAdditionalValuesToCopy<TValue>(Expression<Func<TEntity, TValue>> additionalValuesToCopyExpression)
     {
-        // TODO: check if value to ^copy property is not already set in CalculatedValue
-        var valueToCopyProperties = valueToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-        var config = Configuration.SetValueToCopy(valueToCopyProperties);
+        // TODO: check if value to ^copy property is not already set in Values
+        var additionalValuesToCopyProperties = additionalValuesToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+        var config = Configuration.SetAdditionalValuesToCopy(additionalValuesToCopyProperties);
         return this;
     }
 

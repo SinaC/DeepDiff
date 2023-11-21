@@ -12,7 +12,7 @@ public partial class SimpleEntityMergerTests
     [Fact]
     public void TestMultipleChanges()
     {
-        var existing = Enumerable.Range(0, 10).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 10).Select(x => new Entity
         {
             Index = x,
 
@@ -35,7 +35,7 @@ public partial class SimpleEntityMergerTests
             }).ToList(),
         }).ToArray();
 
-        var calculated = Enumerable.Range(1, 10).Select(x => new Entity
+        var newEntities = Enumerable.Range(1, 10).Select(x => new Entity
         {
             Index = x,
 
@@ -44,8 +44,8 @@ public partial class SimpleEntityMergerTests
             Direction = x % 2 == 0 ? Direction.Up : Direction.Down,
             RequestedPower = x,
             Penalty = x % 3 == 0 ? null : x * 3,
-            Comment = $"Calculated{x}",
-            AdditionalValueToCopy = $"CalculatedAdditionalValue{x}",
+            Comment = $"New{x}",
+            AdditionalValueToCopy = $"NewAdditionalValue{x}",
             SubEntities = Enumerable.Range(1, 5).Select(y => new SubEntity
             {
                 Index = y,
@@ -54,22 +54,22 @@ public partial class SimpleEntityMergerTests
                 Timestamp = DateTime.Today.AddHours(x).AddMinutes(y),
                 Power = y,
                 Price = y % 2 == 0 ? null : y * 3,
-                Comment = $"Calculated{x}_{y}",
+                Comment = $"New{x}_{y}",
             }).ToList(),
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
         mergeConfiguration.PersistEntity<Entity>()
             .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasCalculatedValue(x => new { x.RequestedPower, x.Penalty })
-            .HasValueToCopy(x => new { x.AdditionalValueToCopy })
+            .HasValues(x => new { x.RequestedPower, x.Penalty })
+            .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
             .HasMany(x => x.SubEntities);
         mergeConfiguration.PersistEntity<SubEntity>()
             .HasKey(x => x.Timestamp)
-            .HasCalculatedValue(x => new { x.Power, x.Price });
+            .HasValues(x => new { x.Power, x.Price });
 
         var merger = mergeConfiguration.CreateMerger();
-        var results = merger.Merge(existing, calculated).ToArray();
+        var results = merger.Merge(existingEntities, newEntities).ToArray();
 
         Assert.Equal(11, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));
@@ -77,6 +77,6 @@ public partial class SimpleEntityMergerTests
         Assert.Equal(9, results.Count(x => x.PersistChange == PersistChange.Update));
 
         Assert.All(results.Where(x => x.PersistChange != PersistChange.Insert), x => Assert.StartsWith("Existing", x.Comment)); // Comment is not copied
-        Assert.StartsWith("CalculatedAdditionalValue", results.Single(x => x.PersistChange == PersistChange.Insert).AdditionalValueToCopy); // AdditionalValueToCopy is copied
+        Assert.StartsWith("NewAdditionalValue", results.Single(x => x.PersistChange == PersistChange.Insert).AdditionalValueToCopy); // AdditionalValueToCopy is copied
     }
 }
