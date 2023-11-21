@@ -1,6 +1,6 @@
 ﻿namespace EntityMerger.Exceptions
 {
-    public class MergeEntityConfigurationException : Exception
+    public abstract class MergeEntityConfigurationException : Exception
     {
         public Type EntityType { get; }
 

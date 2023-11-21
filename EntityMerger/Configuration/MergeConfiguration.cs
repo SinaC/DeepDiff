@@ -73,7 +73,7 @@ public sealed class MergeConfiguration : IMergeConfiguration
         // ValuesConfiguration: if not null, cannot be empty, every property must be different and cannot be found in key configuration
         // AdditionalValuesToCopyConfiguration: if not null, cannot be empty, every property must be different and cannot be found in values nor key configuration
         // NavigationManyConfiguration: every NavigationManyChildType must exist in configuration
-        // NavigationOneConfiguration: every NavigationOneChildType must exist in configuration   TODO: cannot be a collection
+        // NavigationOneConfiguration: every NavigationOneProperty cannot be a collection and must exist in configuration
         // MarkAsConfiguration: cannot be null
         foreach (var mergeEntityConfigurationByType in MergeEntityConfigurationByTypes)
         {
@@ -87,6 +87,8 @@ public sealed class MergeConfiguration : IMergeConfiguration
             ValidateNavigationOneConfiguration(type, mergeEntityConfiguration, MergeEntityConfigurationByTypes, exceptions);
             ValidateMarkAsConfiguration(type, mergeEntityConfiguration, exceptions);
         }
+        if (exceptions.Count == 1)
+            throw exceptions.Single();
         if (exceptions.Count > 0)
             throw new AggregateException(exceptions);
     }
@@ -188,9 +190,15 @@ public sealed class MergeConfiguration : IMergeConfiguration
         {
             foreach (var configuration in mergeEntityConfiguration.NavigationOneConfigurations)
             {
-                // check if navigation child type is found in configuration
-                if (!mergeEntityConfigurationByTypes.ContainsKey(configuration.NavigationOneChildType))
-                    exceptions.Add(new MissingNavigationOneChildConfigurationException(entityType, configuration.NavigationOneChildType));
+                // check if navigation one property is not a collection
+                if (configuration.NavigationOneProperty.IsEnumerable())
+                    exceptions.Add(new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationOneProperty.Name));
+                else
+                {
+                    // check if navigation child type is found in configuration
+                    if (!mergeEntityConfigurationByTypes.ContainsKey(configuration.NavigationOneChildType))
+                        exceptions.Add(new MissingNavigationOneChildConfigurationException(entityType, configuration.NavigationOneChildType));
+                }
             }
         }
     }

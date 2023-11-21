@@ -5,9 +5,6 @@ multiple OnUpdate ?
 more tests
 	complex scenario (see aFRR Activation Control)
 
-throw exception where needed
-check parameters where needed
-
 LoadNoNavigation
 | Method                            | N    | Option     | Mean           | Error         | StdDev        |
 |---------------------------------- |----- |----------- |---------------:|--------------:|--------------:|

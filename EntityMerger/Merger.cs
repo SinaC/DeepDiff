@@ -329,6 +329,6 @@ internal sealed class Merger : IMerger
             return;
         if (!Configuration.MergeEntityConfigurationByTypes.TryGetValue(childType, out var childMergeEntityConfiguration))
             throw new MissingConfigurationException(childType);
-        MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, entity, operation);
+        MarkEntityAndPropagateUsingNavigation(childMergeEntityConfiguration, childValue, operation);
     }
 }

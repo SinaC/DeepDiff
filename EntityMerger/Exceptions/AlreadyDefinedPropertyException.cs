@@ -4,8 +4,8 @@
     {
         public string[] AlreadyDefinedPropertyNames { get; }
 
-        public AlreadyDefinedPropertyException(Type entityType, string faultyConfigurationType, string alreadyDefinedInConfigurationType, IEnumerable<string> alreadyDefinedPropertyNames)
-            : base($"{faultyConfigurationType} configuration for type {entityType} contains one or more property already configured in {alreadyDefinedInConfigurationType}: {string.Join(",", alreadyDefinedPropertyNames)}", entityType)
+        public AlreadyDefinedPropertyException(Type entityType, string faultyConfiguration, string alreadyDefinedInConfiguration, IEnumerable<string> alreadyDefinedPropertyNames)
+            : base($"{faultyConfiguration} configuration for type {entityType} contains one or more property already configured in {alreadyDefinedInConfiguration}: {string.Join(",", alreadyDefinedPropertyNames)}", entityType)
         {
             AlreadyDefinedPropertyNames = alreadyDefinedPropertyNames.ToArray();
         }

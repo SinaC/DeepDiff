@@ -58,6 +58,7 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
 
     private IValuesConfiguration SetValuesConfiguration<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
     {
+        // TODO: can only be set once
         var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
         var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties);
         var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties);
@@ -67,6 +68,7 @@ internal sealed class MergeEntityConfiguration<TEntity> : IMergeEntityConfigurat
 
     public IMergeEntityConfiguration<TEntity> HasAdditionalValuesToCopy<TValue>(Expression<Func<TEntity, TValue>> additionalValuesToCopyExpression)
     {
+        // TODO: can only be set once
         var additionalValuesToCopyProperties = additionalValuesToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
         var config = Configuration.SetAdditionalValuesToCopy(additionalValuesToCopyProperties);
         return this;

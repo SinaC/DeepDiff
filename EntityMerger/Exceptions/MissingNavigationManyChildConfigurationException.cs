@@ -2,12 +2,12 @@
 {
     public class MissingNavigationManyChildConfigurationException : MergeEntityConfigurationException
     {
-        public Type TargetType { get; }
+        public Type ChildType { get; }
 
-        public MissingNavigationManyChildConfigurationException(Type entityType, Type targetType)
-            : base($"No configuration found for type {targetType} as target type for NavigationManyConfiguration of type {entityType}", entityType)
+        public MissingNavigationManyChildConfigurationException(Type entityType, Type childType)
+            : base($"No configuration found for type {childType} as child type for NavigationMany configuration of type {entityType}", entityType)
         {
-            TargetType = targetType;
+            ChildType = childType;
         }
     }
 }
