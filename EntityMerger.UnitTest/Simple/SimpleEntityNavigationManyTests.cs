@@ -15,7 +15,7 @@ public class SimpleEntityNavigationManyTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 0,
 
@@ -23,9 +23,9 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<SubEntity>
+                SubEntities = new List<EntityLevel1>
                 {
-                    new SubEntity
+                    new EntityLevel1
                     {
                         Index = 0,
 
@@ -38,7 +38,7 @@ public class SimpleEntityNavigationManyTests
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 0,
 
@@ -46,16 +46,16 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<SubEntity>()
+                SubEntities = new List<EntityLevel1>()
             }
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -75,7 +75,7 @@ public class SimpleEntityNavigationManyTests
     {
         var existingEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 0,
 
@@ -83,13 +83,13 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<SubEntity>()
+                SubEntities = new List<EntityLevel1>()
             }
         };
 
         var newEntities = new[]
         {
-            new Entity
+            new EntityLevel0
             {
                 Index = 0,
 
@@ -97,9 +97,9 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<SubEntity>
+                SubEntities = new List<EntityLevel1>
                 {
-                    new SubEntity
+                    new EntityLevel1
                     {
                         Index = 0,
 
@@ -111,11 +111,11 @@ public class SimpleEntityNavigationManyTests
         };
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 

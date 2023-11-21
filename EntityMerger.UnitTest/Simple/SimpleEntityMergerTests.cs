@@ -12,7 +12,7 @@ public partial class SimpleEntityMergerTests
     [Fact]
     public void TestMultipleChanges()
     {
-        var existingEntities = Enumerable.Range(0, 10).Select(x => new Entity
+        var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -23,7 +23,7 @@ public partial class SimpleEntityMergerTests
             Penalty = x % 3 == 0 ? null : x * 2,
             Comment = $"Existing{x}",
             AdditionalValueToCopy = $"ExistingAdditionalValue{x}",
-            SubEntities = Enumerable.Range(0, 5).Select(y => new SubEntity
+            SubEntities = Enumerable.Range(0, 5).Select(y => new EntityLevel1
             {
                 Index = y,
 
@@ -35,7 +35,7 @@ public partial class SimpleEntityMergerTests
             }).ToList(),
         }).ToArray();
 
-        var newEntities = Enumerable.Range(1, 10).Select(x => new Entity
+        var newEntities = Enumerable.Range(1, 10).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -46,7 +46,7 @@ public partial class SimpleEntityMergerTests
             Penalty = x % 3 == 0 ? null : x * 3,
             Comment = $"New{x}",
             AdditionalValueToCopy = $"NewAdditionalValue{x}",
-            SubEntities = Enumerable.Range(1, 5).Select(y => new SubEntity
+            SubEntities = Enumerable.Range(1, 5).Select(y => new EntityLevel1
             {
                 Index = y,
 
@@ -59,12 +59,12 @@ public partial class SimpleEntityMergerTests
         }).ToArray();
 
         MergeConfiguration mergeConfiguration = new MergeConfiguration();
-        mergeConfiguration.PersistEntity<Entity>()
+        mergeConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
             .HasMany(x => x.SubEntities);
-        mergeConfiguration.PersistEntity<SubEntity>()
+        mergeConfiguration.PersistEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price });
 

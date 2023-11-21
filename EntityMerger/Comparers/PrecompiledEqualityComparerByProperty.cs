@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EntityMerger.Comparer;
+namespace EntityMerger.Comparers;
 
 public sealed class PrecompiledEqualityComparerByProperty<T> : IEqualityComparer
     where T : class

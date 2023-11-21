@@ -1,4 +1,4 @@
-﻿using EntityMerger.Comparer;
+﻿using EntityMerger.Comparers;
 
 namespace EntityMerger.Extensions;
 

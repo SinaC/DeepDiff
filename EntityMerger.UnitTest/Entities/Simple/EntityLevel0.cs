@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace EntityMerger.UnitTest.Entities.Simple;
 
-//
-internal class Entity : PersistEntity
+internal class EntityLevel0 : PersistEntity
 {
     public Guid Id { get; set; }
+
     public DateTime StartsOn { get; set; }
     public Direction Direction { get; set; }
 
@@ -17,10 +17,10 @@ internal class Entity : PersistEntity
     public string Comment { get; set; } = null!;
 
     // one-to-one
-    public SubEntity SubEntity { get; set; } = null!;
+    public EntityLevel1 SubEntity { get; set; } = null!;
 
     // one-to-many
-    public List<SubEntity> SubEntities { get; set; } = null!;
+    public List<EntityLevel1> SubEntities { get; set; } = null!;
 
     // debug property, will never participate in merge neither as key nor value
     public int Index { get; set; }
