@@ -1,4 +1,7 @@
-﻿OnUpdate should also be able to change other fields
+﻿2  nuget package
+	EntityCompare and EntityComparer.Extensions.Microsoft.DependencyInjection
+
+OnUpdate should also be able to change other fields
 	-> Action instead of propertyinfo ?
 multiple OnUpdate ?
 

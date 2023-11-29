@@ -1,6 +1,4 @@
-using System;
-
-namespace EntityComparer.UnitTest.Entities;
+namespace TestApp.Entities;
 
 public abstract class UpdateAuditEntity : CreateAuditEntity
 {
