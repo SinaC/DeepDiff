@@ -1,4 +1,4 @@
-namespace EntityComparer.UnitTest.Entities;
+namespace TestApp.Entities;
 
 public interface IAuditEntity<TAuditedBy, TAuditedOn>
 {

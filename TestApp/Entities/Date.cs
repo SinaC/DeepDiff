@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace EntityComparer.UnitTest.Entities;
+namespace TestApp.Entities;
 
 public readonly struct Date : IEquatable<Date>, IComparable, IComparable<Date>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"

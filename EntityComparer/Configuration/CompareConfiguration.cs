@@ -1,9 +1,6 @@
 using EntityComparer.Exceptions;
 using EntityComparer.Extensions;
-using System;
-using System.ComponentModel;
 using System.Reflection;
-using System.Security.Cryptography;
 
 namespace EntityComparer.Configuration;
 
@@ -33,14 +30,17 @@ public sealed class CompareConfiguration : ICompareConfiguration
 
     public ICompareConfiguration AddProfiles(params Assembly[] assembliesToScan)
     {
-        foreach (var assembly in assembliesToScan)
+        if (assembliesToScan != null && assembliesToScan.Length > 0)
         {
-            var compareProfileType = typeof(CompareProfile);
-            foreach (var derivedCompareProfileType in assembly.GetTypes().Where(x => x != compareProfileType && compareProfileType.IsAssignableFrom(x)))
+            foreach (var assembly in assembliesToScan)
             {
-                var compareProfileInstance = (CompareProfile)Activator.CreateInstance(derivedCompareProfileType)!;
-                foreach (var typeAndCompareEntityConfiguration in compareProfileInstance.CompareEntityConfigurations)
-                    CompareEntityConfigurationByTypes.Add(typeAndCompareEntityConfiguration.Key, typeAndCompareEntityConfiguration.Value);
+                var compareProfileType = typeof(CompareProfile);
+                foreach (var derivedCompareProfileType in assembly.GetTypes().Where(x => x != compareProfileType && compareProfileType.IsAssignableFrom(x)))
+                {
+                    var compareProfileInstance = (CompareProfile)Activator.CreateInstance(derivedCompareProfileType)!;
+                    foreach (var typeAndCompareEntityConfiguration in compareProfileInstance.CompareEntityConfigurations)
+                        CompareEntityConfigurationByTypes.Add(typeAndCompareEntityConfiguration.Key, typeAndCompareEntityConfiguration.Value);
+                }
             }
         }
         return this;

@@ -91,7 +91,8 @@ public class CapacityAvailabilityTests
             .HasMany(x => x.CapacityAvailabilityDetails);
         compareConfiguration.PersistEntity<CapacityAvailabilityDetail>()
             .HasKey(x => x.StartsOn)
-            .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume });
+            .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
+            .HasAdditionalValuesToCopy(x => x.Status);
 
         var comparer = compareConfiguration.CreateComparer();
         return comparer;

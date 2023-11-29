@@ -193,16 +193,14 @@ internal sealed class EntityComparer : IEntityComparer
         var newChildren = (IEnumerable<object>)newEntityChildren!;
         var comparedChildren = Compare(childCompareEntityConfiguration, existingChildren, newChildren, navigationManyConfiguration.UseHashtable);
 
-        // convert children from IEnumerable<object> to List<ChildType>
+        // convert compared children from IEnumerable<object> to List<ChildType>
         var listType = typeof(List<>).MakeGenericType(childType);
         var list = (IList)Activator.CreateInstance(listType)!;
         foreach (var comparedChild in comparedChildren)
             list.Add(comparedChild);
+        navigationManyConfiguration.NavigationManyProperty.SetValue(existingEntity, list);
         if (list.Count > 0)
-        {
-            navigationManyConfiguration.NavigationManyProperty.SetValue(existingEntity, list);
             return true;
-        }
         return false;
     }
 
