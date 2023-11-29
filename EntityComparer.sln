@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
@@ -14,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityComparer.Benchmark", "EntityComparer.Benchmark\EntityComparer.Benchmark.csproj", "{042BCDB0-D034-4CB5-8943-9246DB1112A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityComparer.Benchmark", "EntityComparer.Benchmark\EntityComparer.Benchmark.csproj", "{042BCDB0-D034-4CB5-8943-9246DB1112A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityComparer.Extensions.Microsoft.DependencyInjection", "EntityComparer.Extensions.Microsoft.DependencyInjection\EntityComparer.Extensions.Microsoft.DependencyInjection.csproj", "{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +39,10 @@ Global
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
