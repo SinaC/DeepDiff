@@ -1,7 +1,7 @@
 using EntityComparer.Configuration;
 using TestApp.Entities;
 
-namespace TestApp;
+namespace TestApp.Profile;
 
 public static class ICompareConfigurationExtensions
 {

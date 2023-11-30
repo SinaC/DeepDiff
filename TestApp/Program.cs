@@ -13,7 +13,6 @@ class Program
 
     static void Main(string[] args)
     {
-
         ILogger logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .WriteTo.File(LogFile, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, rollingInterval: RollingInterval.Infinite, rollOnFileSizeLimit: false)
