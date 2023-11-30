@@ -1,18 +1,19 @@
 using System.Reflection;
 
-namespace EntityComparer.Configuration;
-
-public interface ICompareConfiguration
+namespace EntityComparer.Configuration
 {
-    ICompareEntityConfiguration<TEntity> Entity<TEntity>()
-        where TEntity : class;
+    public interface ICompareConfiguration
+    {
+        ICompareEntityConfiguration<TEntity> Entity<TEntity>()
+            where TEntity : class;
 
-    ICompareConfiguration AddProfile<TProfile>()
-        where TProfile : CompareProfile;
-    ICompareConfiguration AddProfiles(params Assembly[] assembliesToScan);
+        ICompareConfiguration AddProfile<TProfile>()
+            where TProfile : CompareProfile;
+        ICompareConfiguration AddProfiles(params Assembly[] assembliesToScan);
 
-    ICompareConfiguration DisableHashtable();
-    ICompareConfiguration SetHashtableThreshold(int threshold);
+        ICompareConfiguration DisableHashtable();
+        ICompareConfiguration SetHashtableThreshold(int threshold);
 
-    IEntityComparer CreateComparer();
+        IEntityComparer CreateComparer();
+    }
 }

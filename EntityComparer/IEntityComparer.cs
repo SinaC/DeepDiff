@@ -1,7 +1,10 @@
-namespace EntityComparer;
+using System.Collections.Generic;
 
-public interface IEntityComparer
+namespace EntityComparer
 {
-    IEnumerable<TEntity> Compare<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
-        where TEntity : class;
+    public interface IEntityComparer
+    {
+        IEnumerable<TEntity> Compare<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+            where TEntity : class;
+    }
 }

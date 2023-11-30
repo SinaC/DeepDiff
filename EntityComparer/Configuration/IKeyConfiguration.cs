@@ -1,6 +1,7 @@
-namespace EntityComparer.Configuration;
-
-public interface IKeyConfiguration
+namespace EntityComparer.Configuration
 {
-    void DisablePrecompiledEqualityComparer();
+    public interface IKeyConfiguration
+    {
+        void DisablePrecompiledEqualityComparer();
+    }
 }

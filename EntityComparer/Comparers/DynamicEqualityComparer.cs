@@ -1,22 +1,26 @@
-namespace EntityComparer.Comparers;
+using System;
+using System.Collections.Generic;
 
-internal sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
-    where T : class
+namespace EntityComparer.Comparers
 {
-    private readonly Func<T, T, bool> _func;
-
-    public DynamicEqualityComparer(Func<T, T, bool> func)
+    internal sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
+        where T : class
     {
-        _func = func;
-    }
+        private readonly Func<T, T, bool> _func;
 
-    public bool Equals(T x, T y)
-    {
-        return _func(x, y);
-    }
+        public DynamicEqualityComparer(Func<T, T, bool> func)
+        {
+            _func = func;
+        }
 
-    public int GetHashCode(T obj)
-    {
-        return 0; // force Equals
+        public bool Equals(T x, T y)
+        {
+            return _func(x, y);
+        }
+
+        public int GetHashCode(T obj)
+        {
+            return 0; // force Equals
+        }
     }
 }
