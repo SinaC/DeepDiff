@@ -21,8 +21,8 @@ compareConfiguration.PersistEntity<SubEntity>()
 var comparer = compareConfiguration.CreateComparer();
 ```
 Then in your application code
-var results = comparer.Compare(existingEntities, newEntities).ToArray();
 ```csharp
+var results = comparer.Compare(existingEntities, newEntities).ToArray();
 ```
 Sample entities definition
 ```csharp
