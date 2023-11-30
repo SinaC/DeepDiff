@@ -1,8 +1,9 @@
-namespace EntityComparer.Configuration;
-
-internal enum CompareEntityOperation
+namespace EntityComparer.Configuration
 {
-    Insert = 1,
-    Update = 2,
-    Delete = 3
+    internal enum CompareEntityOperation
+    {
+        Insert = 1,
+        Update = 2,
+        Delete = 3
+    }
 }

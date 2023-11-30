@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace EntityComparer.Configuration
 {
     public abstract class CompareProfile

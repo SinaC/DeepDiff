@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace EntityComparer.Extensions
 {
     internal static class IReadOnlyCollectionExtensions

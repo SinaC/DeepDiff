@@ -57,10 +57,14 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
             // Entity1: 3rd -> updated
             Assert.Single(results.Single().SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
             // Entity2: 6th -> inserted
             Assert.Single(results.Single().SubEntities.Single().SubEntities);
             Assert.Equal(PersistChange.Insert, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
@@ -85,10 +89,14 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
             // Entity1: 3rd -> updated
             Assert.Single(results.Single().SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
             // Entity2: 2th -> deleted
             Assert.Single(results.Single().SubEntities.Single().SubEntities);
             Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
@@ -113,10 +121,14 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
             // Entity1: 3rd -> updated
             Assert.Single(results.Single().SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
             // Entity2: 2th -> updated
             Assert.Single(results.Single().SubEntities.Single().SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
@@ -142,10 +154,14 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
             // Entity1: 3rd -> deleted
             Assert.Single(results.Single().SubEntities);
             Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: deleted
+            Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().SubEntity.PersistChange);
             // Every Entity2 in Entity1 -> deleted
             Assert.Equal(5, results.Single().SubEntities.Single().SubEntities.Count);
             Assert.All(results.Single().SubEntities.Single().SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
@@ -168,10 +184,14 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
             // Entity1: 3rd -> updated
             Assert.Single(results.Single().SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities.Single().SubEntities);
             // Entity2: update
             Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().SubEntity.PersistChange);
             Assert.Equal(3 * 10 + 2 + 9999, results.Single().SubEntities.Single().SubEntity.Index);
@@ -206,9 +226,13 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
             // Entity1: updated
             Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
             // Entity2: 6th -> inserted
             Assert.Single(results.Single().SubEntity.SubEntities);
             Assert.Equal(PersistChange.Insert, results.Single().SubEntity.SubEntities.Single().PersistChange);
@@ -233,9 +257,13 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
             // Entity1: updated
             Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
             // Entity2: 2th -> deleted
             Assert.Single(results.Single().SubEntity.SubEntities);
             Assert.Equal(PersistChange.Delete, results.Single().SubEntity.SubEntities.Single().PersistChange);
@@ -260,9 +288,13 @@ namespace EntityComparer.UnitTest.Simple
             Assert.Single(results);
             Assert.Equal(PersistChange.Update, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
             // Entity1: 3rd -> updated
             Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
             // Entity2: 2th -> updated
             Assert.Single(results.Single().SubEntity.SubEntities);
             Assert.Equal(PersistChange.Update, results.Single().SubEntity.SubEntities.Single().PersistChange);

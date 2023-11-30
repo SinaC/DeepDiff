@@ -1,9 +1,10 @@
 using System.Reflection;
 
-namespace EntityComparer.Configuration;
-
-internal sealed class MarkAsConfiguration
+namespace EntityComparer.Configuration
 {
-    public PropertyInfo DestinationProperty { get; set; } = null!;
-    public object Value { get; set; } = null!;
+    internal sealed class MarkAsConfiguration
+    {
+        public PropertyInfo DestinationProperty { get; set; } = null!;
+        public object Value { get; set; } = null!;
+    }
 }

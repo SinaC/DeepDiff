@@ -1,3 +1,5 @@
+using System;
+
 namespace EntityComparer.Exceptions
 {
     public abstract class CompareEntityConfigurationException : Exception

@@ -1,6 +1,7 @@
-namespace EntityComparer.Configuration;
-
-public interface INavigationManyConfiguration
+namespace EntityComparer.Configuration
 {
-    INavigationManyConfiguration DisableHashtable();
+    public interface INavigationManyConfiguration
+    {
+        INavigationManyConfiguration DisableHashtable();
+    }
 }

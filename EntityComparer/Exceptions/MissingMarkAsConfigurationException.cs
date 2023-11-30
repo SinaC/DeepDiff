@@ -1,4 +1,5 @@
 using EntityComparer.Configuration;
+using System;
 
 namespace EntityComparer.Exceptions
 {
