@@ -1,28 +1,28 @@
 # Sample
 
 ## How do I get started
-First configure EntityComparer to know what types you want to compare, in the startup of your application
+First configure DeepDiff to know what types you want to compare, in the startup of your application
 
 ```csharp
-CompareConfiguration compareConfiguration = new CompareConfiguration();
-compareConfiguration.Entity<Entity>()
+var diffConfiguration = new DiffConfiguration();
+diffConfiguration.Entity<Entity>()
    .HasKey(x => new { x.StartsOn, x.Name })
    .HasValues(x => new { x.Price, x.Volume })
    .HasMany(x => x.SubEntities)
    .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
    .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
    .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);;
-compareConfiguration.PersistEntity<SubEntity>()
+diffConfiguration.PersistEntity<SubEntity>()
    .HasKey(x => x.SubName)
    .HasValues(x => x.Energy)
    .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
    .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
    .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);;
-var comparer = compareConfiguration.CreateComparer();
+var deepDiff = diffConfiguration.CreateDeepDiff();
 ```
 Then in your application code
 ```csharp
-var results = comparer.Compare(existingEntities, newEntities).ToArray();
+var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
 ```
 Sample entities definition
 ```csharp
