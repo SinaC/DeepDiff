@@ -1,15 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <Version>1.0.1</Version>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>DeepDiff</Title>
     <Authors>SinaC</Authors>
-    <Description>Entities deep comparer</Description>
+    <Description>Entities deep diff</Description>
     <PackageProjectUrl>https://github.com/SinaC/DeepDiff</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/SinaC/DeepDiff</RepositoryUrl>
-    <PackageTags>entity;comparer</PackageTags>
+    <PackageTags>comparer;diff;</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
