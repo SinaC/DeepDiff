@@ -1,6 +1,3 @@
-﻿Reposistory for DeepDiff.Extensions.Microsoft.DependencyInjection
-+ nuget
-
 OnUpdate should also be able to change other fields
 	-> Action instead of propertyinfo ?
 multiple OnUpdate ?
