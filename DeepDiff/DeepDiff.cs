@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace DeepDiff
 {
@@ -15,6 +16,14 @@ namespace DeepDiff
         internal DeepDiff(DiffConfiguration configuration)
         {
             Configuration = configuration;
+        }
+
+        public TEntity Diff<TEntity>(TEntity existingEntity, TEntity newEntity)
+            where TEntity : class
+        {
+            if (!Configuration.DiffEntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var diffEntityConfiguration))
+                throw new MissingConfigurationException(typeof(TEntity));
+            return (TEntity)Diff(diffEntityConfiguration, existingEntity, newEntity);
         }
 
         // for each existing entity
@@ -48,6 +57,36 @@ namespace DeepDiff
 
         private bool CheckIfHashtablesShouldBeUsedUsingThreshold(IEnumerable<object> existingEntities)
             => existingEntities.Count() >= Configuration.HashtableThreshold;
+
+        private object Diff(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity)
+        {
+            // no entity
+            if (existingEntity == null && newEntity == null)
+                return null;
+
+            // no existing entity -> return new entity as inserted
+            if (existingEntity == null)
+            {
+                MarkEntityAndPropagateUsingNavigation(diffEntityConfiguration, newEntity, DiffEntityOperation.Insert);
+                return newEntity;
+            }
+
+            // if no new entity -> return existing as deleted
+            if (newEntity == null)
+            {
+                MarkEntityAndPropagateUsingNavigation(diffEntityConfiguration, existingEntity, DiffEntityOperation.Delete);
+                return existingEntity;
+            }
+
+            var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity);
+            if (!diffModificationsFound)
+            {
+                MarkEntity(diffEntityConfiguration, existingEntity, DiffEntityOperation.Update);
+                return existingEntity;
+            }
+
+            return null; // not insert/update/delete
+        }
 
         private IEnumerable<object> Diff(DiffEntityConfiguration diffEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, bool useHashtableForThatLevel)
         {
