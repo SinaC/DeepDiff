@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using DeepDiff.Extensions.Microsoft.DependencyInjection;
+using DeepDiff;
+using DeepDiff.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TestApp.Entities;
@@ -19,7 +20,10 @@ class Program
                     .CreateLogger();
 
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddDeepDiff(typeof(Program).Assembly);
+        var diffConfiguration = new DiffConfiguration();
+        diffConfiguration.AddProfiles(typeof(Program).Assembly);
+        var deepDiff = diffConfiguration.CreateDeepDiff();
+        serviceCollection.AddSingleton(typeof(IDeepDiff), deepDiff);
         serviceCollection.AddSingleton(logger);
 
         var containerBuilder = new ContainerBuilder();

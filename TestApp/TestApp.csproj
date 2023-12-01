@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DeepDiff.Extensions.Microsoft.DependencyInjection\DeepDiff.Extensions.Microsoft.DependencyInjection.csproj" />
     <ProjectReference Include="..\DeepDiff\DeepDiff.csproj" />
   </ItemGroup>
 
