@@ -15,9 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepDiff.Benchmark", "DeepDiff.Benchmark\DeepDiff.Benchmark.csproj", "{042BCDB0-D034-4CB5-8943-9246DB1112A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepDiff.Extensions.Microsoft.DependencyInjection", "DeepDiff.Extensions.Microsoft.DependencyInjection\DeepDiff.Extensions.Microsoft.DependencyInjection.csproj", "{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNet5", "TestAppNet5\TestAppNet5.csproj", "{6B315DAC-2330-40E8-B6D9-8AA473759180}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAppNet5", "TestAppNet5\TestAppNet5.csproj", "{6B315DAC-2330-40E8-B6D9-8AA473759180}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042BCDB0-D034-4CB5-8943-9246DB1112A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A913F0D-AC85-4E4C-830A-2B4246A15EC4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Release|Any CPU.ActiveCfg = Release|Any CPU
