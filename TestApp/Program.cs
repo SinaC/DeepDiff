@@ -1,6 +1,6 @@
-﻿using Autofac;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using EntityComparer.Extensions.Microsoft.DependencyInjection;
+using DeepDiff.Extensions.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TestApp.Entities;
@@ -19,7 +19,7 @@ class Program
                     .CreateLogger();
 
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddEntityComparer(typeof(Program).Assembly);
+        serviceCollection.AddDeepDiff(typeof(Program).Assembly);
         serviceCollection.AddSingleton(logger);
 
         var containerBuilder = new ContainerBuilder();

@@ -1,4 +1,4 @@
-﻿using EntityComparer;
+using DeepDiff;
 using Serilog;
 using TestApp.Entities;
 using TestApp.Entities.ActivationControl;
@@ -8,12 +8,12 @@ namespace TestApp;
 public class Calculate : ICalculate
 {
     private ILogger Logger { get; }
-    private IEntityComparer EntityComparer { get; }
+    private IDeepDiff DeepDiff { get; }
 
-    public Calculate(ILogger logger, IEntityComparer entityComparer)
+    public Calculate(ILogger logger, IDeepDiff deepDiff)
     {
         Logger = logger;
-        EntityComparer = entityComparer;
+        DeepDiff = deepDiff;
     }
 
     public void Perform(Date deliveryDate)
@@ -25,7 +25,7 @@ public class Calculate : ICalculate
         calculated.TotalEnergyToBeSupplied = 5m;
         calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
-        var results =  EntityComparer.Compare(new[] { existing }, new[] { calculated }).ToArray();
+        var results =  DeepDiff.Diff(new[] { existing }, new[] { calculated }).ToArray();
 
         Logger.Information($"#results: {results.Length}");
     }
