@@ -1,38 +1,70 @@
-using DeepDiff;
-using Serilog;
+using DeepDiff.Configuration;
+using DeepDiff.UnitTest.Entities;
+using DeepDiff.UnitTest.Entities.ActivationControl;
 using System.Linq;
-using TestAppNet5.Entities;
-using TestAppNet5.Entities.ActivationControl;
+using Xunit;
 
-namespace TestAppNet5
+namespace DeepDiff.UnitTest.ActivationControl
 {
-    public class Calculate : ICalculate
+    public class ActivationControlTests
     {
-        private ILogger Logger { get; }
-        private IDeepDiff DeepDiff { get; }
-
-        public Calculate(ILogger logger, IDeepDiff deepDiff)
+        [Fact]
+        public void Test()
         {
-            Logger = logger;
-            DeepDiff = deepDiff;
-        }
-
-        public void Perform(Date deliveryDate)
-        {
-            Logger.Information($"Start calculation for {deliveryDate}");
+            var deliveryDate = Date.Today;
 
             var existing = Generate(deliveryDate, ActivationControlStatus.Validated, "INTERNAL", "TSO");
             var calculated = Generate(deliveryDate, ActivationControlStatus.Calculated, null, null);
             calculated.TotalEnergyToBeSupplied = 5m;
             calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
-            var results =  DeepDiff.Diff(new[] { existing }, new[] { calculated }).ToArray();
+            //
+            var deepDiff = CreateDeepDiff();
+            var results = deepDiff.Diff(new[] { existing }, new[] { calculated }).ToArray();
 
-            Logger.Information($"#results: {results.Length}");
+            //
+            Assert.Single(results);
+            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(ActivationControlStatus.Calculated, results.Single().Status);
+            Assert.Equal("INTERNAL", results.Single().InternalComment);
+            Assert.Equal("TSO", results.Single().TsoComment);
+            Assert.Single(results.Single().ActivationControlDetails);
+            Assert.Single(results.Single().ActivationControlDetails.Single().DpDetails);
+            Assert.Empty(results.Single().ActivationControlDetails.Single().TimestampDetails);
+            Assert.Single(results.Single().ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
+            Assert.Equal(-7, results.Single().ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
         }
 
-        private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
-            => new ()
+        private static IDeepDiff CreateDeepDiff()
+        {
+            var diffConfiguration = new DiffConfiguration();
+            diffConfiguration.PersistEntity<Entities.ActivationControl.ActivationControl>()
+                .HasKey(x => new { x.Day, x.ContractReference })
+                .HasMany(x => x.ActivationControlDetails)
+                .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
+                .HasAdditionalValuesToCopy(x => x.Status);
+            diffConfiguration.PersistEntity<ActivationControlDetail>()
+                .HasKey(x => x.StartsOn)
+                .HasValues(x => new { x.OfferedVolumeUp, x.OfferedVolumeDown, x.OfferedVolumeForRedispatchingUp, x.OfferedVolumeForRedispatchingDown, x.PermittedDeviationUp, x.PermittedDeviationDown, x.RampingRate, x.HasJump })
+                .HasMany(x => x.TimestampDetails)
+                .HasMany(x => x.DpDetails);
+            diffConfiguration.PersistEntity<ActivationControlTimestampDetail>()
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded });
+            diffConfiguration.PersistEntity<ActivationControlDpDetail>()
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.DeliveryPointName, x.Direction, x.DeliveryPointType, x.TotalEnergySupplied })
+                .HasMany(x => x.TimestampDetails);
+            diffConfiguration.PersistEntity<ActivationControlDpTimestampDetail>()
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied });
+
+            var deepDiff = diffConfiguration.CreateDeepDiff();
+            return deepDiff;
+        }
+
+        private static Entities.ActivationControl.ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
+            => new()
             {
                 Day = deliveryDate,
                 ContractReference = "CREF",

@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityComparer.Extensions.Microsoft.DependencyInjection\EntityComparer.Extensions.Microsoft.DependencyInjection.csproj" />
-    <ProjectReference Include="..\EntityComparer\EntityComparer.csproj" />
+    <ProjectReference Include="..\DeepDiff.Extensions.Microsoft.DependencyInjection\DeepDiff.Extensions.Microsoft.DependencyInjection.csproj" />
+    <ProjectReference Include="..\DeepDiff\DeepDiff.csproj" />
   </ItemGroup>
 
 </Project>
