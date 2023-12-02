@@ -90,25 +90,25 @@ public class LoadNoNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.Diff(ExistingEntities, NewEntities).ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHastablePrecompileComparerDeepDiff.Diff(ExistingEntities, NewEntities).ToList();
+        var results = NoHastablePrecompileComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
     }
 
     [Benchmark]
     public void HastableNaiveComparerDiff()
     {
-        var results = HastableNaiveComparerDeepDiff.Diff(ExistingEntities, NewEntities).ToList();
+        var results = HastableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
     }
 
     [Benchmark]
     public void HashtablePrecompileComparerDiff()
     {
-        var results = HashtablePrecompileComparerDeepDiff.Diff(ExistingEntities, NewEntities).ToList();
+        var results = HashtablePrecompileComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
     }
 
     private void GenerateIdentical()

@@ -9,7 +9,7 @@ namespace DeepDiff.UnitTest.ActivationControl
     public class ActivationControlTests
     {
         [Fact]
-        public void Test()
+        public void Single()
         {
             var deliveryDate = Date.Today;
 
@@ -20,19 +20,19 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(new[] { existing }, new[] { calculated }).ToArray();
+            var result = deepDiff.DiffSingle(existing, calculated);
 
             //
-            Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
-            Assert.Equal(ActivationControlStatus.Calculated, results.Single().Status);
-            Assert.Equal("INTERNAL", results.Single().InternalComment);
-            Assert.Equal("TSO", results.Single().TsoComment);
-            Assert.Single(results.Single().ActivationControlDetails);
-            Assert.Single(results.Single().ActivationControlDetails.Single().DpDetails);
-            Assert.Empty(results.Single().ActivationControlDetails.Single().TimestampDetails);
-            Assert.Single(results.Single().ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
-            Assert.Equal(-7, results.Single().ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
+            Assert.NotNull(result);
+            Assert.Equal(PersistChange.Update, result.PersistChange);
+            Assert.Equal(ActivationControlStatus.Calculated, result.Status);
+            Assert.Equal("INTERNAL", result.InternalComment);
+            Assert.Equal("TSO", result.TsoComment);
+            Assert.Single(result.ActivationControlDetails);
+            Assert.Single(result.ActivationControlDetails.Single().DpDetails);
+            Assert.Empty(result.ActivationControlDetails.Single().TimestampDetails);
+            Assert.Single(result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
+            Assert.Equal(-7, result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
         }
 
         private static IDeepDiff CreateDeepDiff()
