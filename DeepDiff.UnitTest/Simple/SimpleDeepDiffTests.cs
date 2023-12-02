@@ -10,7 +10,146 @@ namespace DeepDiff.UnitTest.Simple;
 public partial class SimpleDeepDiffTests
 {
     [Fact]
-    public void TestMultipleChanges()
+    public void ModificationsInNested_SingleEntity()
+    {
+        var existingEntity = new EntityLevel0
+        {
+            Index = 1,
+
+            Id = Guid.NewGuid(),
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 1,
+            Penalty = 3,
+            Comment = $"Existing",
+            AdditionalValueToCopy = $"ExistingAdditionalValue",
+            SubEntities = Enumerable.Range(0, 5).Select(y => new EntityLevel1
+            {
+                Index = y,
+
+                Id = Guid.NewGuid(),
+                Timestamp = DateTime.Today.AddMinutes(y),
+                Power = y,
+                Price = y % 2 == 0 ? null : y * 3,
+                Comment = $"Existing_{y}",
+            }).ToList(),
+        };
+
+        var newEntity = new EntityLevel0
+        {
+            Index = 1,
+
+            Id = Guid.NewGuid(),
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 1,
+            Penalty = 3,
+            Comment = $"Existing",
+            AdditionalValueToCopy = $"ExistingAdditionalValue",
+            SubEntities = Enumerable.Range(1, 5).Select(y => new EntityLevel1
+            {
+                Index = y,
+
+                Id = Guid.NewGuid(),
+                Timestamp = DateTime.Today.AddMinutes(y),
+                Power = 2*y,
+                Price = y % 2 == 0 ? null : y * 3,
+                Comment = $"New_{y}",
+            }).ToList(),
+        };
+
+        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        diffConfiguration.PersistEntity<EntityLevel0>()
+            .HasKey(x => new { x.StartsOn, x.Direction })
+            .HasValues(x => new { x.RequestedPower, x.Penalty })
+            .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
+            .HasMany(x => x.SubEntities);
+        diffConfiguration.PersistEntity<EntityLevel1>()
+            .HasKey(x => x.Timestamp)
+            .HasValues(x => new { x.Power, x.Price });
+
+        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var result = deepDiff.DiffSingle(existingEntity, newEntity);
+
+        Assert.NotNull(result);
+        Assert.Equal(PersistChange.Update, result.PersistChange);
+        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
+        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
+        Assert.Equal(4, result.SubEntities.Where(x => x.PersistChange == PersistChange.Update).Count());
+    }
+
+    [Fact]
+    public void ModificationsOnRoot_SingleEntity()
+    {
+        var existingEntity = new EntityLevel0
+        {
+            Index = 1,
+
+            Id = Guid.NewGuid(),
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 1,
+            Penalty = 3,
+            Comment = $"Existing",
+            AdditionalValueToCopy = $"ExistingAdditionalValue",
+            SubEntities = Enumerable.Range(0, 5).Select(y => new EntityLevel1
+            {
+                Index = y,
+
+                Id = Guid.NewGuid(),
+                Timestamp = DateTime.Today.AddMinutes(y),
+                Power = y,
+                Price = y % 2 == 0 ? null : y * 3,
+                Comment = $"Existing_{y}",
+            }).ToList(),
+        };
+
+        var newEntity = new EntityLevel0
+        {
+            Index = 1,
+
+            Id = Guid.NewGuid(),
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 1,
+            Penalty = 7,
+            Comment = $"New",
+            AdditionalValueToCopy = $"NewAdditionalValue",
+            SubEntities = Enumerable.Range(0, 5).Select(y => new EntityLevel1
+            {
+                Index = y,
+
+                Id = Guid.NewGuid(),
+                Timestamp = DateTime.Today.AddMinutes(y),
+                Power = y,
+                Price = y % 2 == 0 ? null : y * 3,
+                Comment = $"Existing_{y}",
+            }).ToList(),
+        };
+
+        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        diffConfiguration.PersistEntity<EntityLevel0>()
+            .HasKey(x => new { x.StartsOn, x.Direction })
+            .HasValues(x => new { x.RequestedPower, x.Penalty })
+            .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
+            .HasMany(x => x.SubEntities);
+        diffConfiguration.PersistEntity<EntityLevel1>()
+            .HasKey(x => x.Timestamp)
+            .HasValues(x => new { x.Power, x.Price });
+
+        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var result = deepDiff.DiffSingle(existingEntity, newEntity);
+
+        Assert.NotNull(result);
+        Assert.Equal(PersistChange.Update, result.PersistChange);
+        Assert.Equal(7, result.Penalty);
+        Assert.Equal("NewAdditionalValue", result.AdditionalValueToCopy);
+        Assert.Equal("Existing", result.Comment);
+        Assert.Empty(result.SubEntities);
+    }
+
+    [Fact]
+    public void TestMultipleChanges_MultipleEntities()
     {
         var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel0
         {
@@ -69,7 +208,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Equal(11, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));

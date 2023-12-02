@@ -60,7 +60,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Update, results.Single().PersistChange);
@@ -120,7 +120,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Update, results.Single().PersistChange);

@@ -22,7 +22,7 @@ var deepDiff = diffConfiguration.CreateDeepDiff();
 ```
 Then in your application code
 ```csharp
-var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 ```
 Sample entities definition
 ```csharp

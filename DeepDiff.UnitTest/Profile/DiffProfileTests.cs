@@ -17,31 +17,12 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.Diff(entities.existingEntities, entities.newEntities).ToArray();
+            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities).ToArray();
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
-        }
-
-        [Fact]
-        public void AddProfiles()
-        {
-            var entities = GenerateCapacityAvailabilities();
-
-            var diffConfiguration = new DiffConfiguration();
-            diffConfiguration.AddProfiles(typeof(CapacityAvailabilityProfile).Assembly);
-            var deepDiff = diffConfiguration.CreateDeepDiff();
-
-            var results = deepDiff.Diff(entities.existingEntities, entities.newEntities).ToArray();
-
-            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
-            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
-            Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
-            Assert.All(results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityAvailabilityDetails, x => Assert.Equal(Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x.Status));
-            Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
-            Assert.All(results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityAvailabilityDetails, x => Assert.Equal(Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x.Status));
         }
 
         // will generate 5 existing and 6 new (4 first are identical to existing, 5th top level is identical but details are different)

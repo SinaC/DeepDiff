@@ -25,9 +25,9 @@ public class Calculate : ICalculate
         calculated.TotalEnergyToBeSupplied = 5m;
         calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
-        var results =  DeepDiff.Diff(new[] { existing }, new[] { calculated }).ToArray();
+        var result =  DeepDiff.DiffSingle(existing, calculated);
 
-        Logger.Information($"#results: {results.Length}");
+        Logger.Information($"result?: {result != null}");
     }
 
     private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)

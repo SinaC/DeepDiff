@@ -17,6 +17,14 @@ namespace DeepDiff
             Configuration = configuration;
         }
 
+        public TEntity DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+            where TEntity : class
+        {
+            if (!Configuration.DiffEntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var diffEntityConfiguration))
+                throw new MissingConfigurationException(typeof(TEntity));
+            return (TEntity)DiffSingle(diffEntityConfiguration, existingEntity, newEntity);
+        }
+
         // for each existing entity
         //      if entity found with same keys in new entities
         //          if values not the same
@@ -35,13 +43,13 @@ namespace DeepDiff
         //          mark new as Inserted
         //          mark new.Many as Inserted
         //          mark new.One as Inserted
-        public IEnumerable<TEntity> Diff<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+        public IEnumerable<TEntity> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
             where TEntity : class
         {
             if (!Configuration.DiffEntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var diffEntityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
-            var diffEntities = Diff(diffEntityConfiguration, existingEntities, newEntities, Configuration.UseHashtable);
+            var diffEntities = DiffMany(diffEntityConfiguration, existingEntities, newEntities, Configuration.UseHashtable);
             foreach (var diffEntity in diffEntities)
                 yield return (TEntity)diffEntity;
         }
@@ -49,7 +57,63 @@ namespace DeepDiff
         private bool CheckIfHashtablesShouldBeUsedUsingThreshold(IEnumerable<object> existingEntities)
             => existingEntities.Count() >= Configuration.HashtableThreshold;
 
-        private IEnumerable<object> Diff(DiffEntityConfiguration diffEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, bool useHashtableForThatLevel)
+        private object DiffSingle(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity)
+        {
+            // no entity
+            if (existingEntity == null && newEntity == null)
+                return null;
+
+            // no existing entity -> return new entity as inserted
+            if (existingEntity == null)
+            {
+                MarkEntityAndPropagateUsingNavigation(diffEntityConfiguration, newEntity, DiffEntityOperation.Insert);
+                return newEntity;
+            }
+
+            // if no new entity -> return existing as deleted
+            if (newEntity == null)
+            {
+                MarkEntityAndPropagateUsingNavigation(diffEntityConfiguration, existingEntity, DiffEntityOperation.Delete);
+                return existingEntity;
+            }
+
+            // was existing and is new -> maybe an update
+            bool areKeysEqual = false;
+            if (diffEntityConfiguration.KeyConfiguration.KeyProperties != null)
+            {
+                areKeysEqual = diffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                    ? diffEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
+                    : diffEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
+                if (!areKeysEqual) // keys are different -> copy keys
+                    diffEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
+            }
+
+            bool areNewValuesEquals = false;
+            if (diffEntityConfiguration.ValuesConfiguration.ValuesProperties != null)
+            {
+                areNewValuesEquals = diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                    ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
+                    : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
+                // new values are different -> copy new values and additional values to copy
+                if (!areNewValuesEquals)
+                {
+                    diffEntityConfiguration.ValuesConfiguration.ValuesProperties.CopyPropertyValues(existingEntity, newEntity);
+                    diffEntityConfiguration.AdditionalValuesToCopyConfiguration?.AdditionalValuesToCopyProperties.CopyPropertyValues(existingEntity, newEntity);
+                }
+            }
+
+            var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity);
+
+            if (!areKeysEqual || !areNewValuesEquals || diffModificationsFound) // update
+            {
+                MarkEntity(diffEntityConfiguration, existingEntity, DiffEntityOperation.Update);
+                return existingEntity;
+            }
+
+            return null; // not insert/update/delete
+        }
+
+        private IEnumerable<object> DiffMany(DiffEntityConfiguration diffEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, bool useHashtableForThatLevel)
         {
             // no entities to diff
             if ((existingEntities == null || !existingEntities.Any()) && (newEntities == null || !newEntities.Any()))
@@ -194,7 +258,7 @@ namespace DeepDiff
             // diff children
             var existingChildren = (IEnumerable<object>)existingEntityChildren!;
             var newChildren = (IEnumerable<object>)newEntityChildren!;
-            var diffChildren = Diff(childDiffEntityConfiguration, existingChildren, newChildren, navigationManyConfiguration.UseHashtable);
+            var diffChildren = DiffMany(childDiffEntityConfiguration, existingChildren, newChildren, navigationManyConfiguration.UseHashtable);
 
             // convert diff children from IEnumerable<object> to List<ChildType>
             var listType = typeof(List<>).MakeGenericType(childType);

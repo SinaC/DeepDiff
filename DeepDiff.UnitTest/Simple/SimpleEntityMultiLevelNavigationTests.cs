@@ -18,7 +18,7 @@ namespace DeepDiff.UnitTest.Simple
             var newEntities = GenerateEntities(DateTime.Now).ToList();
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             Assert.Equal(5, results.Length);
             Assert.Equal(25, results.SelectMany(x => x.SubEntities).Count());
@@ -51,7 +51,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -83,7 +83,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -115,7 +115,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -148,7 +148,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities.RemoveAt(2);
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -178,7 +178,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntity.Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -220,7 +220,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -251,7 +251,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
@@ -282,7 +282,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var results = deepDiff.Diff(existingEntities, newEntities).ToArray();
+            var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
             // Entity0: 4th -> updated
             Assert.Single(results);
