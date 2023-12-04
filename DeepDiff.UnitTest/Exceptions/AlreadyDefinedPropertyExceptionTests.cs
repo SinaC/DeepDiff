@@ -23,7 +23,7 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasAdditionalValuesToCopy(x => x.StartsOn);
+                .OnUpdate(cfg => cfg.CopyValues(x => x.StartsOn));
 
             Assert.Throws<AlreadyDefinedPropertyException>(() => diffConfiguration.CreateDeepDiff());
         }
@@ -35,7 +35,7 @@ namespace DeepDiff.UnitTest.Exceptions
             diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.Penalty })
-                .HasAdditionalValuesToCopy(x => x.Penalty);
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Penalty));
 
             Assert.Throws<AlreadyDefinedPropertyException>(() => diffConfiguration.CreateDeepDiff());
         }

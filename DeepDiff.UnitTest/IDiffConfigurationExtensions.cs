@@ -9,17 +9,17 @@ public static class IDiffConfigurationExtensions
         where TEntity : PersistEntity
     {
         return diffConfiguration.Entity<TEntity>()
-            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
     }
 
     public static IDiffEntityConfiguration<TEntity> AsPersistEntity<TEntity>(this IDiffEntityConfiguration<TEntity> diffEntityConfiguration)
         where TEntity : PersistEntity
     {
         return diffEntityConfiguration
-            .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-            .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-            .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
     }
 }

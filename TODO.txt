@@ -1,6 +1,14 @@
-OnUpdate should also be able to change other fields
-	-> Action instead of propertyinfo ?
-multiple OnUpdate ?
+continue OnUpdate
+
+in DiffSingle
+	if keys are different
+		DELETE existing
+		Insert new
+in DiffUsingNavigationOne
+	if keys are different
+		DELETE existing
+		INSERT new
+
 
 more tests
 	complex scenario (see aFRR Activation Control)

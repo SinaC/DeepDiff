@@ -69,14 +69,6 @@ namespace DeepDiff.Configuration
             return config;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasAdditionalValuesToCopy<TValue>(Expression<Func<TEntity, TValue>> additionalValuesToCopyExpression)
-        {
-            // TODO: can only be set once
-            var additionalValuesToCopyProperties = additionalValuesToCopyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var config = Configuration.SetAdditionalValuesToCopy(additionalValuesToCopyProperties);
-            return this;
-        }
-
         public IDiffEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
             where TTargetEntity : class
         {
@@ -109,22 +101,27 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> MarkAsInserted<TMember>(Expression<Func<TEntity, TMember>> destinationMember,
-            TMember value)
+        public IDiffEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction)
         {
-            var config = Configuration.SetMarkAsInserted(destinationMember.GetSimplePropertyAccess().Single(), value!);
+            var config = Configuration.GetOrSetOnUpdate();
+            var configOfT = new UpdateConfiguration<TEntity>(config);
+            updateConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> MarkAsUpdated<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
+        public IDiffEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> InsertConfigurationAction)
         {
-            var config = Configuration.SetMarkAsUpdated(destinationMember.GetSimplePropertyAccess().Single(), value!);
+            var config = Configuration.GetOrSetOnInsert();
+            var configOfT = new InsertConfiguration<TEntity>(config);
+            InsertConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> MarkAsDeleted<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
+        public IDiffEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> DeleteConfigurationAction)
         {
-            var config = Configuration.SetMarkAsDeleted(destinationMember.GetSimplePropertyAccess().Single(), value!);
+            var config = Configuration.GetOrSetOnDelete();
+            var configOfT = new DeleteConfiguration<TEntity>(config);
+            DeleteConfigurationAction?.Invoke(configOfT);
             return this;
         }
     }

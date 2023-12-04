@@ -5,7 +5,7 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Exceptions
 {
-    public class MissingMarkAsConfigurationExceptionTests
+    public class MissingOperationConfigurationExceptionTests
     {
         [Fact]
         public void MissingInsertAndUpdateAndDelete()
@@ -16,7 +16,7 @@ namespace DeepDiff.UnitTest.Exceptions
 
             var exception = Assert.Throws<AggregateException>(() => diffConfiguration.CreateDeepDiff());
             Assert.Equal(3, exception.InnerExceptions.Count);
-            Assert.All(exception.InnerExceptions, x => Assert.IsType<MissingMarkAsConfigurationException>(x));
+            Assert.All(exception.InnerExceptions, x => Assert.IsAssignableFrom<MissingOperationConfigurationException>(x));
         }
 
         [Fact]
@@ -25,11 +25,11 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsDeleted(x => x.PersistChange, Entities.PersistChange.Delete);
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Delete));
 
             var exception = Assert.Throws<AggregateException>(() => diffConfiguration.CreateDeepDiff());
             Assert.Equal(2, exception.InnerExceptions.Count);
-            Assert.All(exception.InnerExceptions, x => Assert.IsType<MissingMarkAsConfigurationException>(x));
+            Assert.All(exception.InnerExceptions, x => Assert.IsAssignableFrom<MissingOperationConfigurationException>(x));
         }
 
         [Fact]
@@ -38,11 +38,11 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsUpdated(x => x.PersistChange, Entities.PersistChange.Update);
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Update));
 
             var exception = Assert.Throws<AggregateException>(() => diffConfiguration.CreateDeepDiff());
             Assert.Equal(2, exception.InnerExceptions.Count);
-            Assert.All(exception.InnerExceptions, x => Assert.IsType<MissingMarkAsConfigurationException>(x));
+            Assert.All(exception.InnerExceptions, x => Assert.IsAssignableFrom<MissingOperationConfigurationException>(x));
         }
 
         [Fact]
@@ -51,11 +51,11 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsInserted(x => x.PersistChange, Entities.PersistChange.Insert);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Insert));
 
             var exception = Assert.Throws<AggregateException>(() => diffConfiguration.CreateDeepDiff());
             Assert.Equal(2, exception.InnerExceptions.Count);
-            Assert.All(exception.InnerExceptions, x => Assert.IsType<MissingMarkAsConfigurationException>(x));
+            Assert.All(exception.InnerExceptions, x => Assert.IsAssignableFrom<MissingOperationConfigurationException>(x));
         }
 
         [Fact]
@@ -64,10 +64,10 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsUpdated(x => x.PersistChange, Entities.PersistChange.Update)
-                .MarkAsDeleted(x => x.PersistChange, Entities.PersistChange.Delete);
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Delete));
 
-            Assert.Throws<MissingMarkAsConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Throws<MissingOnInsertConfigurationException>(() => diffConfiguration.CreateDeepDiff());
         }
 
         [Fact]
@@ -76,10 +76,10 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsInserted(x => x.PersistChange, Entities.PersistChange.Insert)
-                .MarkAsDeleted(x => x.PersistChange, Entities.PersistChange.Delete);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Delete));
 
-            Assert.Throws<MissingMarkAsConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Throws<MissingOnUpdateConfigurationException>(() => diffConfiguration.CreateDeepDiff());
         }
 
         [Fact]
@@ -88,10 +88,10 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
-                .MarkAsInserted(x => x.PersistChange, Entities.PersistChange.Insert)
-                .MarkAsUpdated(x => x.PersistChange, Entities.PersistChange.Update);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, Entities.PersistChange.Update));
 
-            Assert.Throws<MissingMarkAsConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Throws<MissingOnDeleteConfigurationException>(() => diffConfiguration.CreateDeepDiff());
         }
     }
 }
