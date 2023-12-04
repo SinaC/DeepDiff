@@ -9,15 +9,15 @@ diffConfiguration.Entity<Entity>()
    .HasKey(x => new { x.StartsOn, x.Name })
    .HasValues(x => new { x.Price, x.Volume })
    .HasMany(x => x.SubEntities)
-   .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-   .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-   .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);;
-diffConfiguration.PersistEntity<SubEntity>()
+   .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+   .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+   .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
+diffConfiguration.Entity<SubEntity>()
    .HasKey(x => x.SubName)
    .HasValues(x => x.Energy)
-   .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-   .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-   .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);;
+   .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+   .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+   .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
 var deepDiff = diffConfiguration.CreateDeepDiff();
 ```
 Then in your application code

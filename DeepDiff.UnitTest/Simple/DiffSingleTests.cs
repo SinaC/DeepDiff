@@ -62,7 +62,7 @@ namespace DeepDiff.UnitTest.Simple
             diffConfiguration.PersistEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
+                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
                 .HasMany(x => x.SubEntities);
             diffConfiguration.PersistEntity<EntityLevel1>()
                 .HasKey(x => x.Timestamp)
@@ -131,7 +131,7 @@ namespace DeepDiff.UnitTest.Simple
             diffConfiguration.PersistEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
+                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
                 .HasMany(x => x.SubEntities);
             diffConfiguration.PersistEntity<EntityLevel1>()
                 .HasKey(x => x.Timestamp)
@@ -201,7 +201,7 @@ namespace DeepDiff.UnitTest.Simple
             diffConfiguration.PersistEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .HasAdditionalValuesToCopy(x => new { x.AdditionalValueToCopy })
+                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
                 .HasMany(x => x.SubEntities);
             diffConfiguration.PersistEntity<EntityLevel1>()
                 .HasKey(x => x.Timestamp)

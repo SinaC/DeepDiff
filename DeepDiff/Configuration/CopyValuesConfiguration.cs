@@ -5,6 +5,6 @@ namespace DeepDiff.Configuration
 {
     internal sealed class CopyValuesConfiguration
     {
-        public IReadOnlyCollection<PropertyInfo> CopyValuesConfigurationProperties { get; set; } = null!;
+        public IReadOnlyCollection<PropertyInfo> CopyValuesProperties { get; set; } = null!;
     }
 }

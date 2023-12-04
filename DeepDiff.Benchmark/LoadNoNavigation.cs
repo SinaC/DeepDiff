@@ -24,9 +24,9 @@ public class LoadNoNavigation
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
-                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHashtableNaiveComparerDeepDiff = noHashtableNoPrecompiledComparerDiffConfiguration.CreateDeepDiff();
 
         var noHastablePrecompileComparerDiffConfiguration = new DiffConfiguration();
@@ -35,9 +35,9 @@ public class LoadNoNavigation
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
-                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHastablePrecompileComparerDeepDiff = noHastablePrecompileComparerDiffConfiguration.CreateDeepDiff();
 
         var hastableNoPrecomileComparerDiffConfiguration = new DiffConfiguration();
@@ -45,9 +45,9 @@ public class LoadNoNavigation
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
-                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         HastableNaiveComparerDeepDiff = hastableNoPrecomileComparerDiffConfiguration.CreateDeepDiff();
 
         var hashtableDiffConfiguration = new DiffConfiguration();
@@ -55,9 +55,9 @@ public class LoadNoNavigation
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
-                .MarkAsInserted(x => x.PersistChange, PersistChange.Insert)
-                .MarkAsUpdated(x => x.PersistChange, PersistChange.Update)
-                .MarkAsDeleted(x => x.PersistChange, PersistChange.Delete);
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         HashtablePrecompileComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
     }
 

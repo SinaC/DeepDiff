@@ -20,11 +20,11 @@ namespace DeepDiff.Configuration
             return config;
         }
 
-        public CopyValuesConfiguration SetCopyValuesConfiguration(IEnumerable<PropertyInfo> copyValuesConfigurationProperties)
+        public CopyValuesConfiguration SetCopyValuesConfiguration(IEnumerable<PropertyInfo> copyValuesProperties)
         {
             var config = new CopyValuesConfiguration
             {
-                CopyValuesConfigurationProperties = copyValuesConfigurationProperties.ToArray()
+                CopyValuesProperties = copyValuesProperties.ToArray()
             };
             CopyValuesConfiguration = config;
             return config;

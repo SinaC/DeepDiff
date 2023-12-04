@@ -10,7 +10,7 @@ public class ActivationControlProfile : DiffProfile
             .AsPersistEntity()
             .HasKey(x => new { x.Day, x.ContractReference })
             .HasValues(x => new {x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount})
-            .HasAdditionalValuesToCopy(x => x.Status)
+            .OnUpdate(cfg => cfg.CopyValues(x => x.Status))
             .HasMany(x => x.ActivationControlDetails);
         CreateDiffEntityConfiguration<Entities.ActivationControl.ActivationControlDetail>()
             .AsPersistEntity()

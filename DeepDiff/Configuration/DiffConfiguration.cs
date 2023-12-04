@@ -3,6 +3,7 @@ using DeepDiff.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 
 namespace DeepDiff.Configuration
@@ -101,10 +102,9 @@ namespace DeepDiff.Configuration
 
                 ValidateKeyConfiguration(type, diffEntityConfiguration, exceptions);
                 ValidateValuesConfiguration(type, diffEntityConfiguration, exceptions);
-                ValidateAdditionalValuesToCopy(type, diffEntityConfiguration, exceptions);
                 ValidateNavigationManyConfiguration(type, diffEntityConfiguration, DiffEntityConfigurationByTypes, exceptions);
                 ValidateNavigationOneConfiguration(type, diffEntityConfiguration, DiffEntityConfigurationByTypes, exceptions);
-                //ValidateMarkAsConfiguration(type, diffEntityConfiguration, exceptions);
+                ValidateOperationConfiguration(type, diffEntityConfiguration, exceptions);
             }
             if (exceptions.Count == 1)
                 throw exceptions.Single();
@@ -158,38 +158,6 @@ namespace DeepDiff.Configuration
             }
         }
 
-        private static void ValidateAdditionalValuesToCopy(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
-        {
-            var configuration = diffEntityConfiguration.AdditionalValuesToCopyConfiguration;
-            if (configuration != null)
-            {
-                // cannot be empty
-                if (configuration.AdditionalValuesToCopyProperties == null || configuration.AdditionalValuesToCopyProperties.Count == 0)
-                    exceptions.Add(new EmptyConfigurationException(entityType, NameOf<AdditionalValuesToCopyConfiguration>()));
-                else
-                {
-                    // cannot contain duplicates
-                    var duplicates = configuration.AdditionalValuesToCopyProperties.FindDuplicate().ToArray();
-                    if (duplicates.Length > 0)
-                        exceptions.Add(new DuplicatePropertyConfigurationException(entityType, NameOf<AdditionalValuesToCopyConfiguration>(), duplicates.Select(x => x.Name)));
-                    // cannot be defined in keys
-                    if (diffEntityConfiguration.KeyConfiguration?.KeyProperties != null)
-                    {
-                        var alreadyDefinedInKey = configuration.AdditionalValuesToCopyProperties.Intersect(diffEntityConfiguration.KeyConfiguration.KeyProperties).ToArray();
-                        if (alreadyDefinedInKey.Length > 0)
-                            exceptions.Add(new AlreadyDefinedPropertyException(entityType, NameOf<AdditionalValuesToCopyConfiguration>(), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name)));
-                    }
-                    // cannot be found in values
-                    if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
-                    {
-                        var alreadyDefinedInKey = configuration.AdditionalValuesToCopyProperties.Intersect(diffEntityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
-                        if (alreadyDefinedInKey.Length > 0)
-                            exceptions.Add(new AlreadyDefinedPropertyException(entityType, NameOf<AdditionalValuesToCopyConfiguration>(), NameOf<ValuesConfiguration>(), alreadyDefinedInKey.Select(x => x.Name)));
-                    }
-                }
-            }
-        }
-
         private static void ValidateNavigationManyConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes, List<Exception> exceptions)
         {
             if (diffEntityConfiguration.NavigationManyConfigurations != null)
@@ -222,19 +190,78 @@ namespace DeepDiff.Configuration
             }
         }
 
-        private static void ValidateMarkAsConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
+        private static void ValidateOperationConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
         {
-            var configuration = diffEntityConfiguration.MarkAsByOperation;
-            ValidateMarkAsConfiguration(entityType, configuration, DiffEntityOperation.Insert, exceptions);
-            ValidateMarkAsConfiguration(entityType, configuration, DiffEntityOperation.Update, exceptions);
-            ValidateMarkAsConfiguration(entityType, configuration, DiffEntityOperation.Delete, exceptions);
+            ValidateUpdateConfiguration(entityType, diffEntityConfiguration, exceptions);
+            ValidateInsertConfiguration(entityType, diffEntityConfiguration, exceptions);
+            ValidateDeleteConfiguration(entityType, diffEntityConfiguration, exceptions);
         }
 
-        private static void ValidateMarkAsConfiguration(Type entityType, IDictionary<DiffEntityOperation, MarkAsConfiguration> markAsConfiguration, DiffEntityOperation diffEntityOperation, List<Exception> exceptions)
+        private static void ValidateUpdateConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
         {
-            var found = markAsConfiguration.ContainsKey(diffEntityOperation);
-            if (!found)
-                exceptions.Add(new MissingMarkAsConfigurationException(entityType, diffEntityOperation));
+            var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
+            if (diffEntityConfiguration.UpdateConfiguration == null)
+                exceptions.Add(new MissingOnUpdateConfigurationException(entityType));
+            else
+            {
+                // set value
+                if (updateConfiguration.SetValueConfiguration == null)
+                    exceptions.Add(new MissingSetValueConfigurationException(entityType, "OnUpdate"));
+
+                // copy values
+                var copyValuesConfigurations = updateConfiguration.CopyValuesConfiguration;
+                if (copyValuesConfigurations != null)
+                {
+                    // cannot be empty
+                    if (copyValuesConfigurations.CopyValuesProperties == null || copyValuesConfigurations.CopyValuesProperties.Count == 0)
+                        exceptions.Add(new EmptyConfigurationException(entityType, NameOf<CopyValuesConfiguration>()));
+                    else
+                    {
+                        // cannot contain duplicates
+                        var duplicates = copyValuesConfigurations.CopyValuesProperties.FindDuplicate().ToArray();
+                        if (duplicates.Length > 0)
+                            exceptions.Add(new DuplicatePropertyConfigurationException(entityType, NameOf<CopyValuesConfiguration>(), duplicates.Select(x => x.Name)));
+                        // cannot be defined in keys
+                        if (diffEntityConfiguration.KeyConfiguration?.KeyProperties != null)
+                        {
+                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(diffEntityConfiguration.KeyConfiguration.KeyProperties).ToArray();
+                            if (alreadyDefinedInKey.Length > 0)
+                                exceptions.Add(new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name)));
+                        }
+                        // cannot be found in values
+                        if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
+                        {
+                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(diffEntityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
+                            if (alreadyDefinedInKey.Length > 0)
+                                exceptions.Add(new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<ValuesConfiguration>(), alreadyDefinedInKey.Select(x => x.Name)));
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ValidateInsertConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
+        {
+            var insertConfiguration = diffEntityConfiguration.InsertConfiguration;
+            if (insertConfiguration == null)
+                exceptions.Add(new MissingOnInsertConfigurationException(entityType));
+            else
+            {
+                if (insertConfiguration.SetValueConfiguration == null)
+                    exceptions.Add(new MissingSetValueConfigurationException(entityType, "OnInsert"));
+            }
+        }
+
+        private static void ValidateDeleteConfiguration(Type entityType, DiffEntityConfiguration diffEntityConfiguration, List<Exception> exceptions)
+        {
+            var deleteConfiguration = diffEntityConfiguration.DeleteConfiguration;
+            if (deleteConfiguration == null)
+                exceptions.Add(new MissingOnDeleteConfigurationException(entityType));
+            else
+            {
+                if (deleteConfiguration.SetValueConfiguration == null)
+                    exceptions.Add(new MissingSetValueConfigurationException(entityType, "OnDelete"));
+            }
         }
 
         internal static string NameOf<T>()

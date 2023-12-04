@@ -42,7 +42,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasKey(x => new { x.Day, x.ContractReference })
                 .HasMany(x => x.ActivationControlDetails)
                 .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
-                .HasAdditionalValuesToCopy(x => x.Status);
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
             diffConfiguration.PersistEntity<ActivationControlDetail>()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.OfferedVolumeUp, x.OfferedVolumeDown, x.OfferedVolumeForRedispatchingUp, x.OfferedVolumeForRedispatchingDown, x.PermittedDeviationUp, x.PermittedDeviationDown, x.RampingRate, x.HasJump })

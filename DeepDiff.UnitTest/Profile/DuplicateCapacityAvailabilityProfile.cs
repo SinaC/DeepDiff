@@ -15,13 +15,13 @@ namespace DeepDiff.UnitTest.Profile
                 .AsPersistEntity()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
-                .HasAdditionalValuesToCopy(x => x.Status);
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
 
             CreateDiffEntityConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>() // duplicate
                 .AsPersistEntity()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
-                .HasAdditionalValuesToCopy(x => x.Status);
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
         }
     }
 }

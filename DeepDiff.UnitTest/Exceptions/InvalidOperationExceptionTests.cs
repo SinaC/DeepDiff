@@ -50,7 +50,7 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             var diffEntityConfiguration = diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>();
 
-            Assert.Throws<InvalidOperationException>(() => diffEntityConfiguration.HasAdditionalValuesToCopy(x => x));
+            Assert.Throws<InvalidOperationException>(() => diffEntityConfiguration.OnUpdate(cfg => cfg.CopyValues(x => x)));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace DeepDiff.UnitTest.Exceptions
             var diffConfiguration = new DiffConfiguration();
             var diffEntityConfiguration = diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>();
 
-            Assert.Throws<InvalidOperationException>(() => diffEntityConfiguration.HasAdditionalValuesToCopy(x => 7));
+            Assert.Throws<InvalidOperationException>(() => diffEntityConfiguration.OnUpdate(cfg => cfg.CopyValues(x => 7)));
         }
 
         [Fact]

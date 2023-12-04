@@ -13,7 +13,9 @@ namespace DeepDiff.Configuration
         public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
         public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
         public IList<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
-       public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
+        public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
+        public InsertConfiguration InsertConfiguration { get; private set; } = null!;
+        public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
 
         public DiffEntityConfiguration(Type entityType)
         {
@@ -64,10 +66,22 @@ namespace DeepDiff.Configuration
             return navigationOneConfiguration;
         }
 
-        public UpdateConfiguration SetOnUpdate()
+        public UpdateConfiguration GetOrSetOnUpdate()
         {
-            UpdateConfiguration = new UpdateConfiguration();
+            UpdateConfiguration = UpdateConfiguration ?? new UpdateConfiguration();
             return UpdateConfiguration;
+        }
+
+        public InsertConfiguration GetOrSetOnInsert()
+        {
+            InsertConfiguration = InsertConfiguration ?? new InsertConfiguration();
+            return InsertConfiguration;
+        }
+
+        public DeleteConfiguration GetOrSetOnDelete()
+        {
+            DeleteConfiguration = DeleteConfiguration ?? new DeleteConfiguration();
+            return DeleteConfiguration;
         }
     }
 }

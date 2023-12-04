@@ -62,6 +62,8 @@ namespace DeepDiff.UnitTest.Simple
             diffConfiguration.Entity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg
                     .SetValue(x => x.PersistChange, PersistChange.Update)
                     .CopyValues(x => x.AdditionalValueToCopy));
