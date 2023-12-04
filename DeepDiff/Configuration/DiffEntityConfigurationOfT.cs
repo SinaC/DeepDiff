@@ -127,5 +127,13 @@ namespace DeepDiff.Configuration
             var config = Configuration.SetMarkAsDeleted(destinationMember.GetSimplePropertyAccess().Single(), value!);
             return this;
         }
+
+        public IDiffEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction)
+        {
+            var config = Configuration.SetOnUpdate();
+            var configOfT = new UpdateConfiguration<TEntity>(config);
+            updateConfigurationAction?.Invoke(configOfT);
+            return this;
+        }
     }
 }

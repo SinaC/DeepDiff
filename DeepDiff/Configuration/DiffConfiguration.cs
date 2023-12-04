@@ -104,7 +104,7 @@ namespace DeepDiff.Configuration
                 ValidateAdditionalValuesToCopy(type, diffEntityConfiguration, exceptions);
                 ValidateNavigationManyConfiguration(type, diffEntityConfiguration, DiffEntityConfigurationByTypes, exceptions);
                 ValidateNavigationOneConfiguration(type, diffEntityConfiguration, DiffEntityConfigurationByTypes, exceptions);
-                ValidateMarkAsConfiguration(type, diffEntityConfiguration, exceptions);
+                //ValidateMarkAsConfiguration(type, diffEntityConfiguration, exceptions);
             }
             if (exceptions.Count == 1)
                 throw exceptions.Single();

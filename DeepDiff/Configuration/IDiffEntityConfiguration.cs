@@ -7,7 +7,6 @@ namespace DeepDiff.Configuration
     public interface IDiffEntityConfiguration<TEntity>
         where TEntity : class
     {
-
         IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression);
         IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction);
 
@@ -29,5 +28,7 @@ namespace DeepDiff.Configuration
         IDiffEntityConfiguration<TEntity> MarkAsUpdated<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
 
         IDiffEntityConfiguration<TEntity> MarkAsDeleted<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
+
+        IDiffEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction);
     }
 }
