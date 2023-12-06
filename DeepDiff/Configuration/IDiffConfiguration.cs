@@ -11,9 +11,6 @@ namespace DeepDiff.Configuration
             where TProfile : DiffProfile;
         IDiffConfiguration AddProfiles(params Assembly[] assembliesToScan);
 
-        IDiffConfiguration DisableHashtable();
-        IDiffConfiguration SetHashtableThreshold(int threshold);
-
         IDeepDiff CreateDeepDiff();
     }
 }

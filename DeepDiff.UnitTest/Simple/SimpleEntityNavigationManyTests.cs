@@ -63,7 +63,7 @@ public class SimpleEntityNavigationManyTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Same(existingEntities.Single(), results.Single());
         Assert.Single(results.Single().SubEntities);
         Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().PersistChange);
@@ -123,7 +123,7 @@ public class SimpleEntityNavigationManyTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Same(existingEntities.Single(), results.Single());
         Assert.Single(results.Single().SubEntities);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntities.Single().PersistChange);

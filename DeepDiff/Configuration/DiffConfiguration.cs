@@ -3,7 +3,6 @@ using DeepDiff.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 
 namespace DeepDiff.Configuration
@@ -11,8 +10,6 @@ namespace DeepDiff.Configuration
     public sealed class DiffConfiguration : IDiffConfiguration
     {
         internal IDictionary<Type, DiffEntityConfiguration> DiffEntityConfigurationByTypes { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
-        internal bool UseHashtable { get; private set; } = true;
-        internal int HashtableThreshold { get; private set; } = 15;
 
         public IDiffEntityConfiguration<TEntity> Entity<TEntity>()
             where TEntity : class
@@ -63,18 +60,6 @@ namespace DeepDiff.Configuration
                     }
                 }
             }
-            return this;
-        }
-
-        public IDiffConfiguration DisableHashtable()
-        {
-            UseHashtable = false;
-            return this;
-        }
-
-        public IDiffConfiguration SetHashtableThreshold(int threshold)
-        {
-            HashtableThreshold = threshold;
             return this;
         }
 

@@ -53,15 +53,15 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntity);
-            // Entity1: 3rd -> updated
+            // Entity1: 3rd -> none
             Assert.Single(results.Single().SubEntities);
-            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntities.Single().SubEntity);
@@ -85,15 +85,15 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntity);
-            // Entity1: 3rd -> updated
+            // Entity1: 3rd -> none
             Assert.Single(results.Single().SubEntities);
-            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntities.Single().SubEntity);
@@ -117,15 +117,15 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntity);
-            // Entity1: 3rd -> updated
+            // Entity1: 3rd -> none
             Assert.Single(results.Single().SubEntities);
-            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntities.Single().SubEntity);
@@ -150,9 +150,9 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntity);
@@ -180,15 +180,15 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntity: null
             Assert.Null(results.Single().SubEntity);
-            // Entity1: 3rd -> updated
+            // Entity1: 3rd -> none
             Assert.Single(results.Single().SubEntities);
-            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
             Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
             // SubEntities: null
             Assert.Empty(results.Single().SubEntities.Single().SubEntities);
@@ -222,14 +222,14 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntities: null
             Assert.Empty(results.Single().SubEntities);
-            // Entity1: updated
-            Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
+            // Entity1: none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
             // SubEntities: null
             Assert.Null(results.Single().SubEntity.SubEntity);
@@ -253,14 +253,14 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntities: null
             Assert.Empty(results.Single().SubEntities);
-            // Entity1: updated
-            Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
+            // Entity1: none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
             // SubEntities: null
             Assert.Null(results.Single().SubEntity.SubEntity);
@@ -284,14 +284,14 @@ namespace DeepDiff.UnitTest.Simple
             var deepDiff = CreateDeepDiff();
             var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
-            // Entity0: 4th -> updated
+            // Entity0: 4th -> none
             Assert.Single(results);
-            Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
             Assert.Equal(3, results.Single().Index);
             // SubEntities: null
             Assert.Empty(results.Single().SubEntities);
-            // Entity1: 3rd -> updated
-            Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
+            // Entity1: 3rd -> none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
             Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
             // SubEntities: null
             Assert.Null(results.Single().SubEntity.SubEntity);

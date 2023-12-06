@@ -62,7 +62,7 @@ public class SimpleEntityNavigationOneTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntity.PersistChange);
     }
 
@@ -119,7 +119,7 @@ public class SimpleEntityNavigationOneTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Delete, results.Single().SubEntity.PersistChange);
     }
 
@@ -249,7 +249,7 @@ public class SimpleEntityNavigationOneTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
         Assert.Equal(newEntities.Single().SubEntity.Timestamp, results.Single().SubEntity.Timestamp);
     }
@@ -316,7 +316,7 @@ public class SimpleEntityNavigationOneTests
         var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
-        Assert.Equal(PersistChange.Update, results.Single().PersistChange);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
         Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
     }

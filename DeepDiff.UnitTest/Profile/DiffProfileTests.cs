@@ -20,13 +20,30 @@ namespace DeepDiff.UnitTest.Profile
             var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities).ToArray();
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
+            Assert.Empty(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
+            Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
+            Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.None).CapacityMarketUnitId);
+        }
+
+        [Fact]
+        public void AddProfile_ForceOnUpdate()
+        {
+            var entities = GenerateCapacityAvailabilities();
+
+            var diffConfiguration = new DiffConfiguration();
+            diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
+            var deepDiff = diffConfiguration.CreateDeepDiff();
+
+            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel()).ToArray();
+
+            Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
         }
 
         // will generate 5 existing and 6 new (4 first are identical to existing, 5th top level is identical but details are different)
-        private (IEnumerable<Entities.CapacityAvailability.CapacityAvailability> existingEntities, IEnumerable<Entities.CapacityAvailability.CapacityAvailability> newEntities) GenerateCapacityAvailabilities()
+        private static (IEnumerable<Entities.CapacityAvailability.CapacityAvailability> existingEntities, IEnumerable<Entities.CapacityAvailability.CapacityAvailability> newEntities) GenerateCapacityAvailabilities()
         {
             var startDate = DateTime.Today;
             var dayCount = 5;
