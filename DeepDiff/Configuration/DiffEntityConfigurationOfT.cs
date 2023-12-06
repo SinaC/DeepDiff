@@ -23,19 +23,9 @@ namespace DeepDiff.Configuration
         }
 
         public IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
-        {
-            SetKeyConfiguration(keyExpression);
-            return this;
-        }
+            => HasKey(keyExpression, null);
 
         public IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction)
-        {
-            var config = SetKeyConfiguration(keyExpression);
-            keyConfigurationAction?.Invoke(config);
-            return this;
-        }
-
-        private IKeyConfiguration SetKeyConfiguration<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
         {
             // TODO: can only be set once
             var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
@@ -43,61 +33,48 @@ namespace DeepDiff.Configuration
             var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(keyProperties);
 
             var config = Configuration.SetKey(keyProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
-            return config;
+            keyConfigurationAction?.Invoke(config);
+            return this;
         }
 
         public IDiffEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
-        {
-            SetValuesConfiguration(valuesExpression);
-            return this;
-        }
+            => HasValues(valuesExpression, null);
 
         public IDiffEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration> valuesConfigurationAction)
-        {
-            var config = SetValuesConfiguration(valuesExpression);
-            valuesConfigurationAction?.Invoke(config);
-            return this;
-        }
-
-        private IValuesConfiguration SetValuesConfiguration<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
         {
             // TODO: can only be set once
             var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
             var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties);
             var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties);
             var config = Configuration.SetValues(valueProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
-            return config;
+            valuesConfigurationAction?.Invoke(config);
+            return this;
         }
 
         public IDiffEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
             where TTargetEntity : class
-        {
-            var config = AddNavigationManyConfiguration(navigationPropertyExpression);
-            return this;
-        }
+            => HasMany(navigationPropertyExpression, null);
 
         public IDiffEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration> navigationManyConfigurationAction)
-            where TTargetEntity : class
-        {
-            var config = AddNavigationManyConfiguration(navigationPropertyExpression);
-            navigationManyConfigurationAction?.Invoke(config);
-            return this;
-        }
-
-        private INavigationManyConfiguration AddNavigationManyConfiguration<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
             where TTargetEntity : class
         {
             var navigationManyPropertyInfo = navigationPropertyExpression.GetSimplePropertyAccess().Single();
             var navigationManyDestinationType = typeof(TTargetEntity);
             var config = Configuration.AddNavigationMany(navigationManyPropertyInfo, navigationManyDestinationType);
-            return config;
+            navigationManyConfigurationAction?.Invoke(config);
+            return this;
         }
 
         public IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
             where TTargetEntity : class
+            => HasOne(navigationPropertyExpression, null);
+
+        public IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration> navigationOneConfigurationAction)
+            where TTargetEntity : class
         {
             var navigationOneDestinationType = typeof(TTargetEntity);
             var config = Configuration.AddNavigationOne(navigationPropertyExpression.GetSimplePropertyAccess().Single(), navigationOneDestinationType);
+            navigationOneConfigurationAction?.Invoke(config);
             return this;
         }
 

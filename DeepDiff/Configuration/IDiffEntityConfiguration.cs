@@ -21,6 +21,9 @@ namespace DeepDiff.Configuration
         IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
             where TTargetEntity : class;
 
+        IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration> navigationOneConfigurationAction)
+            where TTargetEntity : class;
+
         IDiffEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction);
 
         IDiffEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> insertConfigurationAction);
