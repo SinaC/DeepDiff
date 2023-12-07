@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace DeepDiff.Configuration
 {
-    internal class DeleteConfiguration<TEntity> : IDeleteConfiguration<TEntity>
+    internal sealed class DeleteConfiguration<TEntity> : IDeleteConfiguration<TEntity>
         where TEntity : class
     {
         public DeleteConfiguration Configuration { get; private set; }

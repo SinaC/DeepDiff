@@ -2,7 +2,7 @@
 
 namespace DeepDiff.Configuration
 {
-    internal class InsertConfiguration
+    internal sealed class InsertConfiguration
     {
         public SetValueConfiguration SetValueConfiguration { get; set; } = null!;
 

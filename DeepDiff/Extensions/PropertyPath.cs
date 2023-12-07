@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DeepDiff.Extensions
 {
-    internal class PropertyPath : IEnumerable<PropertyInfo>
+    internal sealed class PropertyPath : IEnumerable<PropertyInfo>
     {
         // Note: This class is currently immutable. If you make it mutable then you
         // must ensure that instances are cloned when cloning the DbModelBuilder.

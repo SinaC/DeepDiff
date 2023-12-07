@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace DeepDiff.Exceptions
 {
-    public class DuplicatePropertyConfigurationException : DiffEntityConfigurationException
+    public sealed class DuplicatePropertyConfigurationException : DiffEntityConfigurationException
     {
         public string[] DuplicatePropertyNames { get; }
 

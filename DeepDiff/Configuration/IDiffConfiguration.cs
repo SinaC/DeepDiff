@@ -12,5 +12,7 @@ namespace DeepDiff.Configuration
         IDiffConfiguration AddProfiles(params Assembly[] assembliesToScan);
 
         IDeepDiff CreateDeepDiff();
+
+        void ValidateConfiguration();
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace DeepDiff.Exceptions
 {
-    public class MissingNavigationManyChildConfigurationException : DiffEntityConfigurationException
+    public sealed class MissingNavigationManyChildConfigurationException : DiffEntityConfigurationException
     {
         public Type ChildType { get; }
 

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
-    internal class UpdateConfiguration
+    internal sealed class UpdateConfiguration
     {
         public SetValueConfiguration SetValueConfiguration { get; set; } = null!;
         public CopyValuesConfiguration CopyValuesConfiguration { get; set;} = null!;
