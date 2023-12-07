@@ -2,7 +2,7 @@ using System;
 
 namespace DeepDiff.Exceptions
 {
-    public class MissingConfigurationException : Exception
+    public sealed class MissingConfigurationException : Exception
     {
         public Type EntityType { get; }
 
