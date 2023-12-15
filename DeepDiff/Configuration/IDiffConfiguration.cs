@@ -9,6 +9,7 @@ namespace DeepDiff.Configuration
 
         IDiffConfiguration AddProfile<TProfile>()
             where TProfile : DiffProfile;
+        IDiffConfiguration AddProfile(DiffProfile diffProfile);
         IDiffConfiguration AddProfiles(params Assembly[] assembliesToScan);
 
         IDeepDiff CreateDeepDiff();
