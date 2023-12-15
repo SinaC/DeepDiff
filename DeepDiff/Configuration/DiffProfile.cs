@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     {
         internal Dictionary<Type, DiffEntityConfiguration> DiffEntityConfigurations { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
 
-        protected IDiffEntityConfiguration<TEntity> CreateDiffEntityConfiguration<TEntity>()
+        protected IDiffEntityConfiguration<TEntity> CreateConfiguration<TEntity>()
             where TEntity : class
         {
             var entityType = typeof(TEntity);

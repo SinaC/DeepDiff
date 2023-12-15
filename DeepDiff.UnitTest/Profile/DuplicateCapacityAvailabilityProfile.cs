@@ -6,18 +6,18 @@ namespace DeepDiff.UnitTest.Profile
     {
         public DuplicateCapacityAvailabilityProfile()
         {
-            CreateDiffEntityConfiguration<Entities.CapacityAvailability.CapacityAvailability>()
+            CreateConfiguration<Entities.CapacityAvailability.CapacityAvailability>()
                 .AsPersistEntity()
                 .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
                 .HasValues(x => x.IsEnergyContrained)
                 .HasMany(x => x.CapacityAvailabilityDetails);
-            CreateDiffEntityConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>()
+            CreateConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>()
                 .AsPersistEntity()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
                 .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
 
-            CreateDiffEntityConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>() // duplicate
+            CreateConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>() // duplicate
                 .AsPersistEntity()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })

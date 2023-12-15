@@ -27,21 +27,14 @@ namespace DeepDiff.Configuration
         public IDiffConfiguration AddProfile<TProfile>()
             where TProfile : DiffProfile
         {
-            DiffProfile diffProfileInstance;
-            try
-            {
-                diffProfileInstance = (DiffProfile)Activator.CreateInstance(typeof(TProfile))!;
-            }
-            catch (TargetInvocationException ex) when (ex.InnerException is DuplicateDiffEntityConfigurationException)
-            {
-                throw ex.InnerException;
-            }
-            foreach (var typeAndDiffEntityConfiguration in diffProfileInstance.DiffEntityConfigurations)
-            {
-                if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
-                    throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
-                DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
-            }
+            var diffProfileInstance = CreateProfileInstance(typeof(TProfile));
+            AddProfileFromInstance(diffProfileInstance);
+            return this;
+        }
+
+        public IDiffConfiguration AddProfile(DiffProfile diffProfile)
+        {
+            AddProfileFromInstance(diffProfile);
             return this;
         }
 
@@ -54,9 +47,8 @@ namespace DeepDiff.Configuration
                     var diffProfileType = typeof(DiffProfile);
                     foreach (var derivedDiffProfileType in assembly.GetTypes().Where(x => x != diffProfileType && diffProfileType.IsAssignableFrom(x)))
                     {
-                        var diffProfileInstance = (DiffProfile)Activator.CreateInstance(derivedDiffProfileType)!;
-                        foreach (var typeAndDiffEntityConfiguration in diffProfileInstance.DiffEntityConfigurations)
-                            DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
+                        var diffProfileInstance = CreateProfileInstance(derivedDiffProfileType);
+                        AddProfileFromInstance(diffProfileInstance);
                     }
                 }
             }
@@ -97,6 +89,31 @@ namespace DeepDiff.Configuration
                 throw exceptions.Single();
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions);
+        }
+
+        private static DiffProfile CreateProfileInstance(Type diffProfileType)
+        {
+            DiffProfile diffProfileInstance;
+            try
+            {
+                diffProfileInstance = (DiffProfile)Activator.CreateInstance(diffProfileType)!;
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException is DuplicateDiffEntityConfigurationException)
+            {
+                throw ex.InnerException;
+            }
+            return diffProfileInstance;
+        }
+
+        private void AddProfileFromInstance(DiffProfile diffProfile)
+        {
+            foreach (var typeAndDiffEntityConfiguration in diffProfile.DiffEntityConfigurations)
+            {
+                if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
+                    throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
+                DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
+            }
+
         }
     }
 }
