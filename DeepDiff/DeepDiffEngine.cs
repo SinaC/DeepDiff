@@ -51,7 +51,7 @@ namespace DeepDiff
             }
 
             bool areNewValuesEquals = false;
-            if (diffEntityConfiguration.ValuesConfiguration.ValuesProperties != null)
+            if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
                 areNewValuesEquals = diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                     ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
@@ -117,7 +117,7 @@ namespace DeepDiff
                 // existing entity found in new entities -> if values are different it's an update
                 if (newEntity != null)
                 {
-                    if (diffEntityConfiguration.ValuesConfiguration.ValuesProperties != null)
+                    if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                     {
                         var areNewValuesEquals = diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                             ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
@@ -272,7 +272,7 @@ namespace DeepDiff
                 }
 
                 bool areNewValuesEquals = false;
-                if (childDiffEntityConfiguration.ValuesConfiguration.ValuesProperties != null)
+                if (childDiffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                 {
                     areNewValuesEquals = childDiffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                         ? childDiffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, newEntityChild)
