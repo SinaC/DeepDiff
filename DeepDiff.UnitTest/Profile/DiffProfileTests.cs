@@ -34,7 +34,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel()).ToArray();
+            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()).ToArray();
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));

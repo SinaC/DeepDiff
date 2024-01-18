@@ -3,6 +3,6 @@
     public interface IDiffManyConfiguration
     {
         IDiffManyConfiguration DisableHashTable();
-        IDiffManyConfiguration ForceOnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel();
+        IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
     }
 }

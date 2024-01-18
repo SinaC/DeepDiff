@@ -138,7 +138,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel());
+            var result = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);

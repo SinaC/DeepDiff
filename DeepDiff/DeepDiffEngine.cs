@@ -64,7 +64,7 @@ namespace DeepDiff
             var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity);
             if (!areKeysEqual || !areNewValuesEquals || diffModificationsFound) // update
             {
-                if (!areKeysEqual || !areNewValuesEquals || DiffSingleOrManyConfiguration.OnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel)
+                if (!areKeysEqual || !areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
                     OnUpdate(diffEntityConfiguration, existingEntity, newEntity);
                 return existingEntity;
             }
@@ -129,7 +129,7 @@ namespace DeepDiff
                         var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity);
                         if (!areNewValuesEquals || diffModificationsFound)
                         {
-                            if (!areNewValuesEquals || DiffSingleOrManyConfiguration.OnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel)
+                            if (!areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
                                 OnUpdate(diffEntityConfiguration, existingEntity, newEntity);
                             yield return existingEntity;
                         }
@@ -285,7 +285,7 @@ namespace DeepDiff
                 var diffModificationsFound = DiffUsingNavigation(childDiffEntityConfiguration, existingEntityChild, newEntityChild);
                 if (!areKeysEqual || !areNewValuesEquals || diffModificationsFound) // update
                 {
-                    if (!areKeysEqual || !areNewValuesEquals || DiffSingleOrManyConfiguration.OnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel)
+                    if (!areKeysEqual || !areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
                         OnUpdate(childDiffEntityConfiguration, existingEntityChild, newEntityChild);
                     return true;
                 }
