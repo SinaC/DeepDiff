@@ -14,9 +14,9 @@
             return this;
         }
 
-        public IDiffManyConfiguration ForceOnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel()
+        public IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()
         {
-            OnUpdateEvenIfModificatiosnDetectedOnlyInNestedLevel = true;
+            OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = true;
             return this;
         }
     }
