@@ -69,7 +69,8 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         // deleted: 0
         // updated: 1, 2, 4, 5, 7, 8

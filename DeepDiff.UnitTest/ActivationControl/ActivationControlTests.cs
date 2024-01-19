@@ -1,4 +1,5 @@
 using DeepDiff.Configuration;
+using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
 using System.Linq;
@@ -20,7 +21,8 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.DiffSingle(existing, calculated);
+            var result = diff.Entity;
 
             //
             Assert.NotNull(result);
@@ -33,6 +35,11 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Empty(result.ActivationControlDetails.Single().TimestampDetails);
             Assert.Single(result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
             Assert.Equal(-7, result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
+            Assert.Single(diff.Operations.OfType<UpdateDiffOperation>());
+            Assert.Equal((-7m).ToString(), diff.Operations.OfType<UpdateDiffOperation>().Single().NewValue);
+            Assert.Equal((420).ToString(), diff.Operations.OfType<UpdateDiffOperation>().Single().ExistingValue);
+            Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), diff.Operations.OfType<UpdateDiffOperation>().Single().PropertyName);
+            Assert.Equal(nameof(ActivationControlDpTimestampDetail), diff.Operations.OfType<UpdateDiffOperation>().Single().EntityName);
         }
 
         private static IDeepDiff CreateDeepDiff()

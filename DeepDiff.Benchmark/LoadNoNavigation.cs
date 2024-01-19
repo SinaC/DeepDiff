@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using DeepDiff.Benchmark.Entities;
 using DeepDiff.Configuration;
 
 namespace DeepDiff.Benchmark;
@@ -10,43 +11,43 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> NewEntities { get; set; } = null!;
 
     private IDeepDiff NoHashtableNaiveComparerDeepDiff { get; }
-    private IDeepDiff NoHastablePrecompileComparerDeepDiff { get; }
+    private IDeepDiff NoHastablePrecompiledComparerDeepDiff { get; }
     private IDeepDiff HastableNaiveComparerDeepDiff { get; }
-    private IDeepDiff HashtablePrecompileComparerDeepDiff { get; }
+    private IDeepDiff HashtablePrecompiledComparerDeepDiff { get; }
 
     public LoadNoNavigation()
     {
         Random = new Random();
 
-        var noHashtableNoPrecompiledComparerDiffConfiguration = new DiffConfiguration();
-        noHashtableNoPrecompiledComparerDiffConfiguration
+        var noHashtableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        noHashtableNaiveComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        NoHashtableNaiveComparerDeepDiff = noHashtableNoPrecompiledComparerDiffConfiguration.CreateDeepDiff();
+        NoHashtableNaiveComparerDeepDiff = noHashtableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
-        var noHastablePrecompileComparerDiffConfiguration = new DiffConfiguration();
-        noHastablePrecompileComparerDiffConfiguration
+        var noHastablePrecompiledComparerDiffConfiguration = new DiffConfiguration();
+        noHastablePrecompiledComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        NoHastablePrecompileComparerDeepDiff = noHastablePrecompileComparerDiffConfiguration.CreateDeepDiff();
+        NoHastablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
 
-        var hastableNoPrecomileComparerDiffConfiguration = new DiffConfiguration();
-        hastableNoPrecomileComparerDiffConfiguration
+        var hastableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        hastableNaiveComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        HastableNaiveComparerDeepDiff = hastableNoPrecomileComparerDiffConfiguration.CreateDeepDiff();
+        HastableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
         var hashtableDiffConfiguration = new DiffConfiguration();
         hashtableDiffConfiguration
@@ -56,7 +57,7 @@ public class LoadNoNavigation
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        HashtablePrecompileComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
+        HashtablePrecompiledComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
     }
 
     [Params(10, 100, 1000)]
@@ -88,25 +89,25 @@ public class LoadNoNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).Entities.ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHastablePrecompileComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).ToList();
+        var results = NoHastablePrecompiledComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).Entities.ToList();
     }
 
     [Benchmark]
     public void HastableNaiveComparerDiff()
     {
-        var results = HastableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
+        var results = HastableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).Entities.ToList();
     }
 
     [Benchmark]
     public void HashtablePrecompileComparerDiff()
     {
-        var results = HashtablePrecompileComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).ToList();
+        var results = HashtablePrecompiledComparerDeepDiff.DiffMany(ExistingEntities, NewEntities).Entities.ToList();
     }
 
     private void GenerateIdentical()
@@ -194,30 +195,4 @@ public class LoadNoNavigation
         NoNew,
         Random
     }
-}
-
-public class NoNavigationEntity
-{
-    // DB key
-    public Guid Id { get; set; }
-
-    // Business key
-    public DateTime Date { get; set; }
-    public string ContractReference { get; set; } = null!;
-
-    // Calculated values
-    public decimal Penalty { get; set; }
-    public decimal Volume { get; set; }
-    public decimal Price { get; set; }
-
-    //
-    public PersistChange PersistChange { get; set; }
-}
-
-public enum PersistChange
-{
-    None,
-    Insert,
-    Update,
-    Delete
 }

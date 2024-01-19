@@ -20,7 +20,7 @@ public class Program
             //    .WithToolchain(InProcessNoEmitToolchain.Instance));
             .AddJob(Job.Default);
 
-        var summary = BenchmarkRunner.Run<LoadNoNavigation>(config);
-        //var summary = BenchmarkRunner.Run<DeepDiff>(config);
+        //var summary = BenchmarkRunner.Run<LoadNoNavigation>(config);
+        var summary = BenchmarkRunner.Run<LoadNavigation>(config);
     }
 }

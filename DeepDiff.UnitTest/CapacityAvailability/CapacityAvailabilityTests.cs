@@ -50,7 +50,8 @@ public class CapacityAvailabilityTests
         AssignFK(newCapacityAvailabilities, false);
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingCapacityAvailabilities, newCapacityAvailabilities).ToArray();
+        var diff = deepDiff.DiffMany(existingCapacityAvailabilities, newCapacityAvailabilities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);

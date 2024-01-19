@@ -17,7 +17,8 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities).ToArray();
+            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
+            var results = diff.Entities.ToArray();
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Empty(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
@@ -34,7 +35,8 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()).ToArray();
+            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+            var results = diff.Entities.ToArray();
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));

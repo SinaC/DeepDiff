@@ -59,7 +59,8 @@ public class SimpleEntityNavigationOneTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -116,7 +117,8 @@ public class SimpleEntityNavigationOneTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -182,7 +184,8 @@ public class SimpleEntityNavigationOneTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Empty(results);
     }
@@ -246,7 +249,8 @@ public class SimpleEntityNavigationOneTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -313,7 +317,8 @@ public class SimpleEntityNavigationOneTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);

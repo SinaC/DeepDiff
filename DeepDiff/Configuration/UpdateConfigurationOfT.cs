@@ -30,5 +30,11 @@ namespace DeepDiff.Configuration
             Configuration.CopyValuesConfiguration = config;
             return this;
         }
+
+        public IUpdateConfiguration<TEntity> GenerateOperations()
+        {
+            Configuration.SetGenerationOperations();
+            return this;
+        }
     }
 }
