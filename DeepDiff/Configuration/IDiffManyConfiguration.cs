@@ -3,6 +3,8 @@
     public interface IDiffManyConfiguration
     {
         IDiffManyConfiguration DisableHashTable();
+        IDiffManyConfiguration SetHashtableThreshold(int threshold);
         IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
+        IDiffManyConfiguration DisableOperationsGeneration();
     }
 }

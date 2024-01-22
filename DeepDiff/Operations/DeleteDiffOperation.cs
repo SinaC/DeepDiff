@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace DeepDiff.Operations
+﻿namespace DeepDiff.Operations
 {
     public class DeleteDiffOperation : DiffOperationBase
     {
-        public IReadOnlyCollection<string> Keys { get; init; }
+        public string Keys { get; init; }
     }
 }

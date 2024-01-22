@@ -1,4 +1,6 @@
 using DeepDiff.Configuration;
+using DeepDiff.Operations;
+using DeepDiff.UnitTest.Entities.CapacityAvailability;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +21,17 @@ namespace DeepDiff.UnitTest.Profile
 
             var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
             var results = diff.Entities.ToArray();
+            var operations = diff.Operations;
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Empty(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.None).CapacityMarketUnitId);
+            Assert.Equal(97, operations.OfType<InsertDiffOperation>().Count());
+            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(96, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+            Assert.Empty(operations.OfType<DeleteDiffOperation>());
+            Assert.Empty(operations.OfType<UpdateDiffOperation>());
         }
 
         [Fact]

@@ -38,8 +38,7 @@ namespace DeepDiff
             return new DiffSingleResult<TEntity> 
             {
                 Entity = (TEntity)diffEntity,
-                Operations = diffOperations,
-                Elapsed = engine.Elapsed
+                Operations = diffOperations
             };
         }
 
@@ -62,8 +61,7 @@ namespace DeepDiff
             return new DiffManyResult<TEntity>
             {
                 Entities = diffEntities.Cast<TEntity>(),
-                Operations = diffOperations,
-                Elapsed = engine.Elapsed
+                Operations = diffOperations
             };
         }
     }

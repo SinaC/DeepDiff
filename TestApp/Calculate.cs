@@ -27,7 +27,7 @@ public class Calculate : ICalculate
 
         var result =  DeepDiff.DiffSingle(existing, calculated);
 
-        Logger.Information($"result?: {result?.Entity != null}");
+        Logger.Information($"result?: {result.Entity != null}");
     }
 
     private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)

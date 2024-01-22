@@ -8,6 +8,6 @@ namespace DeepDiff.Configuration
     {
         IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
         IUpdateConfiguration<TEntity> CopyValues<TValue>(Expression<Func<TEntity, TValue>> copyValuesExpression);
-        IUpdateConfiguration<TEntity> GenerateOperations();
+        IUpdateConfiguration<TEntity> DisableOperationsGeneration();
     }
 }

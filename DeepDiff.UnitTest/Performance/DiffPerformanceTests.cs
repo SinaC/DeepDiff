@@ -34,8 +34,6 @@ namespace DeepDiff.UnitTest.Performance
             sw.Stop();
 
             Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-            for(var i = 0; i < diff.Elapsed.Length; i++)
-                Output.WriteLine("Elapsed: {0} ms", diff.Elapsed[i]);
         }
 
         [Fact]
@@ -54,8 +52,6 @@ namespace DeepDiff.UnitTest.Performance
             sw.Stop();
 
             Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-            for (var i = 0; i < diff.Elapsed.Length; i++)
-                Output.WriteLine("Elapsed: {0} ms", diff.Elapsed[i]);
         }
 
         [Fact]
@@ -74,8 +70,6 @@ namespace DeepDiff.UnitTest.Performance
             sw.Stop();
 
             Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-            for (var i = 0; i < diff.Elapsed.Length; i++)
-                Output.WriteLine("Elapsed: {0} ms", diff.Elapsed[i]);
         }
 
         [Fact]
@@ -94,8 +88,6 @@ namespace DeepDiff.UnitTest.Performance
             sw.Stop();
 
             Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-            for (var i = 0; i < diff.Elapsed.Length; i++)
-                Output.WriteLine("Elapsed: {0} ms", diff.Elapsed[i]);
         }
 
         private static IDeepDiff CreateDeepDiff()

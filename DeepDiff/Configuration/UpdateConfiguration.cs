@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     {
         public SetValueConfiguration SetValueConfiguration { get; set; } = null!;
         public CopyValuesConfiguration CopyValuesConfiguration { get; set; } = null!;
-        public bool GenerateOperations { get; set; } = false;
+        public bool GenerateOperations { get; set; } = true;
 
         public SetValueConfiguration SetSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {
@@ -31,9 +31,9 @@ namespace DeepDiff.Configuration
             return config;
         }
 
-        public void SetGenerationOperations()
+        public void SetGenerationOperations(bool generateOperations)
         {
-            GenerateOperations = true;
+            GenerateOperations = generateOperations;
         }
     }
 }

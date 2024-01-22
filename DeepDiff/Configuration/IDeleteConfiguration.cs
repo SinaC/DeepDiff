@@ -7,5 +7,6 @@ namespace DeepDiff.Configuration
         where TEntity: class
     {
         IDeleteConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
+        IDeleteConfiguration<TEntity> DisableOperationsGeneration();
     }
 }

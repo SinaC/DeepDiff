@@ -19,5 +19,11 @@
             OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = true;
             return this;
         }
+
+        public IDiffSingleConfiguration DisableOperationsGeneration()
+        {
+            GenerateOperations = false;
+            return this;
+        }
     }
 }
