@@ -2,6 +2,8 @@ using DeepDiff.Configuration;
 using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -50,6 +52,44 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().PropertyName);
         }
 
+        [Fact]
+        public void Single_ChildrenDeletedAndOneChildrenInsertedAndRootUpdated()
+        {
+            var deliveryDate = Date.Today;
+            var existing = Generate(deliveryDate, ActivationControlStatus.Validated, "INTERNAL", "TSO");
+            var calculated = new Entities.ActivationControl.ActivationControl
+            {
+                Day = deliveryDate,
+                ContractReference = "CREF",
+
+                TotalDiscrepancy = 0,
+                TotalEnergyRequested = 0,
+                TotalEnergyToBeSupplied = 0,
+                FailedPercentage = 0,
+                IsJumpExcludedCount = 0,
+                IsMeasurementExcludedCount = 0,
+
+                ActivationControlDetails = new List<ActivationControlDetail> 
+                {
+                    new ActivationControlDetail
+                    {
+                        StartsOn = DateTime.Today.AddDays(1).AddHours(4).AddMinutes(45), // should get activation control id from existing (1)
+                        
+                        TimestampDetails = new List<ActivationControlTimestampDetail>(),
+                        DpDetails = new List<ActivationControlDpDetail>(),
+                    }
+                },
+
+                Status = ActivationControlStatus.Calculated,
+            };
+
+            //
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffSingle(existing, calculated);
+            var result = diff.Entity;
+            var operations = diff.Operations;
+        }
+
         private static IDeepDiff CreateDeepDiff()
         {
             var diffConfiguration = new DiffConfiguration();
@@ -81,6 +121,8 @@ namespace DeepDiff.UnitTest.ActivationControl
         private static Entities.ActivationControl.ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
             => new()
             {
+                Id = 1,
+
                 Day = deliveryDate,
                 ContractReference = "CREF",
 
@@ -95,6 +137,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 ActivationControlDetails = Enumerable.Range(0, 96)
                     .Select(x => new ActivationControlDetail
                     {
+                        ActivationControlId = 1,
                         StartsOn = deliveryDate.UtcDateTime.AddMinutes(15 * x),
 
                         OfferedVolumeUp = x,
@@ -109,6 +152,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                         TimestampDetails = Enumerable.Range(0, 255)
                             .Select(y => new ActivationControlTimestampDetail
                             {
+                                ActivationControlId = 1,
                                 Timestamp = deliveryDate.UtcDateTime.AddMinutes(15 * x).AddSeconds(4 * y),
 
                                 PowerMeasured = x * y,
@@ -129,6 +173,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                         DpDetails = Enumerable.Range(0, 5)
                             .Select(y => new ActivationControlDpDetail
                             {
+                                ActivationControlId = 1,
                                 DeliveryPointEan = $"DPEAN_{x * y}",
 
                                 DeliveryPointName = $"DPNAME_{x * y}",
@@ -139,6 +184,8 @@ namespace DeepDiff.UnitTest.ActivationControl
                                 TimestampDetails = Enumerable.Range(0, 255)
                                     .Select(z => new ActivationControlDpTimestampDetail
                                     {
+                                        ActivationControlId = 1,
+                                        DeliveryPointEan = $"DPEAN_{x * y}",
                                         Timestamp = deliveryDate.UtcDateTime.AddMinutes(15 * x).AddSeconds(4 * z),
 
                                         PowerMeasured = x * y * z,

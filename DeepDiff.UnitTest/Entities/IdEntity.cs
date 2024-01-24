@@ -1,13 +1,7 @@
-using System;
-
 namespace DeepDiff.UnitTest.Entities;
 
-public abstract class IdEntity : PersistEntity
+public abstract class IdEntity<TId> : PersistEntity
+    where TId: struct
 {
-    public Guid Id { get; set; }
-
-    protected IdEntity()
-    {
-        Id = Guid.NewGuid();
-    }
+    public TId Id { get; set; }
 }

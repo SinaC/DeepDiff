@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace DeepDiff.UnitTest.Entities.CapacityAvailability;
 
 [DebuggerDisplay("{DebuggerDisplay, nq}")]
-public class CapacityAvailabilityDetail : UpdateAuditEntity
+public class CapacityAvailabilityDetail : UpdateAuditEntity<Guid>
 {
     public DateTime StartsOn { get; set; }
 

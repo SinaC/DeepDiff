@@ -13,7 +13,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void GlobalDisableOperationsGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModificationInNested();
+            var (existingEntity, newEntity) = GenerateModifications();
 
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<EntityLevel0>()
@@ -36,7 +36,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void UpdateDisableOperationGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModificationInNested();
+            var (existingEntity, newEntity) = GenerateModifications();
 
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<EntityLevel0>()
@@ -62,7 +62,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void InsertDisableOperationGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModificationInNested();
+            var (existingEntity, newEntity) = GenerateModifications();
 
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<EntityLevel0>()
@@ -89,7 +89,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void DeleteDisableOperationGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModificationInNested();
+            var (existingEntity, newEntity) = GenerateModifications();
 
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<EntityLevel0>()
@@ -116,7 +116,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void CheckOperations()
         {
-            var (existingEntity, newEntity) = GenerateModificationInNested();
+            var (existingEntity, newEntity) = GenerateModifications();
 
             var diffConfiguration = new DiffConfiguration();
             diffConfiguration.PersistEntity<EntityLevel0>()
@@ -142,21 +142,31 @@ namespace DeepDiff.UnitTest.Operations
             Assert.Single(operations.OfType<InsertDiffOperation>());
             Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)));
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>().Single().Keys);
-            // 4 updates
-            // each update are on Power property -> generate 1 UpdatedProperty (Power), NO CopyValuesProperty (AdditionalValueToCopy) and 1 SetValueProperty (PersistChange)
-            Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
+            // 1 update on EntityLevel0 and 4 updates on EntityLevel1
+            // each update EntityLevel1 are on Power property -> generate 1 UpdatedProperty (Power), NO CopyValuesProperty (AdditionalValueToCopy) and 1 SetValueProperty (PersistChange)
+            Assert.Equal(5, operations.OfType<UpdateDiffOperation>().Count());
+            //
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.UpdatedProperties));
+            Assert.Equal(nameof(EntityLevel0.Penalty), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).UpdatedProperties.Single().PropertyName);
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.CopyValuesProperties));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.CopyValuesProperties), x => Assert.Equal(nameof(EntityLevel0.AdditionalValueToCopy), x.PropertyName));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.SetValueProperties));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(nameof(EntityLevel0.PersistChange), x.PropertyName));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(PersistChange.Update.ToString(), x.NewValue));
+            //
             Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(EntityLevel1)));
-            Assert.All(operations.OfType<UpdateDiffOperation>(), x => Assert.Single(x.UpdatedProperties));
-            Assert.All(operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties), x => Assert.Equal(nameof(EntityLevel1.Power), x.PropertyName));
-            Assert.All(operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties), x => Assert.NotEqual(x.ExistingValue, x.NewValue));
-            Assert.All(operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue)*2, Convert.ToInt32(x.NewValue)));
-            Assert.All(operations.OfType<UpdateDiffOperation>(), x => Assert.Empty(x.CopyValuesProperties));
-            Assert.All(operations.OfType<UpdateDiffOperation>(), x => Assert.Single(x.SetValueProperties));
-            Assert.All(operations.OfType<UpdateDiffOperation>().SelectMany(x => x.SetValueProperties), x => Assert.Equal(nameof(EntityLevel1.PersistChange), x.PropertyName));
-            Assert.All(operations.OfType<UpdateDiffOperation>().SelectMany(x => x.SetValueProperties), x => Assert.Equal(PersistChange.Update.ToString(), x.NewValue));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.UpdatedProperties));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(nameof(EntityLevel1.Power), x.PropertyName));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.NotEqual(x.ExistingValue, x.NewValue));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue)*2, Convert.ToInt32(x.NewValue)));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Empty(x.CopyValuesProperties));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.SetValueProperties));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(nameof(EntityLevel1.PersistChange), x.PropertyName));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(PersistChange.Update.ToString(), x.NewValue));
         }
 
-        private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateModificationInNested()
+        private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateModifications()
         {
             var existingEntity = new EntityLevel0
             {
@@ -189,7 +199,7 @@ namespace DeepDiff.UnitTest.Operations
                 StartsOn = DateTime.Today,
                 Direction = Direction.Up,
                 RequestedPower = 1,
-                Penalty = 3,
+                Penalty = 4,
                 Comment = $"New",
                 AdditionalValueToCopy = $"NewAdditionalValue",
                 SubEntities = Enumerable.Range(1, 5).Select(y => new EntityLevel1
