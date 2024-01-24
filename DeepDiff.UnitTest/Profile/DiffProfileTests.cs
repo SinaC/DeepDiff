@@ -1,4 +1,6 @@
 using DeepDiff.Configuration;
+using DeepDiff.Operations;
+using DeepDiff.UnitTest.Entities.CapacityAvailability;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,8 @@ namespace DeepDiff.UnitTest.Profile
 {
     public class DiffProfileTests
     {
+        private const int QhCount = 96;
+
         [Fact]
         public void AddProfile()
         {
@@ -17,12 +21,21 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities).ToArray();
+            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
+            var results = diff.Entities.ToArray();
+            var operations = diff.Operations;
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Empty(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.None).CapacityMarketUnitId);
+            Assert.Equal(1+QhCount, operations.OfType<InsertDiffOperation>().Count());
+            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+            Assert.Empty(operations.OfType<DeleteDiffOperation>());
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count()); // no update on CapacityAvailability
+            Assert.Empty(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
         }
 
         [Fact]
@@ -34,12 +47,21 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var results = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()).ToArray();
+            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+            var results = diff.Entities.ToArray();
+            var operations = diff.Operations;
 
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == Entities.PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == Entities.PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == Entities.PersistChange.Update).CapacityMarketUnitId);
+            Assert.Equal(1 + QhCount, operations.OfType<InsertDiffOperation>().Count());
+            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+            Assert.Empty(operations.OfType<DeleteDiffOperation>());
+            Assert.Equal(1+QhCount, operations.OfType<UpdateDiffOperation>().Count());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
         }
 
         // will generate 5 existing and 6 new (4 first are identical to existing, 5th top level is identical but details are different)
@@ -56,7 +78,7 @@ namespace DeepDiff.UnitTest.Profile
                 Day = startDate.AddDays(x),
                 CapacityMarketUnitId = existingCmuId,
                 IsEnergyContrained = isEnergyContrained,
-                CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Validated, x, x).ToList()
+                CapacityAvailabilityDetails = GenerateDetails(startDate, CapacityAvailabilityStatus.Validated, x, x).ToList()
             }).ToArray();
             AssignFK(existingCapacityAvailabilities, true);
 
@@ -65,18 +87,18 @@ namespace DeepDiff.UnitTest.Profile
                 Day = startDate.AddDays(x),
                 CapacityMarketUnitId = existingCmuId,
                 IsEnergyContrained = isEnergyContrained,
-                CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, x, x != 4 ? x : 7).ToList()
+                CapacityAvailabilityDetails = GenerateDetails(startDate, CapacityAvailabilityStatus.Calculated, x, x != 4 ? x : 7).ToList()
             }).Concat
             (
                 new[]
                 {
-                new Entities.CapacityAvailability.CapacityAvailability
-                {
-                    Day = startDate.AddDays(1),
-                    CapacityMarketUnitId = newCmuId,
-                    IsEnergyContrained = isEnergyContrained,
-                    CapacityAvailabilityDetails = GenerateDetails(startDate, Entities.CapacityAvailability.CapacityAvailabilityStatus.Calculated, 1, 1).ToList()
-                }
+                    new Entities.CapacityAvailability.CapacityAvailability
+                    {
+                        Day = startDate.AddDays(1),
+                        CapacityMarketUnitId = newCmuId,
+                        IsEnergyContrained = isEnergyContrained,
+                        CapacityAvailabilityDetails = GenerateDetails(startDate, CapacityAvailabilityStatus.Calculated, 1, 1).ToList()
+                    }
                 }
             ).ToArray();
             AssignFK(newCapacityAvailabilities, false);
@@ -84,16 +106,16 @@ namespace DeepDiff.UnitTest.Profile
             return (existingCapacityAvailabilities, newCapacityAvailabilities);
         }
 
-        private static IEnumerable<Entities.CapacityAvailability.CapacityAvailabilityDetail> GenerateDetails(DateTime day, Entities.CapacityAvailability.CapacityAvailabilityStatus status, int dayShift, int calculationShift)
-            => Enumerable.Range(0, 96).Select(y => GenerateDetail(day, status, dayShift, y, calculationShift));
+        private static IEnumerable<CapacityAvailabilityDetail> GenerateDetails(DateTime day, CapacityAvailabilityStatus status, int dayShift, int calculationShift)
+            => Enumerable.Range(0, QhCount).Select(y => GenerateDetail(day, status, dayShift, y, calculationShift));
 
-        private static Entities.CapacityAvailability.CapacityAvailabilityDetail GenerateDetail(DateTime day, Entities.CapacityAvailability.CapacityAvailabilityStatus status, int dayShift, int tick, int calculationShift)
+        private static CapacityAvailabilityDetail GenerateDetail(DateTime day, CapacityAvailabilityStatus status, int dayShift, int tick, int calculationShift)
             => new()
             {
                 StartsOn = day.AddDays(dayShift).AddMinutes(15 * tick),
-                AvailableVolume = calculationShift * tick,
-                MissingVolume = calculationShift * tick,
-                ObligatedVolume = 2 * calculationShift + tick,
+                AvailableVolume = (1 + calculationShift) * tick,
+                MissingVolume = 3 + calculationShift + tick,
+                ObligatedVolume = 2 * (1+ calculationShift) + tick,
                 Status = status
             };
 

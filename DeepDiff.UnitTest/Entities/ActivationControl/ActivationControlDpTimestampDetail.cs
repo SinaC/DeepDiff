@@ -8,7 +8,7 @@ public class ActivationControlDpTimestampDetail : PersistEntity
 {
     // composite PK (PK from ActivationControlDpDetail + Timestamp)
     // PK from ActivationControlDpDetail
-    public Guid ActivationControlId { get; set; }
+    public int ActivationControlId { get; set; }
     public DateTime StartsOn { get; set; }
     public string DeliveryPointEan { get; set; }
     // PK

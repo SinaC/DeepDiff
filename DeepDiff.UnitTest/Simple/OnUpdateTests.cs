@@ -69,7 +69,9 @@ namespace DeepDiff.UnitTest.Simple
                     .CopyValues(x => x.AdditionalValueToCopy));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var result = diff.Entity;
+
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);
             Assert.Equal(3, result.RequestedPower);

@@ -7,7 +7,8 @@ namespace DeepDiff.Configuration
     internal sealed class UpdateConfiguration
     {
         public SetValueConfiguration SetValueConfiguration { get; set; } = null!;
-        public CopyValuesConfiguration CopyValuesConfiguration { get; set;} = null!;
+        public CopyValuesConfiguration CopyValuesConfiguration { get; set; } = null!;
+        public bool GenerateOperations { get; set; } = true;
 
         public SetValueConfiguration SetSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {
@@ -28,6 +29,11 @@ namespace DeepDiff.Configuration
             };
             CopyValuesConfiguration = config;
             return config;
+        }
+
+        public void SetGenerationOperations(bool generateOperations)
+        {
+            GenerateOperations = generateOperations;
         }
     }
 }

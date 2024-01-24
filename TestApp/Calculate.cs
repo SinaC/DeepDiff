@@ -27,7 +27,7 @@ public class Calculate : ICalculate
 
         var result =  DeepDiff.DiffSingle(existing, calculated);
 
-        Logger.Information($"result?: {result != null}");
+        Logger.Information($"result?: {result.Entity != null}");
     }
 
     private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
@@ -78,7 +78,7 @@ public class Calculate : ICalculate
                             IsMeasurementExcluded = false,
                         }).ToList(),
 
-                    DpDetails = Enumerable.Range(0, 5)
+                    DpDetails = Enumerable.Range(0, 10)
                         .Select(y => new ActivationControlDpDetail
                         {
                             DeliveryPointEan = $"DPEAN_{x * y}",

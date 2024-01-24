@@ -22,5 +22,11 @@ namespace DeepDiff.Configuration
             Configuration.SetValueConfiguration = config;
             return this;
         }
+
+        public IInsertConfiguration<TEntity> DisableOperationsGeneration()
+        {
+            Configuration.SetGenerationOperations(false);
+            return this;
+        }
     }
 }

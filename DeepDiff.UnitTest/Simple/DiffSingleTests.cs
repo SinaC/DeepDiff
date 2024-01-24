@@ -69,7 +69,8 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var result = diff.Entity;
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.None, result.PersistChange);
@@ -138,7 +139,8 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+            var result = diff.Entity;
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -207,7 +209,8 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var result = diff.Entity;
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -277,7 +280,8 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var result = diff.Entity;
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);

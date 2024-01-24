@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace DeepDiff.UnitTest.Entities.ActivationControl;
 
 [DebuggerDisplay("{DebuggerDisplay, nq}")]
-public class ActivationControl : UpdateAuditEntity
+public class ActivationControl : UpdateAuditEntity<int>
 {
     public string ContractReference { get; set; }
     public Date Day { get; set; }

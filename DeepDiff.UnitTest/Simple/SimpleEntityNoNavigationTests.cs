@@ -44,7 +44,8 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Empty(results);
     }
@@ -85,7 +86,8 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Delete, results.Single().PersistChange);
@@ -128,7 +130,8 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
@@ -172,7 +175,8 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.DiffMany(existingEntities, newEntities).ToArray();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var results = diff.Entities.ToArray();
 
         Assert.Equal(2, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));

@@ -8,7 +8,7 @@ public class ActivationControlTimestampDetail : PersistEntity, IAuditEntity<stri
 {
     // composite PK (PK from ActivationControlDetail + Timestamp)
     // PK from ActivationControlDetail
-    public Guid ActivationControlId { get; set; }
+    public int ActivationControlId { get; set; }
     public DateTime StartsOn { get; set; }
     // PK
     public DateTime Timestamp { get; set; }

@@ -9,7 +9,7 @@ public class ActivationControlDetail : PersistEntity
 {
     // composite PK (PK from ActivationControl + StartsOn)
     // PK from ActivationControl
-    public Guid ActivationControlId { get; set; }
+    public int ActivationControlId { get; set; }
     // PK
     public DateTime StartsOn { get; set; }
 
