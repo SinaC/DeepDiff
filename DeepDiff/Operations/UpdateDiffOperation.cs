@@ -1,9 +1,12 @@
-﻿namespace DeepDiff.Operations
+﻿using System.Collections.Generic;
+using System.Security.Principal;
+
+namespace DeepDiff.Operations
 {
     public class UpdateDiffOperation : DiffOperationBase
     {
-        public string PropertyName { get; init; }
-        public string ExistingValue { get; init; }
-        public string NewValue { get; init; }
+        public IReadOnlyCollection<UpdateDiffOperationPropertyInfo> UpdatedProperties { get; init; }
+        public IReadOnlyCollection<UpdateDiffOperationPropertyInfo> SetValueProperties { get; init; }
+        public IReadOnlyCollection<UpdateDiffOperationPropertyInfo> CopyValuesProperties { get; init; }
     }
 }

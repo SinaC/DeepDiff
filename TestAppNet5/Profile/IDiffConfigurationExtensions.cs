@@ -14,7 +14,7 @@ namespace TestAppNet5.Profile
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         }
 
-        public static IDiffEntityConfiguration<TEntity> AsPersistEntity<TEntity>(this IDiffEntityConfiguration<TEntity> diffEntityConfiguration)
+        public static IDiffEntityConfiguration<TEntity> PersistEntity<TEntity>(this IDiffEntityConfiguration<TEntity> diffEntityConfiguration)
             where TEntity : PersistEntity
         {
             return diffEntityConfiguration

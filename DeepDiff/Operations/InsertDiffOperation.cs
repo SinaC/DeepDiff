@@ -2,6 +2,5 @@
 {
     public class InsertDiffOperation : DiffOperationBase
     {
-        public string Keys { get; init; }
     }
 }
