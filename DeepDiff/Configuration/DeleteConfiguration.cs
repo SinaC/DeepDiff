@@ -17,6 +17,7 @@ namespace DeepDiff.Configuration
             SetValueConfiguration = config;
             return config;
         }
+
         public void SetGenerationOperations(bool generationOperations)
         {
             GenerateOperations = generationOperations;

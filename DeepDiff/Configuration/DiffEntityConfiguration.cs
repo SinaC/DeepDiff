@@ -68,19 +68,19 @@ namespace DeepDiff.Configuration
 
         public UpdateConfiguration GetOrSetOnUpdate()
         {
-            UpdateConfiguration = UpdateConfiguration ?? new UpdateConfiguration();
+            UpdateConfiguration ??= new UpdateConfiguration();
             return UpdateConfiguration;
         }
 
         public InsertConfiguration GetOrSetOnInsert()
         {
-            InsertConfiguration = InsertConfiguration ?? new InsertConfiguration();
+            InsertConfiguration ??= new InsertConfiguration();
             return InsertConfiguration;
         }
 
         public DeleteConfiguration GetOrSetOnDelete()
         {
-            DeleteConfiguration = DeleteConfiguration ?? new DeleteConfiguration();
+            DeleteConfiguration ??= new DeleteConfiguration();
             return DeleteConfiguration;
         }
     }
