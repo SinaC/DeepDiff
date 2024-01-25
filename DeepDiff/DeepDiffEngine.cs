@@ -44,7 +44,7 @@ namespace DeepDiff
             bool areKeysEqual = false;
             if (diffEntityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = diffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
                     ? diffEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
                     : diffEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
                 if (!areKeysEqual) // keys are different -> copy keys
@@ -54,7 +54,7 @@ namespace DeepDiff
             bool areNewValuesEquals = false;
             if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                areNewValuesEquals = diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                     ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
                     : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
             }
@@ -123,7 +123,7 @@ namespace DeepDiff
                 {
                     if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                     {
-                        var areNewValuesEquals = diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                        var areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                             ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
                             : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
 
@@ -168,11 +168,11 @@ namespace DeepDiff
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
             => DiffSingleOrManyConfiguration.UseHashtable && existingEntities.Count() >= DiffSingleOrManyConfiguration.HashtableThreshold;
 
-        private static object SearchMatchingEntityByKey(KeyConfiguration keyConfiguration, IEnumerable<object> entities, object existingEntity)
+        private object SearchMatchingEntityByKey(KeyConfiguration keyConfiguration, IEnumerable<object> entities, object existingEntity)
         {
             foreach (var entity in entities)
             {
-                var areKeysEqual = keyConfiguration.UsePrecompiledEqualityComparer
+                var areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
                     ? keyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, entity)
                     : keyConfiguration.NaiveEqualityComparer.Equals(existingEntity, entity);
                 if (areKeysEqual)
@@ -183,7 +183,7 @@ namespace DeepDiff
 
         private Hashtable InitializeHashtable(KeyConfiguration keyConfiguration, IEnumerable<object> entities)
         {
-            var equalityComparer = keyConfiguration.UsePrecompiledEqualityComparer
+            var equalityComparer = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
                 ? keyConfiguration.PrecompiledEqualityComparer
                 : keyConfiguration.NaiveEqualityComparer;
             var hashtable = new Hashtable(equalityComparer);
@@ -281,7 +281,7 @@ namespace DeepDiff
                 bool areKeysEqual = false;
                 if (childDiffEntityConfiguration.KeyConfiguration.KeyProperties != null)
                 {
-                    areKeysEqual = childDiffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                    areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && childDiffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
                         ? childDiffEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, newEntityChild)
                         : childDiffEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, newEntityChild);
                     if (!areKeysEqual) // keys are different -> copy keys
@@ -291,7 +291,7 @@ namespace DeepDiff
                 bool areNewValuesEquals = false;
                 if (childDiffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                 {
-                    areNewValuesEquals = childDiffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                    areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && childDiffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
                         ? childDiffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, newEntityChild)
                         : childDiffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, newEntityChild);
                 }

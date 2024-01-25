@@ -1,7 +1,15 @@
-current syntax
-	.HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id).HasNavigationKey(child => child.StartsOn, parent => parent.StartsOn)
-new syntax
-	.HasMany(x => x.SubEntities, cfg => cfg.WithNavigationKey().From(x => new {x.Id, x.StartsOn}).To(x => new {x.EntityId, x.StartsOn}))
+comparer
+	we should be able to specify an equality comparer by type
+		such as a decimal(6) comparer for example which would compare only 6 first digits after decimal separator
+	or simply add decimal comparision config, something like cfg => cfg.SetDecimalPrecision(6) while using DeepDiff.DiffSingle or DiffMany
+
+	use DiffSingleOrManyConfiguration.DecimalPrecision in Naive and Precompiled comparer
+
+navigation key
+	current syntax
+		.HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id).HasNavigationKey(child => child.StartsOn, parent => parent.StartsOn)
+	new syntax
+		.HasMany(x => x.SubEntities, cfg => cfg.WithNavigationKey().From(x => new {x.Id, x.StartsOn}).To(x => new {x.EntityId, x.StartsOn}))
 
 more tests
 	complex scenario (see aFRR Activation Control)

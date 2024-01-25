@@ -21,7 +21,7 @@ namespace DeepDiff.Comparers
             if (object.ReferenceEquals(left, right))
                 return true;
             if (Properties == null)
-                return Equals(left, right);
+                return left == null || left.Equals(right);
             if (left is not T)
                 return false;
             if (right is not T)
@@ -30,9 +30,16 @@ namespace DeepDiff.Comparers
             {
                 var existingValue = propertyInfo.GetValue(left);
                 var newValue = propertyInfo.GetValue(right);
-
-                if (!Equals(existingValue, newValue))
-                    return false;
+                if (propertyInfo.PropertyType.IsValueType)
+                {
+                    if (!object.Equals(existingValue, newValue))
+                        return false;
+                }
+                else
+                {
+                    if (!object.ReferenceEquals(existingValue, newValue) && (existingValue == null || !existingValue.Equals(newValue)))
+                        return false;
+                }
             }
             return true;
         }

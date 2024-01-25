@@ -25,5 +25,17 @@
             GenerateOperations = false;
             return this;
         }
+
+        public IDiffSingleConfiguration DisablePrecompiledEqualityComparer()
+        {
+            UsePrecompiledEqualityComparer = false;
+            return this;
+        }
+
+        public IDiffSingleConfiguration SetDecimalPrecision(int precision)
+        {
+            DecimalPrecision = precision;
+            return this;
+        }
     }
 }

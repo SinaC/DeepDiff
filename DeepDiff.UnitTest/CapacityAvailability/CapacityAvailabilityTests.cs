@@ -64,6 +64,59 @@ public class CapacityAvailabilityTests
         Assert.Equal(96, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
     }
 
+    [Fact]
+    public void DetectInsertAtCapacityAvailabilityLevel_Naive()
+    {
+        var startDate = DateTime.Today;
+        var dayCount = 5;
+        var existingCmuId = "CMUIDExisting";
+        var newCmuId = "CMUIDNew";
+        var isEnergyContrained = true;
+
+        var existingCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
+        {
+            Day = startDate.AddDays(x),
+            CapacityMarketUnitId = existingCmuId,
+            IsEnergyContrained = isEnergyContrained,
+            CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
+        }).ToArray();
+        AssignFK(existingCapacityAvailabilities, true);
+
+        var newCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
+        {
+            Day = startDate.AddDays(x),
+            CapacityMarketUnitId = existingCmuId,
+            IsEnergyContrained = isEnergyContrained,
+            CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
+        }).Concat
+        (
+            new[]
+            {
+                new Entities.CapacityAvailability.CapacityAvailability
+                {
+                    Day = startDate.AddDays(1),
+                    CapacityMarketUnitId = newCmuId,
+                    IsEnergyContrained = isEnergyContrained,
+                    CapacityAvailabilityDetails = GenerateDetails(startDate, 1).ToList()
+                }
+            }
+        ).ToArray();
+        AssignFK(newCapacityAvailabilities, false);
+
+        var deepDiff = CreateDeepDiff();
+        var diff = deepDiff.DiffMany(existingCapacityAvailabilities, newCapacityAvailabilities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var results = diff.Entities.ToArray();
+        var operations = diff.Operations;
+
+        Assert.Single(results);
+        Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
+        Assert.Equal(newCmuId, results.Single().CapacityMarketUnitId);
+        Assert.Equal(97, operations.Count); // 1 at root level and 96 at detail level
+        Assert.Equal(97, operations.OfType<InsertDiffOperation>().Count());
+        Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+        Assert.Equal(96, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+    }
+
     private static IEnumerable<CapacityAvailabilityDetail> GenerateDetails(DateTime day, int dayShift)
         => Enumerable.Range(0, 96).Select(y => GenerateDetail(day, dayShift, y));
 

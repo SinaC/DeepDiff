@@ -32,6 +32,27 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void CheckPropagation_Naive()
+        {
+            var existingEntities = Array.Empty<EntityLevel0>();
+
+            var newEntities = GenerateEntities(DateTime.Now).ToList();
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            Assert.Equal(5, results.Length);
+            Assert.Equal(25, results.SelectMany(x => x.SubEntities).Count());
+            Assert.Equal(125, results.SelectMany(x => x.SubEntities).SelectMany(x => x.SubEntities).Count());
+            Assert.All(results, x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+            Assert.All(results.SelectMany(x => x.SubEntities), x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+            Assert.All(results.SelectMany(x => x.SubEntities).SelectMany(x => x.SubEntities), x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+            Assert.All(results.Select(x => x.SubEntity), x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+            Assert.All(results.SelectMany(x => x.SubEntities).Select(x => x.SubEntity), x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+        }
+
+        [Fact]
         public void UpdateSetWhenInsertingNavigationManyNestedEntity()
         {
             var now = DateTime.Now;
@@ -75,6 +96,49 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void UpdateSetWhenInsertingNavigationManyNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // add new sub-sub-entity
+            newEntities[3].SubEntities[2].SubEntities.Add(new EntityLevel2
+            {
+                Index = 98765,
+
+                Id = Guid.NewGuid(),
+
+                DeliveryPointEan = $"DP_INSERTED",
+
+                Value1 = 1234,
+                Value2 = 5678,
+            });
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
+            // Entity1: 3rd -> none
+            Assert.Single(results.Single().SubEntities);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
+            // Entity2: 6th -> inserted
+            Assert.Single(results.Single().SubEntities.Single().SubEntities);
+            Assert.Equal(PersistChange.Insert, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
+            Assert.Equal("DP_INSERTED", results.Single().SubEntities.Single().SubEntities.Single().DeliveryPointEan);
+            Assert.Equal(98765, results.Single().SubEntities.Single().SubEntities.Single().Index);
+        }
+
+        [Fact]
         public void UpdateSetWhenDeletingNavigationManyNestedEntity()
         {
             var now = DateTime.Now;
@@ -86,6 +150,39 @@ namespace DeepDiff.UnitTest.Simple
 
             var deepDiff = CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
+            // Entity1: 3rd -> none
+            Assert.Single(results.Single().SubEntities);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
+            // Entity2: 2th -> deleted
+            Assert.Single(results.Single().SubEntities.Single().SubEntities);
+            Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
+            Assert.Equal("DP_3_2_1", results.Single().SubEntities.Single().SubEntities.Single().DeliveryPointEan);
+            Assert.Equal(3 * 100 + 2 * 10 + 1, results.Single().SubEntities.Single().SubEntities.Single().Index);
+        }
+
+        [Fact]
+        public void UpdateSetWhenDeletingNavigationManyNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // delete 2nd sub-sub-entity
+            newEntities[3].SubEntities[2].SubEntities.RemoveAt(1);
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -142,6 +239,40 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void UpdateSetWhenUpdatingNavigationManyNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // update 2nd sub-sub-entity
+            newEntities[3].SubEntities[2].SubEntities[1].Value2 = 13579m;
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
+            // Entity1: 3rd -> none
+            Assert.Single(results.Single().SubEntities);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntities.Single().SubEntity);
+            // Entity2: 2th -> updated
+            Assert.Single(results.Single().SubEntities.Single().SubEntities);
+            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 100 + 2 * 10 + 1, results.Single().SubEntities.Single().SubEntities.Single().Index);
+            Assert.Equal("DP_3_2_1", results.Single().SubEntities.Single().SubEntities.Single().DeliveryPointEan);
+            Assert.Equal(13579m, results.Single().SubEntities.Single().SubEntities.Single().Value2);
+        }
+
+        [Fact]
         public void UpdateSetAndDeletePropagationWhenDeletingNavigationManyNestedEntity()
         {
             var now = DateTime.Now;
@@ -173,6 +304,37 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void UpdateSetAndDeletePropagationWhenDeletingNavigationManyNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // delete 3rd sub-entity
+            newEntities[3].SubEntities.RemoveAt(2);
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
+            // Entity1: 3rd -> deleted
+            Assert.Single(results.Single().SubEntities);
+            Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntity: deleted
+            Assert.Equal(PersistChange.Delete, results.Single().SubEntities.Single().SubEntity.PersistChange);
+            // Every Entity2 in Entity1 -> deleted
+            Assert.Equal(5, results.Single().SubEntities.Single().SubEntities.Count);
+            Assert.All(results.Single().SubEntities.Single().SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
+        }
+
+        [Fact]
         public void UpdateSetWhenUpdatingNavigationOneNestedEntity()
         {
             var now = DateTime.Now;
@@ -184,6 +346,39 @@ namespace DeepDiff.UnitTest.Simple
 
             var deepDiff = CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntity: null
+            Assert.Null(results.Single().SubEntity);
+            // Entity1: 3rd -> none
+            Assert.Single(results.Single().SubEntities);
+            Assert.Equal(PersistChange.None, results.Single().SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 2, results.Single().SubEntities.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities.Single().SubEntities);
+            // Entity2: update
+            Assert.Equal(PersistChange.Update, results.Single().SubEntities.Single().SubEntity.PersistChange);
+            Assert.Equal(3 * 10 + 2 + 9999, results.Single().SubEntities.Single().SubEntity.Index);
+            Assert.Equal(13579m, results.Single().SubEntities.Single().SubEntity.Value2);
+            Assert.Equal("DP_3_2_1000", results.Single().SubEntities.Single().SubEntity.DeliveryPointEan);
+        }
+
+        [Fact]
+        public void UpdateSetWhenUpdatingNavigationOneNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // update sub-sub-entity
+            newEntities[3].SubEntities[2].SubEntity.Value2 = 13579m;
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -248,6 +443,48 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void UpdateSetWhenInsertingNavigationManyInsideNavigationOneNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // add new sub-sub-entity
+            newEntities[3].SubEntity.SubEntities.Add(new EntityLevel2
+            {
+                Index = 98765,
+
+                Id = Guid.NewGuid(),
+
+                DeliveryPointEan = $"DP_INSERTED",
+
+                Value1 = 1234,
+                Value2 = 5678,
+            });
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
+            // Entity1: none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
+            Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
+            // Entity2: 6th -> inserted
+            Assert.Single(results.Single().SubEntity.SubEntities);
+            Assert.Equal(PersistChange.Insert, results.Single().SubEntity.SubEntities.Single().PersistChange);
+            Assert.Equal(98765, results.Single().SubEntity.SubEntities.Single().Index);
+            Assert.Equal("DP_INSERTED", results.Single().SubEntity.SubEntities.Single().DeliveryPointEan);
+        }
+
+        [Fact]
         public void UpdateSetWhenDeletingNavigationManyInsideNavigationOneNestedEntity()
         {
             var now = DateTime.Now;
@@ -280,6 +517,38 @@ namespace DeepDiff.UnitTest.Simple
         }
 
         [Fact]
+        public void UpdateSetWhenDeletingNavigationManyInsideNavigationOneNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // delete 2nd sub-sub-entity
+            newEntities[3].SubEntity.SubEntities.RemoveAt(1);
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
+            // Entity1: none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
+            Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
+            // Entity2: 2th -> deleted
+            Assert.Single(results.Single().SubEntity.SubEntities);
+            Assert.Equal(PersistChange.Delete, results.Single().SubEntity.SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 1 + 9999, results.Single().SubEntity.SubEntities.Single().Index);
+            Assert.Equal("DP_3_1000_1", results.Single().SubEntity.SubEntities.Single().DeliveryPointEan);
+        }
+
+        [Fact]
         public void UpdateSetWhenUpdatingNavigationManyInsideNavigationOneNestedEntity()
         {
             var now = DateTime.Now;
@@ -291,6 +560,39 @@ namespace DeepDiff.UnitTest.Simple
 
             var deepDiff = CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var results = diff.Entities.ToArray();
+
+            // Entity0: 4th -> none
+            Assert.Single(results);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Equal(3, results.Single().Index);
+            // SubEntities: null
+            Assert.Empty(results.Single().SubEntities);
+            // Entity1: 3rd -> none
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
+            Assert.Equal(3 + 9999, results.Single().SubEntity.Index);
+            // SubEntities: null
+            Assert.Null(results.Single().SubEntity.SubEntity);
+            // Entity2: 2th -> updated
+            Assert.Single(results.Single().SubEntity.SubEntities);
+            Assert.Equal(PersistChange.Update, results.Single().SubEntity.SubEntities.Single().PersistChange);
+            Assert.Equal(3 * 10 + 1 + 9999, results.Single().SubEntity.SubEntities.Single().Index);
+            Assert.Equal("DP_3_1000_1", results.Single().SubEntity.SubEntities.Single().DeliveryPointEan);
+            Assert.Equal(13579m, results.Single().SubEntity.SubEntities.Single().Value2);
+        }
+
+        [Fact]
+        public void UpdateSetWhenUpdatingNavigationManyInsideNavigationOneNestedEntity_Naive()
+        {
+            var now = DateTime.Now;
+            // existing == newEntities
+            var existingEntities = GenerateEntities(now).ToList();
+            var newEntities = GenerateEntities(now).ToList();
+            // update 2nd sub-sub-entity
+            newEntities[3].SubEntity.SubEntities[1].Value2 = 13579m;
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none

@@ -2,8 +2,6 @@ using DeepDiff.Configuration;
 using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -53,41 +51,44 @@ namespace DeepDiff.UnitTest.ActivationControl
         }
 
         [Fact]
-        public void Single_ChildrenDeletedAndOneChildrenInsertedAndRootUpdated()
+        public void Single_2Updates_Naive()
         {
             var deliveryDate = Date.Today;
+
             var existing = Generate(deliveryDate, ActivationControlStatus.Validated, "INTERNAL", "TSO");
-            var calculated = new Entities.ActivationControl.ActivationControl
-            {
-                Day = deliveryDate,
-                ContractReference = "CREF",
-
-                TotalDiscrepancy = 0,
-                TotalEnergyRequested = 0,
-                TotalEnergyToBeSupplied = 0,
-                FailedPercentage = 0,
-                IsJumpExcludedCount = 0,
-                IsMeasurementExcludedCount = 0,
-
-                ActivationControlDetails = new List<ActivationControlDetail> 
-                {
-                    new ActivationControlDetail
-                    {
-                        StartsOn = DateTime.Today.AddDays(1).AddHours(4).AddMinutes(45), // should get activation control id from existing (1)
-                        
-                        TimestampDetails = new List<ActivationControlTimestampDetail>(),
-                        DpDetails = new List<ActivationControlDpDetail>(),
-                    }
-                },
-
-                Status = ActivationControlStatus.Calculated,
-            };
+            var calculated = Generate(deliveryDate, ActivationControlStatus.Calculated, null!, null!);
+            calculated.TotalEnergyToBeSupplied = 5m;
+            calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.DisablePrecompiledEqualityComparer());
             var result = diff.Entity;
             var operations = diff.Operations;
+
+            //
+            Assert.NotNull(result);
+            Assert.Equal(PersistChange.Update, result.PersistChange);
+            Assert.Equal(ActivationControlStatus.Calculated, result.Status);
+            Assert.Equal("INTERNAL", result.InternalComment);
+            Assert.Equal("TSO", result.TsoComment);
+            Assert.Single(result.ActivationControlDetails);
+            Assert.Single(result.ActivationControlDetails.Single().DpDetails);
+            Assert.Empty(result.ActivationControlDetails.Single().TimestampDetails);
+            Assert.Single(result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
+            Assert.Equal(-7, result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
+            Assert.Empty(operations.OfType<InsertDiffOperation>());
+            Assert.Empty(operations.OfType<DeleteDiffOperation>());
+            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Count());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).SelectMany(x => x.UpdatedProperties));
+            Assert.Equal((5m).ToString(), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().NewValue);
+            Assert.Equal((3).ToString(), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().ExistingValue);
+            Assert.Equal(nameof(Entities.ActivationControl.ActivationControl.TotalEnergyToBeSupplied), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).UpdatedProperties.Single().PropertyName);
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)));
+            Assert.Equal((-7m).ToString(), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().NewValue);
+            Assert.Equal((420).ToString(), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().ExistingValue);
+            Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().PropertyName);
         }
 
         private static IDeepDiff CreateDeepDiff()
