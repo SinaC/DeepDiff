@@ -18,9 +18,14 @@ namespace DeepDiff.Configuration
 
         public INavigationOneConfiguration<TEntity, TChildEntity> HasNavigationKey<TKey>(Expression<Func<TChildEntity, TKey>> childNavigationKeyExpression, Expression<Func<TEntity, TKey>> navigationKeyExpression)
         {
-            var childNavigationKeyProperty = childNavigationKeyExpression.GetSimplePropertyAccess().Single();
-            var navigationKeyProperty = navigationKeyExpression.GetSimplePropertyAccess().Single();
-            Configuration.AddNavigationKeyConfiguration(childNavigationKeyProperty, navigationKeyProperty);
+            var childNavigationKeyProperties = childNavigationKeyExpression.GetSimplePropertyAccessList().Select(p => p.Single()).ToArray();
+            var navigationKeyProperties = navigationKeyExpression.GetSimplePropertyAccessList().Select(p => p.Single()).ToArray();
+            for (var i = 0; i < childNavigationKeyProperties.Length; i++) // we are sure childNavigationKeyProperties and navigationKeyProperties has the same length
+            {
+                var childNavigationKeyProperty = childNavigationKeyProperties[i];
+                var navigationKeyProperty = navigationKeyProperties[i];
+                Configuration.AddNavigationKeyConfiguration(childNavigationKeyProperty, navigationKeyProperty);
+            }
             return this;
         }
     }

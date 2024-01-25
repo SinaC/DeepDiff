@@ -247,15 +247,15 @@ namespace DeepDiff.UnitTest.ForeignKey
             diffConfiguration.PersistEntity<ActivationControlDetail>()
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.OfferedVolumeUp, x.OfferedVolumeDown, x.OfferedVolumeForRedispatchingUp, x.OfferedVolumeForRedispatchingDown, x.PermittedDeviationUp, x.PermittedDeviationDown, x.RampingRate, x.HasJump })
-                .HasMany(x => x.TimestampDetails, cfg => cfg.HasNavigationKey(x => x.ActivationControlId, x => x.ActivationControlId).HasNavigationKey(x => x.StartsOn, x => x.StartsOn))
-                .HasMany(x => x.DpDetails, cfg => cfg.HasNavigationKey(x => x.ActivationControlId, x => x.ActivationControlId).HasNavigationKey(x => x.StartsOn, x => x.StartsOn));
+                .HasMany(x => x.TimestampDetails, cfg => cfg.HasNavigationKey(x => new { x.ActivationControlId, x.StartsOn }, x => new { x.ActivationControlId, x.StartsOn }))
+                .HasMany(x => x.DpDetails, cfg => cfg.HasNavigationKey(x => new { x.ActivationControlId, x.StartsOn }, x => new { x.ActivationControlId, x.StartsOn }));
             diffConfiguration.PersistEntity<ActivationControlTimestampDetail>()
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded });
             diffConfiguration.PersistEntity<ActivationControlDpDetail>()
                 .HasKey(x => x.DeliveryPointEan)
                 .HasValues(x => new { x.DeliveryPointName, x.Direction, x.DeliveryPointType, x.TotalEnergySupplied })
-                .HasMany(x => x.TimestampDetails, cfg => cfg.HasNavigationKey(x => x.ActivationControlId, x => x.ActivationControlId).HasNavigationKey(x => x.StartsOn, x => x.StartsOn).HasNavigationKey(x => x.DeliveryPointEan, x => x.DeliveryPointEan));
+                .HasMany(x => x.TimestampDetails, cfg => cfg.HasNavigationKey(x => new { x.ActivationControlId, x.StartsOn, x.DeliveryPointEan }, x => new { x.ActivationControlId, x.StartsOn, x.DeliveryPointEan }));
             diffConfiguration.PersistEntity<ActivationControlDpTimestampDetail>()
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied });

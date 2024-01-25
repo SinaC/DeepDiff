@@ -5,12 +5,6 @@ comparer
 
 	use DiffSingleOrManyConfiguration.DecimalPrecision in Naive and Precompiled comparer
 
-navigation key
-	current syntax
-		.HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id).HasNavigationKey(child => child.StartsOn, parent => parent.StartsOn)
-	new syntax
-		.HasMany(x => x.SubEntities, cfg => cfg.WithNavigationKey().From(x => new {x.Id, x.StartsOn}).To(x => new {x.EntityId, x.StartsOn}))
-
 more tests
 	complex scenario (see aFRR Activation Control)
 
