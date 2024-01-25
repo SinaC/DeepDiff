@@ -8,7 +8,7 @@ var diffConfiguration = new DiffConfiguration();
 diffConfiguration.Entity<Entity>()
    .HasKey(x => new { x.StartsOn, x.Name })
    .HasValues(x => new { x.Price, x.Volume })
-   .HasMany(x => x.SubEntities)
+   .HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id))
    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
    .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
    .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -31,7 +31,7 @@ public class Entity
   public Guid Id { get; set; } // DB Key
   public DateTime StartsOn { get; set; } // Business Key
   public string Name { get; set; } // Business Key
-  public int Price { get; set; }
+  public decimal Price { get; set; }
   public int Volume { get; set; }
   public PersistChange PersistChange { get; set; }
   public List<SubEntity> SubEntities { get; set; }
@@ -43,6 +43,7 @@ public class SubEntity
   public string SubName { get; set; } // Business Key
   public int Energy { get; set; }
   public PersistChange PersistChange { get; set; }
+  public Guid EntityId { get; set; } // Foreign Key
 }
 
 public enum PersistChange

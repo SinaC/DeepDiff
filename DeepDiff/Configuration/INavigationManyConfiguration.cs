@@ -1,6 +1,12 @@
+using System.Linq.Expressions;
+using System;
+
 namespace DeepDiff.Configuration
 {
-    public interface INavigationManyConfiguration
+    public interface INavigationManyConfiguration<TEntity, TChildEntity>
+        where TEntity : class
+        where TChildEntity : class
     {
+        INavigationManyConfiguration<TEntity, TChildEntity> HasNavigationKey<TKey>(Expression<Func<TChildEntity, TKey>> childNavigationKeyExpression, Expression<Func<TEntity, TKey>> navigationKeyExpression);
     }
 }
