@@ -1,3 +1,5 @@
+.HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id))
+
 more tests
 	complex scenario (see aFRR Activation Control)
 

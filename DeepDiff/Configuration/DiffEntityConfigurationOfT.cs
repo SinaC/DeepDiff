@@ -51,30 +51,33 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression)
-            where TTargetEntity : class
+        public IDiffEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression)
+            where TChildEntity : class
             => HasMany(navigationPropertyExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasMany<TTargetEntity>(Expression<Func<TEntity, List<TTargetEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration> navigationManyConfigurationAction)
-            where TTargetEntity : class
+        public IDiffEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration<TEntity, TChildEntity>> navigationManyConfigurationAction)
+            where TChildEntity : class
         {
             var navigationManyPropertyInfo = navigationPropertyExpression.GetSimplePropertyAccess().Single();
-            var navigationManyDestinationType = typeof(TTargetEntity);
+            var navigationManyDestinationType = typeof(TChildEntity);
             var config = Configuration.AddNavigationMany(navigationManyPropertyInfo, navigationManyDestinationType);
-            navigationManyConfigurationAction?.Invoke(config);
+            var configOfT = new NavigationManyConfiguration<TEntity, TChildEntity>(config);
+            navigationManyConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression)
-            where TTargetEntity : class
+        public IDiffEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression)
+            where TChildEntity : class
             => HasOne(navigationPropertyExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasOne<TTargetEntity>(Expression<Func<TEntity, TTargetEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration> navigationOneConfigurationAction)
-            where TTargetEntity : class
+        public IDiffEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration<TEntity, TChildEntity>> navigationOneConfigurationAction)
+            where TChildEntity : class
         {
-            var navigationOneDestinationType = typeof(TTargetEntity);
-            var config = Configuration.AddNavigationOne(navigationPropertyExpression.GetSimplePropertyAccess().Single(), navigationOneDestinationType);
-            navigationOneConfigurationAction?.Invoke(config);
+            var navigationOnePropertyInfo = navigationPropertyExpression.GetSimplePropertyAccess().Single();
+            var navigationOneDestinationType = typeof(TChildEntity);
+            var config = Configuration.AddNavigationOne(navigationOnePropertyInfo, navigationOneDestinationType);
+            var configOfT = new NavigationOneConfiguration<TEntity, TChildEntity>(config);
+            navigationOneConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
