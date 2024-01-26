@@ -30,8 +30,7 @@ namespace DeepDiff.Configuration
             if (DiffEntityConfigurationByTypes.ContainsKey(entityType))
                 throw new DuplicateDiffEntityConfigurationException(entityType);
 
-            var diffEntityConfiguration = new DiffEntityConfiguration(entityType);
-            diffEntityConfiguration.SetTypeSpecificComparers(TypeSpecificComparers);
+            var diffEntityConfiguration = new DiffEntityConfiguration(entityType, TypeSpecificComparers);
             DiffEntityConfigurationByTypes.Add(entityType, diffEntityConfiguration);
 
             return new DiffEntityConfiguration<TEntity>(diffEntityConfiguration);
@@ -41,13 +40,13 @@ namespace DeepDiff.Configuration
             where TProfile : DiffProfile
         {
             var diffProfileInstance = CreateProfileInstance(typeof(TProfile));
-            AddProfileFromInstance(diffProfileInstance);
+            //AddProfileFromInstance(diffProfileInstance);
             return this;
         }
 
         public IDiffConfiguration AddProfile(DiffProfile diffProfile)
         {
-            AddProfileFromInstance(diffProfile);
+            //AddProfileFromInstance(diffProfile);
             return this;
         }
 
@@ -61,7 +60,7 @@ namespace DeepDiff.Configuration
                     foreach (var derivedDiffProfileType in assembly.GetTypes().Where(x => x != diffProfileType && diffProfileType.IsAssignableFrom(x)))
                     {
                         var diffProfileInstance = CreateProfileInstance(derivedDiffProfileType);
-                        AddProfileFromInstance(diffProfileInstance);
+                        //AddProfileFromInstance(diffProfileInstance);
                     }
                 }
             }
@@ -104,12 +103,13 @@ namespace DeepDiff.Configuration
                 throw new AggregateException(exceptions);
         }
 
-        private static DiffProfile CreateProfileInstance(Type diffProfileType)
+        private DiffProfile CreateProfileInstance(Type diffProfileType)
         {
             DiffProfile diffProfileInstance;
             try
             {
-                diffProfileInstance = (DiffProfile)Activator.CreateInstance(diffProfileType)!;
+                diffProfileInstance = (DiffProfile)Activator.CreateInstance(diffProfileType, this)!;
+                //diffProfileInstance.TypeSpecificComparers = TypeSpecificComparers;
             }
             catch (TargetInvocationException ex) when (ex.InnerException is DuplicateDiffEntityConfigurationException)
             {
@@ -118,16 +118,14 @@ namespace DeepDiff.Configuration
             return diffProfileInstance;
         }
 
-        private void AddProfileFromInstance(DiffProfile diffProfile)
-        {
-            foreach (var typeAndDiffEntityConfiguration in diffProfile.DiffEntityConfigurations)
-            {
-                if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
-                    throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
-                typeAndDiffEntityConfiguration.Value.SetTypeSpecificComparers(TypeSpecificComparers);
-                DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
-            }
-
-        }
+        //private void AddProfileFromInstance(DiffProfile diffProfile)
+        //{
+        //    foreach (var typeAndDiffEntityConfiguration in diffProfile.DiffEntityConfigurations)
+        //    {
+        //        if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
+        //            throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
+        //        DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
+        //    }
+        //}
     }
 }

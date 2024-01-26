@@ -9,7 +9,7 @@ namespace DeepDiff.Configuration
     internal sealed class DiffEntityConfiguration
     {
         public Type EntityType { get; }
-        public IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get; private set; } = null!;
+        public IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get; } = null!;
 
         public KeyConfiguration KeyConfiguration { get; private set; } = null!;
         public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
@@ -19,13 +19,14 @@ namespace DeepDiff.Configuration
         public InsertConfiguration InsertConfiguration { get; private set; } = null!;
         public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
 
-        public DiffEntityConfiguration(Type entityType)
+        internal DiffEntityConfiguration(Type entityType)
+            : this(entityType, null)
         {
-            EntityType = entityType;
         }
 
-        public void SetTypeSpecificComparers(IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        public DiffEntityConfiguration(Type entityType, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
         {
+            EntityType = entityType;
             TypeSpecificComparers = typeSpecificComparers;
         }
 
