@@ -12,9 +12,7 @@ namespace DeepDiff.Validators
         public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
         {
             var insertConfiguration = diffEntityConfiguration.InsertConfiguration;
-            if (insertConfiguration == null)
-                yield return new MissingOnInsertConfigurationException(entityType);
-            else
+            if (insertConfiguration != null)
             {
                 if (insertConfiguration.SetValueConfiguration == null)
                     yield return new MissingSetValueConfigurationException(entityType, "OnInsert");
