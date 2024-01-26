@@ -20,6 +20,10 @@ internal class EntityLevel1 : PersistEntity
     // one-to-many
     public List<EntityLevel2> SubEntities { get; set; } = null!;
 
+    // FK to EntityLevel0
+    public Guid EntityLevel0Id { get; set; }
+    public EntityLevel0 EntityLevel0 { get; set; } = null!;
+
     // debug property, will never participate in compare neither as key nor value
     public int Index { get; set; }
 }

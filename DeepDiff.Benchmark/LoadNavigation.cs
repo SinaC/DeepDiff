@@ -137,7 +137,7 @@ public class LoadNavigation
         HashtablePrecompiledComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
     }
 
-    [Params(10, 100, 1000)]
+    [Params(10, 100)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoNew, DataGenerationOptions.Random)]

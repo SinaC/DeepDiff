@@ -1,6 +1,7 @@
 using DeepDiff.Exceptions;
 using DeepDiff.Validators;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +10,18 @@ namespace DeepDiff.Configuration
 {
     public sealed class DiffConfiguration : IDiffConfiguration
     {
+        private IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get;  }
+
         internal Dictionary<Type, DiffEntityConfiguration> DiffEntityConfigurationByTypes { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
+
+        public DiffConfiguration()
+        {
+        }
+
+        public DiffConfiguration(IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        {
+            TypeSpecificComparers = typeSpecificComparers;
+        }
 
         public IDiffEntityConfiguration<TEntity> Entity<TEntity>()
             where TEntity : class
@@ -19,6 +31,7 @@ namespace DeepDiff.Configuration
                 throw new DuplicateDiffEntityConfigurationException(entityType);
 
             var diffEntityConfiguration = new DiffEntityConfiguration(entityType);
+            diffEntityConfiguration.SetTypeSpecificComparers(TypeSpecificComparers);
             DiffEntityConfigurationByTypes.Add(entityType, diffEntityConfiguration);
 
             return new DiffEntityConfiguration<TEntity>(diffEntityConfiguration);
@@ -111,6 +124,7 @@ namespace DeepDiff.Configuration
             {
                 if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
                     throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
+                typeAndDiffEntityConfiguration.Value.SetTypeSpecificComparers(TypeSpecificComparers);
                 DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
             }
 

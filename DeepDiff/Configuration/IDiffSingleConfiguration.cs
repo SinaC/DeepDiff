@@ -6,5 +6,6 @@
         IDiffSingleConfiguration SetHashtableThreshold(int threshold);
         IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
         IDiffSingleConfiguration DisableOperationsGeneration();
+        IDiffSingleConfiguration DisablePrecompiledEqualityComparer();
     }
 }

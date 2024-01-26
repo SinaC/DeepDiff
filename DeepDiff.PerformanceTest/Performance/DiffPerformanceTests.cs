@@ -64,9 +64,9 @@ public class DiffPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var deepDiff = CreateDeepDiff_NaiveComparer();
+        var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
+        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -82,9 +82,9 @@ public class DiffPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var deepDiff = CreateDeepDiff_NaiveComparer();
+        var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisableHashTable());
+        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisableHashTable().DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -108,27 +108,6 @@ public class DiffPerformanceTests
         diffConfiguration.PersistEntity<EntityLevel2>()
             .HasKey(x => x.DeliveryPointEan)
             .HasValues(x => new { x.Value1, x.Value2 });
-        var diff = diffConfiguration.CreateDeepDiff();
-        return diff;
-    }
-
-    private static IDeepDiff CreateDeepDiff_NaiveComparer()
-    {
-        var diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
-            .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasValues(x => new { x.RequestedPower, x.Penalty }, opt => opt.DisablePrecompiledEqualityComparer())
-            .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
-            .HasOne(x => x.SubEntity)
-            .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel1>()
-            .HasKey(x => x.Timestamp, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasValues(x => new { x.Power, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasOne(x => x.SubEntity)
-            .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel2>()
-            .HasKey(x => x.DeliveryPointEan, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasValues(x => new { x.Value1, x.Value2 }, opt => opt.DisablePrecompiledEqualityComparer());
         var diff = diffConfiguration.CreateDeepDiff();
         return diff;
     }

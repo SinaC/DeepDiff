@@ -24,5 +24,11 @@
             GenerateOperations = false;
             return this;
         }
+
+        public IDiffManyConfiguration DisablePrecompiledEqualityComparer()
+        {
+            UsePrecompiledEqualityComparer = false;
+            return this;
+        }
     }
 }
