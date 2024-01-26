@@ -7,6 +7,5 @@
         IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
         IDiffSingleConfiguration DisableOperationsGeneration();
         IDiffSingleConfiguration DisablePrecompiledEqualityComparer();
-        IDiffSingleConfiguration SetDecimalPrecision(int precision);
     }
 }

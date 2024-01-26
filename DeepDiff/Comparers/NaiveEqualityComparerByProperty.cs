@@ -9,16 +9,25 @@ namespace DeepDiff.Comparers
     internal sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
         where T : class
     {
-        private IReadOnlyCollection<PropertyInfo>? Properties { get; }
+        private Type TypeOfT { get; }
+        private IReadOnlyCollection<PropertyInfo> Properties { get; }
+        private IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get; }
 
         public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
+            : this(properties, null)
         {
+        }
+
+        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        {
+            TypeOfT = typeof(T);
             Properties = properties?.ToArray();
+            TypeSpecificComparers = typeSpecificComparers;
         }
 
         public new bool Equals(object? left, object? right)
         {
-            if (object.ReferenceEquals(left, right))
+            if (object.ReferenceEquals(left, right)) // will handle left == right == null
                 return true;
             if (Properties == null)
                 return left == null || left.Equals(right);
@@ -26,11 +35,19 @@ namespace DeepDiff.Comparers
                 return false;
             if (right is not T)
                 return false;
+            if (TypeSpecificComparers?.TryGetValue(TypeOfT, out var typeSpecificComparer) == true)
+                return typeSpecificComparer.Equals(left, right);
             foreach (var propertyInfo in Properties)
             {
                 var existingValue = propertyInfo.GetValue(left);
                 var newValue = propertyInfo.GetValue(right);
-                if (propertyInfo.PropertyType.IsValueType)
+
+                if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                {
+                    if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
+                        return false;
+                }
+                else if (propertyInfo.PropertyType.IsValueType)
                 {
                     if (!object.Equals(existingValue, newValue))
                         return false;

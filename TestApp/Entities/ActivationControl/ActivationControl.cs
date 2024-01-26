@@ -5,7 +5,7 @@ namespace TestApp.Entities.ActivationControl;
 [DebuggerDisplay("{DebuggerDisplay, nq}")]
 public class ActivationControl : UpdateAuditEntity
 {
-    public string ContractReference { get; set; }
+    public string ContractReference { get; set; } = null!;
     public Date Day { get; set; }
 
     public decimal TotalEnergyRequested { get; set; }
@@ -16,8 +16,8 @@ public class ActivationControl : UpdateAuditEntity
     public int IsJumpExcludedCount { get; set; }
 
     public ActivationControlStatus Status { get; set; }
-    public string InternalComment { get; set; }
-    public string TsoComment { get; set; }
+    public string InternalComment { get; set; } = null!;
+    public string TsoComment { get; set; } = null!;
 
     // one-to-many
     public List<ActivationControlDetail> ActivationControlDetails { get; set; } = null!;

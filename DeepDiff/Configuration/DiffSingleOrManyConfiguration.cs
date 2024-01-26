@@ -7,6 +7,5 @@
         public bool OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel { get; protected set; } = false;
         public bool GenerateOperations { get; protected set; } = true;
         public bool UsePrecompiledEqualityComparer { get; protected set; } = true;
-        public int? DecimalPrecision { get; protected set; } = null; // if null, no specific compare
     }
 }

@@ -31,11 +31,5 @@
             UsePrecompiledEqualityComparer = false;
             return this;
         }
-
-        public IDiffSingleConfiguration SetDecimalPrecision(int precision)
-        {
-            DecimalPrecision = precision;
-            return this;
-        }
     }
 }

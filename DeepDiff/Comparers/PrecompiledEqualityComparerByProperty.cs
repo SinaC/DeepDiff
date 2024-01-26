@@ -14,8 +14,13 @@ namespace DeepDiff.Comparers
         private Func<T, int> Hasher { get; init; }
 
         public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
+            : this(properties, null)
         {
-            Comparer = ExpressionGenerater.GenerateComparer<T>(properties);
+        }
+
+        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        {
+            Comparer = ExpressionGenerater.GenerateComparer<T>(properties, typeSpecificComparers);
             Hasher = ExpressionGenerater.GenerateHasher<T>(properties);
         }
 
@@ -30,9 +35,6 @@ namespace DeepDiff.Comparers
     // most code has been ripped from https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
     internal delegate bool CompareFunc<T>(T left, T right);
 
-    /// <summary>
-    /// Helper class to take care of generating the comparer expression using "Just once" reflection.
-    /// </summary>
     internal static class ExpressionGenerater
     {
         internal static MethodInfo SequenceEqualMethod { get; }
@@ -59,32 +61,40 @@ namespace DeepDiff.Comparers
               .Single(methodInfo => methodInfo.Name == nameof(ExpressionGenerater.AddHashCodeMembersForCollection));
         }
 
-        private static Expression GenerateEqualityExpression(ParameterExpression left, ParameterExpression right, PropertyInfo propInfo)
+        private static Expression GenerateEqualityExpression(ParameterExpression left, ParameterExpression right, PropertyInfo propInfo, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
         {
             Type propertyType = propInfo.PropertyType;
-            Type equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
 
             MethodInfo equalMethod;
             Expression equalCall;
-            if (equitableType.IsAssignableFrom(propertyType))
+            if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Converter.Equals((object)left, (object)right)
             {
-                equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType });
-                equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Property(right, propInfo));
+                equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
+                equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
             }
             else
             {
-                equalMethod = propertyType.GetMethod(nameof(Equals), new Type[] { typeof(object) });
-                equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
+                Type equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
+                if (equitableType.IsAssignableFrom(propertyType)) // generates left.Equals(right)
+                {
+                    equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType });
+                    equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Property(right, propInfo));
+                }
+                else // generates left.Equals((object)right)
+                {
+                    equalMethod = propertyType.GetMethod(nameof(Equals), new Type[] { typeof(object) });
+                    equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
+                }
             }
 
             if (propInfo.PropertyType.IsValueType)
             {
-                // Property is value type, no need to check for null, so directly call Equals
+                // property is value type, no need to check for null, so directly call Equals
                 return equalCall;
             }
             else
             {
-                // Generate
+                // generate
                 //       Expression<Func<T, T, bool>> ce = (T x, T y) => object.ReferenceEquals(x, y) || (x != null && x.Equals(y));
 
                 Expression leftValue = Expression.Property(left, propInfo);
@@ -99,7 +109,7 @@ namespace DeepDiff.Comparers
             }
         }
 
-        internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties)
+        internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
         {
             var comparers = new List<Expression>();
             ParameterExpression left = Expression.Parameter(typeof(T), "left");
@@ -107,7 +117,7 @@ namespace DeepDiff.Comparers
 
             foreach (PropertyInfo propInfo in properties)
             {
-                comparers.Add(GenerateEqualityExpression(left, right, propInfo));
+                comparers.Add(GenerateEqualityExpression(left, right, propInfo, typeSpecificComparers));
             }
             Expression ands = comparers.Aggregate((left, right) => Expression.AndAlso(left, right));
             CompareFunc<T>? andComparer = Expression.Lambda<CompareFunc<T>>(ands, left, right).Compile();

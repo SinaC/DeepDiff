@@ -13,11 +13,11 @@ public class CapacityAvailabilityDetail : UpdateAuditEntity<Guid>
     public decimal MissingVolume { get; set; }
 
     public CapacityAvailabilityStatus Status { get; set; }
-    public string Comment { get; set; }
+    public string Comment { get; set; } = null!;
 
     // FK to CapacityAvailability
     public Guid CapacityAvailabilityId { get; set; }
-    public CapacityAvailability CapacityAvailability { get; set; }
+    public CapacityAvailability CapacityAvailability { get; set; } = null!;
 
     private string DebuggerDisplay => $"{StartsOn} OV:{ObligatedVolume} AV:{AvailableVolume} MV:{MissingVolume} {Status} {Id}";
 }

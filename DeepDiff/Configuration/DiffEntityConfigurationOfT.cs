@@ -12,11 +12,6 @@ namespace DeepDiff.Configuration
     {
         public DiffEntityConfiguration Configuration { get; private set; }
 
-        public DiffEntityConfiguration()
-        {
-            Configuration = new DiffEntityConfiguration(typeof(TEntity));
-        }
-
         internal DiffEntityConfiguration(DiffEntityConfiguration diffEntityConfiguration)
         {
             Configuration = diffEntityConfiguration;
@@ -29,8 +24,8 @@ namespace DeepDiff.Configuration
         {
             // TODO: can only be set once
             var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(keyProperties);
-            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(keyProperties);
+            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(keyProperties, Configuration.TypeSpecificComparers);
+            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(keyProperties, Configuration.TypeSpecificComparers);
 
             var config = Configuration.SetKey(keyProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
             keyConfigurationAction?.Invoke(config);
@@ -44,8 +39,8 @@ namespace DeepDiff.Configuration
         {
             // TODO: can only be set once
             var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties);
-            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties);
+            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties, Configuration.TypeSpecificComparers);
+            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties, Configuration.TypeSpecificComparers);
             var config = Configuration.SetValues(valueProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
             valuesConfigurationAction?.Invoke(config);
             return this;

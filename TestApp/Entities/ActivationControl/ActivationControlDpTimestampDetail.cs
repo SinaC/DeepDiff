@@ -9,7 +9,7 @@ public class ActivationControlDpTimestampDetail : PersistEntity
     // PK from ActivationControlDpDetail
     public Guid ActivationControlId { get; set; }
     public DateTime StartsOn { get; set; }
-    public string DeliveryPointEan { get; set; }
+    public string DeliveryPointEan { get; set; } = null!;
     // PK
     public DateTime Timestamp { get; set; }
 

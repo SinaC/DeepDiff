@@ -1,7 +1,11 @@
 using DeepDiff.Configuration;
 using DeepDiff.Operations;
+using DeepDiff.UnitTest.Comparer;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -91,9 +95,72 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().PropertyName);
         }
 
+        [Fact]
+        public void Decimal6()
+        {
+            var deliveryDate = Date.Today;
+            var existing = new Entities.ActivationControl.ActivationControl
+            {
+                Day = deliveryDate,
+                ContractReference = "CREF",
+
+                TotalEnergyToBeSupplied = 1.123456789m,
+            };
+            var calculated = new Entities.ActivationControl.ActivationControl
+            {
+                Day = deliveryDate,
+                ContractReference = "CREF",
+
+                TotalEnergyToBeSupplied = 1.1234561212121m,
+            };
+
+            //
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffSingle(existing, calculated);
+            var result = diff.Entity;
+            var operations = diff.Operations;
+
+            //
+            Assert.Null(result); // no diff
+        }
+
+        [Fact]
+        public void Decimal6_Naive()
+        {
+            var deliveryDate = Date.Today;
+            var existing = new Entities.ActivationControl.ActivationControl
+            {
+                Day = deliveryDate,
+                ContractReference = "CREF",
+
+                TotalEnergyToBeSupplied = 1.123456789m,
+            };
+            var calculated = new Entities.ActivationControl.ActivationControl
+            {
+                Day = deliveryDate,
+                ContractReference = "CREF",
+
+                TotalEnergyToBeSupplied = 1.1234561212121m,
+            };
+
+            //
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var result = diff.Entity;
+            var operations = diff.Operations;
+
+            //
+            Assert.Null(result); // no diff
+        }
+
         private static IDeepDiff CreateDeepDiff()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var typeSpecificCompares = new Dictionary<Type, IEqualityComparer>
+            {
+                { typeof(decimal), new DecimalComparer(6) },
+                { typeof(decimal?), new NullableDecimalComparer(6) },
+            };
+            var diffConfiguration = new DiffConfiguration(typeSpecificCompares);
             diffConfiguration.PersistEntity<Entities.ActivationControl.ActivationControl>()
                 .HasKey(x => new { x.Day, x.ContractReference })
                 .HasMany(x => x.ActivationControlDetails)
