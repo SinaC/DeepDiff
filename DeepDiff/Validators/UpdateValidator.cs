@@ -15,9 +15,7 @@ namespace DeepDiff.Validators
         public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
         {
             var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
-            if (diffEntityConfiguration.UpdateConfiguration == null)
-                yield return new MissingOnUpdateConfigurationException(entityType);
-            else
+            if (updateConfiguration != null)
             {
                 // set value
                 if (updateConfiguration.SetValueConfiguration == null)
