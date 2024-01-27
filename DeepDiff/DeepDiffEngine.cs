@@ -270,10 +270,17 @@ namespace DeepDiff
             if (diff == newEntityChild)
             {
                 if (navigationOneConfiguration.NavigationKeyConfigurations != null)
-                    CopyNavigationKey(navigationOneConfiguration.NavigationKeyConfigurations, newEntityChild, existingEntity); // TODO: this will not propagate navigation keys in nested entities
+                    CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, navigationOneConfiguration.NavigationKeyConfigurations, newEntityChild, existingEntity); // TODO: this will not propagate navigation keys in nested entities
             }
 
             return true;
+        }
+
+        private void CopyNavigationKeyAndProgagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, IEnumerable<NavigationKeyConfiguration> navigationKeyConfigurations, object childEntity, object parentEntity)
+        {
+            if (navigationKeyConfigurations != null)
+                CopyNavigationKey(navigationKeyConfigurations, childEntity, parentEntity);
+            PropagateUsingNavigation(diffEntityConfiguration, childEntity);
         }
 
         private void OnUpdate(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, bool copyPropertyValues, IList<DiffOperationBase> diffOperations)
@@ -363,6 +370,52 @@ namespace DeepDiff
             if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
                 throw new MissingConfigurationException(childType);
             operation(childDiffEntityConfiguration, childValue, diffOperations);
+        }
+
+        private void PropagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object entity)
+        {
+            if (diffEntityConfiguration.NavigationManyConfigurations != null)
+            {
+                foreach (var navigationManyConfiguration in diffEntityConfiguration.NavigationManyConfigurations)
+                    PropagateUsingNavigationMany(navigationManyConfiguration, entity);
+            }
+            if (diffEntityConfiguration.NavigationOneConfigurations != null)
+            {
+                foreach (var navigationOneConfiguration in diffEntityConfiguration.NavigationOneConfigurations)
+                    PropagateUsingNavigationOne(navigationOneConfiguration, entity);
+            }
+        }
+
+        private void PropagateUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object entity)
+        {
+            if (navigationManyConfiguration.NavigationManyProperty == null)
+                return;
+            var childrenValue = navigationManyConfiguration.NavigationManyProperty.GetValue(entity);
+            if (childrenValue == null)
+                return;
+            var childType = navigationManyConfiguration.NavigationManyChildType;
+            if (childType == null)
+                return;
+            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+                throw new MissingConfigurationException(childType);
+            var children = (IEnumerable<object>)childrenValue;
+            foreach (var child in children)
+                CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, navigationManyConfiguration.NavigationKeyConfigurations, child, entity);
+        }
+
+        private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object entity)
+        {
+            if (navigationOneConfiguration.NavigationOneProperty == null)
+                return;
+            var childValue = navigationOneConfiguration.NavigationOneProperty.GetValue(entity);
+            if (childValue == null)
+                return;
+            var childType = navigationOneConfiguration.NavigationOneChildType;
+            if (childType == null)
+                return;
+            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+                throw new MissingConfigurationException(childType);
+            CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, navigationOneConfiguration.NavigationKeyConfigurations, childValue, entity);
         }
 
         private void CopyNavigationKey(IEnumerable<NavigationKeyConfiguration> navigationKeyConfigurations, object childEntity, object parentEntity)
