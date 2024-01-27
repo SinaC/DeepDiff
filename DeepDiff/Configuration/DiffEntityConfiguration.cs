@@ -56,8 +56,8 @@ namespace DeepDiff.Configuration
         {
             var navigationManyConfiguration = new NavigationManyConfiguration
             {
-                NavigationManyProperty = navigationManyProperty,
-                NavigationManyChildType = navigationManyDestinationType
+                NavigationProperty = navigationManyProperty,
+                NavigationChildType = navigationManyDestinationType
             };
             NavigationManyConfigurations.Add(navigationManyConfiguration);
             return navigationManyConfiguration;
@@ -67,8 +67,8 @@ namespace DeepDiff.Configuration
         {
             var navigationOneConfiguration = new NavigationOneConfiguration
             {
-                NavigationOneProperty = navigationOneProperty,
-                NavigationOneChildType = navigationOneChildType
+                NavigationProperty = navigationOneProperty,
+                NavigationChildType = navigationOneChildType
             };
             NavigationOneConfigurations.Add(navigationOneConfiguration);
             return navigationOneConfiguration;
