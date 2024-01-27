@@ -1,9 +1,5 @@
-comparer
-	we should be able to specify an equality comparer by type
-		such as a decimal(6) comparer for example which would compare only 6 first digits after decimal separator
-	or simply add decimal comparision config, something like cfg => cfg.SetDecimalPrecision(6) while using DeepDiff.DiffSingle or DiffMany
-
-	use DiffSingleOrManyConfiguration.DecimalPrecision in Naive and Precompiled comparer
+FIX
+	FK is not set in nested children with HasOne (to be checked with HasMany)
 
 more tests
 	complex scenario (see aFRR Activation Control)
@@ -94,4 +90,4 @@ LoadNavigation (3 levels, 1st level: N 2nd level: 96 items, 3rd level: 255 items
 | NoHashtableNaiveComparerDiff     | 100 | Random     | 39,569,418.9 μs | 3,924,687.60 μs | 11,572,029.94 μs | 39,803,473.9 μs |
 | NoHastablePrecompileComparerDiff | 100 | Random     |  6,891,785.5 μs |   549,685.41 μs |  1,620,759.84 μs |  6,864,795.0 μs |
 | HastableNaiveComparerDiff        | 100 | Random     |              NA |              NA |               NA |              NA |
-| HashtablePrecompileComparerDiff  | 100 | Random     |              NA |              NA |               NA |              NA |
+| HashtablePrecompileComparerDiff  | 100 | Random     |              NA |              NA |               NA |              NA |                                                                        

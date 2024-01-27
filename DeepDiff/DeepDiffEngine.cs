@@ -211,6 +211,7 @@ namespace DeepDiff
             if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
                 throw new MissingConfigurationException(childType);
 
+            // get children
             var existingEntityChildren = navigationManyConfiguration.NavigationManyProperty.GetValue(existingEntity);
             var newEntityChildren = navigationManyConfiguration.NavigationManyProperty.GetValue(newEntity);
 
@@ -224,21 +225,22 @@ namespace DeepDiff
             var list = (IList)Activator.CreateInstance(listType)!;
             foreach (var diffChild in diffChildren)
                 list.Add(diffChild);
+            // set navigation many property to diff children
             navigationManyConfiguration.NavigationManyProperty.SetValue(existingEntity, list);
+            // if any children, set navigation key
             if (list.Count > 0)
             {
-                // copy navigation key if any configured
+                // copy navigation key if any configured on each children
                 if (navigationManyConfiguration.NavigationKeyConfigurations != null)
                 {
                     foreach (var child in list)
-                        CopyNavigationKey(navigationManyConfiguration.NavigationKeyConfigurations, child, existingEntity);
+                        CopyNavigationKey(navigationManyConfiguration.NavigationKeyConfigurations, child, existingEntity); // TODO: this will not propagate navigation keys in nested entities
                 }
                 return true;
             }
             return false;
         }
 
-        // TODO: could use InternalDiffSingle ? at least partially ?
         private bool DiffUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             if (navigationOneConfiguration.NavigationOneProperty == null)
@@ -250,55 +252,28 @@ namespace DeepDiff
             if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
                 throw new MissingConfigurationException(childType);
 
+            // get child
             var existingEntityChild = navigationOneConfiguration.NavigationOneProperty.GetValue(existingEntity);
             var newEntityChild = navigationOneConfiguration.NavigationOneProperty.GetValue(newEntity);
 
-            // was not existing and is now new -> it's an insert
-            if (existingEntityChild == null && newEntityChild != null)
-            {
-                navigationOneConfiguration.NavigationOneProperty.SetValue(existingEntity, newEntityChild);
-                OnInsertAndPropagateUsingNavigation(childDiffEntityConfiguration, newEntityChild, diffOperations);
-                CopyNavigationKey(navigationOneConfiguration.NavigationKeyConfigurations, newEntityChild, existingEntity);
-                return true;
-            }
-            // was existing and is not new -> it's a delete
-            if (existingEntityChild != null && newEntityChild == null)
-            {
-                OnDeleteAndPropagateUsingNavigation(childDiffEntityConfiguration, existingEntityChild, diffOperations);
-                return true;
-            }
-            // was existing and is new -> maybe an update
-            if (existingEntityChild != null && newEntityChild != null)
-            {
-                bool areKeysEqual = false;
-                if (childDiffEntityConfiguration.KeyConfiguration.KeyProperties != null)
-                {
-                    areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && childDiffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
-                        ? childDiffEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, newEntityChild)
-                        : childDiffEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, newEntityChild);
-                    if (!areKeysEqual) // keys are different -> copy keys
-                        childDiffEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntityChild, newEntityChild);
-                }
+            // diff child
+            var diff = InternalDiffSingle(childDiffEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
 
-                bool areNewValuesEquals = false;
-                if (childDiffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
-                {
-                    areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && childDiffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
-                        ? childDiffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntityChild, newEntityChild)
-                        : childDiffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntityChild, newEntityChild);
-                }
+            // set navigation one property to diff child
+            navigationOneConfiguration.NavigationOneProperty.SetValue(existingEntity, diff);
 
-                var diffModificationsFound = DiffUsingNavigation(childDiffEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
-                if (!areKeysEqual || !areNewValuesEquals || diffModificationsFound) // update
-                {
-                    if (!areKeysEqual || !areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
-                        OnUpdate(childDiffEntityConfiguration, existingEntityChild, newEntityChild, !areNewValuesEquals, diffOperations); // new values are different -> copy new values and dump differences
-                    return true;
-                }
+            // not insert/delete/update
+            if (diff == null)
+                return false;
+
+            // if insert, set navigation key
+            if (diff == newEntityChild)
+            {
+                if (navigationOneConfiguration.NavigationKeyConfigurations != null)
+                    CopyNavigationKey(navigationOneConfiguration.NavigationKeyConfigurations, newEntityChild, existingEntity); // TODO: this will not propagate navigation keys in nested entities
             }
-            // not insert/update/delete -> set to null
-            navigationOneConfiguration.NavigationOneProperty.SetValue(existingEntity, null);
-            return false;
+
+            return true;
         }
 
         private void OnUpdate(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, bool copyPropertyValues, IList<DiffOperationBase> diffOperations)
