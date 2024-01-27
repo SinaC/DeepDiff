@@ -16,13 +16,13 @@ namespace DeepDiff.Validators
                 foreach (var configuration in diffEntityConfiguration.NavigationOneConfigurations)
                 {
                     // check if navigation one property is not a collection
-                    if (configuration.NavigationOneProperty.IsEnumerable())
-                        yield return new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationOneProperty.Name);
+                    if (configuration.NavigationProperty.IsEnumerable())
+                        yield return new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationProperty.Name);
                     else
                     {
                         // check if navigation child type is found in configuration
-                        if (!diffEntityConfigurationByTypes.ContainsKey(configuration.NavigationOneChildType))
-                            yield return new MissingNavigationOneChildConfigurationException(entityType, configuration.NavigationOneChildType);
+                        if (!diffEntityConfigurationByTypes.ContainsKey(configuration.NavigationChildType))
+                            yield return new MissingNavigationOneChildConfigurationException(entityType, configuration.NavigationChildType);
                     }
                 }
             }

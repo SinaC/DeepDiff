@@ -15,8 +15,8 @@ namespace DeepDiff.Validators
                 foreach (var configuration in diffEntityConfiguration.NavigationManyConfigurations)
                 {
                     // check if navigation child type is found in configuration
-                    if (!diffEntityConfigurationByTypes.ContainsKey(configuration.NavigationManyChildType))
-                        yield return new MissingNavigationManyChildConfigurationException(entityType, configuration.NavigationManyChildType);
+                    if (!diffEntityConfigurationByTypes.ContainsKey(configuration.NavigationChildType))
+                        yield return new MissingNavigationManyChildConfigurationException(entityType, configuration.NavigationChildType);
                 }
             }
         }
