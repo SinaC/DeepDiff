@@ -1,6 +1,3 @@
-FIX
-	FK is not set in nested children with HasOne (to be checked with HasMany)
-
 more tests
 	complex scenario (see aFRR Activation Control)
 
