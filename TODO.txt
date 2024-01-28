@@ -1,12 +1,13 @@
 1.4.0
 	--don't create anymore Naive/Precompiled comparer in HasKey, HasValues but in CreateDeepDiff
 	--new configuration:
-	--WithComparer(Type, IEqualityComparer) (see if possible to do WithComparer<T>(IEqualityComparer<T>))
-	--WithComparer(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer) (see if possible to do WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T>))
+	--WithComparer(Type, IEqualityComparer)
+	--WithComparer(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer)
 	--remove additional IReadOnlyDictionary param in DiffConfiguration ctor
 	--use TypeSpecificComparers and PropertySpecificComparers in CreateComparers
-	remove IDiffConfiguration from profile ctor
 	implement ComparerValidator
+	try to implement WithComparer<T>(IEqualityComparer<T>)
+	try to implement WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T> 
 
 more tests
 	complex scenario (see aFRR Activation Control)
