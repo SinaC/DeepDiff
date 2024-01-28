@@ -71,17 +71,26 @@ namespace DeepDiff.UnitTest.ForeignKey
             };
 
             DiffConfiguration diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<EntityLevel0>()
+            diffConfiguration.Entity<EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
                 .HasOne(x => x.SubEntity);
-            diffConfiguration.PersistEntity<EntityLevel1>()
+            diffConfiguration.Entity<EntityLevel1>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.Power })
                 .HasMany(x => x.SubEntities);
-            diffConfiguration.PersistEntity<EntityLevel2>()
-               .HasKey(x => x.DeliveryPointEan)
-               .HasValues(x => new { x.Value1, x.Value2 });
+            diffConfiguration.Entity<EntityLevel2>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.Value1, x.Value2 });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);
@@ -154,17 +163,26 @@ namespace DeepDiff.UnitTest.ForeignKey
             };
 
             DiffConfiguration diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<EntityLevel0>()
+            diffConfiguration.Entity<EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
                 .HasOne(x => x.SubEntity, cfg => cfg.HasNavigationKey(x => x.EntityLevel0Id, x => x.Id));
-            diffConfiguration.PersistEntity<EntityLevel1>()
+            diffConfiguration.Entity<EntityLevel1>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.Power })
                 .HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(x => x.EntityLevel1Id, x => x.Id));
-            diffConfiguration.PersistEntity<EntityLevel2>()
-               .HasKey(x => x.DeliveryPointEan)
-               .HasValues(x => new { x.Value1, x.Value2 });
+            diffConfiguration.Entity<EntityLevel2>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.Value1, x.Value2 });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);
@@ -251,17 +269,26 @@ namespace DeepDiff.UnitTest.ForeignKey
             };
 
             DiffConfiguration diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<EntityLevel0>()
+            diffConfiguration.Entity<EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
                 .HasOne(x => x.SubEntity, cfg => cfg.HasNavigationKey(x => x.EntityLevel0Id, x => x.Id));
-            diffConfiguration.PersistEntity<EntityLevel1>()
+            diffConfiguration.Entity<EntityLevel1>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.Power })
                 .HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(x => x.EntityLevel1Id, x => x.Id));
-            diffConfiguration.PersistEntity<EntityLevel2>()
-               .HasKey(x => x.DeliveryPointEan)
-               .HasValues(x => new { x.Value1, x.Value2 });
+            diffConfiguration.Entity<EntityLevel2>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.Value1, x.Value2 });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffMany(existingEntities, newEntities);

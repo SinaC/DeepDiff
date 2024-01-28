@@ -19,13 +19,13 @@ namespace DeepDiff.Configuration
             UsePrecompiledEqualityComparer = false;
         }
 
-        public void CreateComparers(Type typeOfT, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        public void CreateComparers(Type typeOfT, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
             var naiveEqualityComparerByPropertyTypeOfT = typeof(NaiveEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            NaiveEqualityComparer = (IEqualityComparer)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, KeyProperties, typeSpecificComparers);
+            NaiveEqualityComparer = (IEqualityComparer)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, KeyProperties, typeSpecificComparers); // TODO: use propertySpecificComparers
 
             var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            PrecompiledEqualityComparer = (IEqualityComparer)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, typeSpecificComparers);
+            PrecompiledEqualityComparer = (IEqualityComparer)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, typeSpecificComparers); // TODO: use propertySpecificComparers
         }
     }
 }

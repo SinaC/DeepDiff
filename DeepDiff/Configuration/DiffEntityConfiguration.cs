@@ -10,7 +10,6 @@ namespace DeepDiff.Configuration
     internal sealed class DiffEntityConfiguration
     {
         public Type EntityType { get; }
-        public IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get; } = null!;
 
         public KeyConfiguration KeyConfiguration { get; private set; } = null!;
         public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
@@ -19,36 +18,27 @@ namespace DeepDiff.Configuration
         public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
         public InsertConfiguration InsertConfiguration { get; private set; } = null!;
         public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
+        public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
 
         internal DiffEntityConfiguration(Type entityType)
-            : this(entityType, null)
-        {
-        }
-
-        public DiffEntityConfiguration(Type entityType, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
         {
             EntityType = entityType;
-            TypeSpecificComparers = typeSpecificComparers;
         }
 
-        public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
+        public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
         {
             KeyConfiguration = new KeyConfiguration
             {
                 KeyProperties = keyProperties.ToArray(),
-                PrecompiledEqualityComparer = precompiledEqualityComparer,
-                NaiveEqualityComparer = naiveEqualityComparer
             };
             return KeyConfiguration;
         }
 
-        public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties, IEqualityComparer precompiledEqualityComparer, IEqualityComparer naiveEqualityComparer)
+        public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties)
         {
             ValuesConfiguration = new ValuesConfiguration
             {
                 ValuesProperties = valuesProperties.ToArray(),
-                PrecompiledEqualityComparer = precompiledEqualityComparer,
-                NaiveEqualityComparer = naiveEqualityComparer
             };
             return ValuesConfiguration;
         }
@@ -93,10 +83,16 @@ namespace DeepDiff.Configuration
             return DeleteConfiguration;
         }
 
+        public ComparerConfiguration GetOrSetWithComparer()
+        {
+            ComparerConfiguration ??= new ComparerConfiguration();
+            return ComparerConfiguration;
+        }
+
         public void CreateComparers()
         {
-            KeyConfiguration.CreateComparers(EntityType, TypeSpecificComparers);
-            ValuesConfiguration.CreateComparers(EntityType, TypeSpecificComparers);
+            KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration?.TypeSpecificComparers, ComparerConfiguration?.PropertySpecificComparers);
+            ValuesConfiguration.CreateComparers(EntityType, ComparerConfiguration?.TypeSpecificComparers, ComparerConfiguration?.PropertySpecificComparers);
         }
     }
 }

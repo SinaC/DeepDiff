@@ -161,7 +161,7 @@ public class ComparerPerformanceTests
     }
 
     [Fact]
-    public void NaiveEqualityComparerByProperty_4Field_CustomComparer()
+    public void NaiveEqualityComparerByProperty_4Fields_CustomComparer()
     {
         var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
             {
@@ -205,7 +205,7 @@ public class ComparerPerformanceTests
     }
 
     [Fact]
-    public void PrecompiledEqualityComparerByProperty_4Field_CustomComparer()
+    public void PrecompiledEqualityComparerByProperty_4Fields_CustomComparer()
     {
         var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
             {

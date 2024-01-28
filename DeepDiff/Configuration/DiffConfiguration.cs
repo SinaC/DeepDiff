@@ -1,7 +1,6 @@
 using DeepDiff.Exceptions;
 using DeepDiff.Validators;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,17 +9,10 @@ namespace DeepDiff.Configuration
 {
     public sealed class DiffConfiguration : IDiffConfiguration
     {
-        private IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get;  }
-
         internal Dictionary<Type, DiffEntityConfiguration> DiffEntityConfigurationByTypes { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
 
         public DiffConfiguration()
         {
-        }
-
-        public DiffConfiguration(IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
-        {
-            TypeSpecificComparers = typeSpecificComparers;
         }
 
         public IDiffEntityConfiguration<TEntity> Entity<TEntity>()
@@ -30,7 +22,7 @@ namespace DeepDiff.Configuration
             if (DiffEntityConfigurationByTypes.ContainsKey(entityType))
                 throw new DuplicateDiffEntityConfigurationException(entityType);
 
-            var diffEntityConfiguration = new DiffEntityConfiguration(entityType, TypeSpecificComparers);
+            var diffEntityConfiguration = new DiffEntityConfiguration(entityType);
             DiffEntityConfigurationByTypes.Add(entityType, diffEntityConfiguration);
 
             return new DiffEntityConfiguration<TEntity>(diffEntityConfiguration);
@@ -70,7 +62,6 @@ namespace DeepDiff.Configuration
         public IDeepDiff CreateDeepDiff()
         {
             ValidateConfiguration();
-
             CreateComparers();
 
             return new DeepDiff(this);
@@ -88,7 +79,8 @@ namespace DeepDiff.Configuration
                 new NavigationOneValidator(),
                 new UpdateValidator(),
                 new InsertValidator(),
-                new DeleteValidator()
+                new DeleteValidator(),
+                new ComparerValidator(),
             };
 
             foreach (var (type, diffEntityConfiguration) in DiffEntityConfigurationByTypes)
@@ -108,9 +100,7 @@ namespace DeepDiff.Configuration
         private void CreateComparers()
         {
             foreach (var (_, diffEntityConfiguration) in DiffEntityConfigurationByTypes)
-            {
                 diffEntityConfiguration.CreateComparers();
-            }
         }
 
         private DiffProfile CreateProfileInstance(Type diffProfileType)

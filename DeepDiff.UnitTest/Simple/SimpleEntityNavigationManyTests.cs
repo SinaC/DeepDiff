@@ -51,11 +51,17 @@ public class SimpleEntityNavigationManyTests
         };
 
         var diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel1>()
+        diffConfiguration.Entity<EntityLevel1>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -113,11 +119,17 @@ public class SimpleEntityNavigationManyTests
         };
 
         var diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel1>()
+        diffConfiguration.Entity<EntityLevel1>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -174,11 +186,17 @@ public class SimpleEntityNavigationManyTests
         };
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel1>()
+        diffConfiguration.Entity<EntityLevel1>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 
@@ -235,11 +253,17 @@ public class SimpleEntityNavigationManyTests
         };
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower })
             .HasMany(x => x.SubEntities);
-        diffConfiguration.PersistEntity<EntityLevel1>()
+        diffConfiguration.Entity<EntityLevel1>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
 

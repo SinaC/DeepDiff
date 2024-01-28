@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -29,5 +30,9 @@ namespace DeepDiff.Configuration
         IDiffEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> insertConfigurationAction);
 
         IDiffEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> deleteConfigurationAction);
+
+        IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer equalityComparer);
+
+        IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer propertyEqualityComparer);
     }
 }

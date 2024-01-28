@@ -1,5 +1,6 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
+using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Profile;
 using Xunit;
 
@@ -11,11 +12,17 @@ namespace DeepDiff.UnitTest.Exceptions
         public void DuplicateAddDiffConfiguration()
         {
             var diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.StartsOn);
 
-            Assert.Throws<DuplicateDiffEntityConfigurationException>(() => diffConfiguration.PersistEntity<Entities.Simple.EntityLevel0>()
+            Assert.Throws<DuplicateDiffEntityConfigurationException>(() => diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.StartsOn));
         }
