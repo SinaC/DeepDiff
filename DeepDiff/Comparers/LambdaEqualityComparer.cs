@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace DeepDiff.Comparers
 {
-    internal sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
+    internal sealed class LambdaEqualityComparer<T> : IEqualityComparer<T>
         where T : class
     {
         private readonly Func<T, T, bool> _func;
 
-        public DynamicEqualityComparer(Func<T, T, bool> func)
+        public LambdaEqualityComparer(Func<T, T, bool> func)
         {
             _func = func;
         }

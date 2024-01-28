@@ -71,6 +71,8 @@ namespace DeepDiff.Configuration
         {
             ValidateConfiguration();
 
+            CreateComparers();
+
             return new DeepDiff(this);
         }
 
@@ -103,13 +105,20 @@ namespace DeepDiff.Configuration
                 throw new AggregateException(exceptions);
         }
 
+        private void CreateComparers()
+        {
+            foreach (var (_, diffEntityConfiguration) in DiffEntityConfigurationByTypes)
+            {
+                diffEntityConfiguration.CreateComparers();
+            }
+        }
+
         private DiffProfile CreateProfileInstance(Type diffProfileType)
         {
             DiffProfile diffProfileInstance;
             try
             {
                 diffProfileInstance = (DiffProfile)Activator.CreateInstance(diffProfileType, this)!;
-                //diffProfileInstance.TypeSpecificComparers = TypeSpecificComparers;
             }
             catch (TargetInvocationException ex) when (ex.InnerException is DuplicateDiffEntityConfigurationException)
             {

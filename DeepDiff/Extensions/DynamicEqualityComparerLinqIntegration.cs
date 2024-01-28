@@ -11,7 +11,7 @@ namespace DeepDiff.Extensions
             this IEnumerable<TSource> source, IEnumerable<TSource> other, Func<TSource, TSource, bool> func)
             where TSource : class
         {
-            return source.SequenceEqual(other, new DynamicEqualityComparer<TSource>(func));
+            return source.SequenceEqual(other, new LambdaEqualityComparer<TSource>(func));
         }
     }
 }

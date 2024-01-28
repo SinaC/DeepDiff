@@ -1,3 +1,4 @@
+using DeepDiff.Comparers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -90,6 +91,12 @@ namespace DeepDiff.Configuration
         {
             DeleteConfiguration ??= new DeleteConfiguration();
             return DeleteConfiguration;
+        }
+
+        public void CreateComparers()
+        {
+            KeyConfiguration.CreateComparers(EntityType, TypeSpecificComparers);
+            ValuesConfiguration.CreateComparers(EntityType, TypeSpecificComparers);
         }
     }
 }
