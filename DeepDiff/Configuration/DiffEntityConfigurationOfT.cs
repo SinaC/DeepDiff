@@ -1,7 +1,6 @@
 using DeepDiff.Comparers;
 using DeepDiff.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -97,19 +96,21 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer equalityComparer)
+        public IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer)
         {
+            var comparer = NonGenericEqualityComparer.Create(equalityComparer);
             var propertyType = typeof(T);
             var config = Configuration.GetOrSetWithComparer();
-            config.TypeSpecificComparers.Add(propertyType, equalityComparer);
+            config.TypeSpecificComparers.Add(propertyType, comparer);
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer propertyEqualityComparer)
+        public IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer)
         {
+            var comparer = NonGenericEqualityComparer.Create(propertyEqualityComparer);
             var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();
             var config = Configuration.GetOrSetWithComparer();
-            config.PropertySpecificComparers.Add(propertyInfo, propertyEqualityComparer);
+            config.PropertySpecificComparers.Add(propertyInfo, comparer);
             return this;
         }
     }

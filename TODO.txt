@@ -5,9 +5,12 @@
 	--WithComparer(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer)
 	--remove additional IReadOnlyDictionary param in DiffConfiguration ctor
 	--use TypeSpecificComparers and PropertySpecificComparers in CreateComparers
+	--try to implement WithComparer<T>(IEqualityComparer<T>)
+	--try to implement WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T>
+	change NaiveEqualityComparerByProperty and PrecompiledEqualityComparerByProperty
+		should return list of modified properties (or additional method which should be use to compare Values -> then used to copy only modified properties)
+	when updating, copy only different values
 	implement ComparerValidator
-	try to implement WithComparer<T>(IEqualityComparer<T>)
-	try to implement WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T> 
 
 more tests
 	complex scenario (see aFRR Activation Control)

@@ -1,10 +1,10 @@
-﻿
-using System;
-using System.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DeepDiff.UnitTest;
 
-internal class NullableDecimalComparer : IEqualityComparer
+internal class NullableDecimalComparer : IEqualityComparer<decimal?>
 {
     private int Decimals { get; }
     private decimal Modulus { get; }
@@ -15,18 +15,19 @@ internal class NullableDecimalComparer : IEqualityComparer
         Modulus = 1m / (decimal)Math.Pow(10, Decimals);
     }
 
-    public new bool Equals(object? left, object? right)
+    public bool Equals(decimal? left, decimal? right)
     {
-        if (ReferenceEquals(left, right)) // will handle left == right == null
+        if (left == null && right == null)
             return true;
-        if (left is not decimal)
+        if (left == null && right != null)
             return false;
-        if (right is not decimal)
+        if (left != null && right == null)
             return false;
-        var leftAsDecimal = (decimal?)left;
-        var rightAsDecimal = (decimal?)right;
-        return leftAsDecimal != null && EqualsTruncated(leftAsDecimal.Value, rightAsDecimal.Value);
+        return EqualsTruncated(left!.Value, right!.Value);
     }
+
+    public int GetHashCode([DisallowNull] decimal? d)
+        => d?.GetHashCode() ?? 0;
 
     private bool EqualsTruncated(decimal left, decimal right)
     {
@@ -34,7 +35,4 @@ internal class NullableDecimalComparer : IEqualityComparer
         var rightTruncated = right - (right % Modulus);
         return leftTruncated == rightTruncated;
     }
-
-    public int GetHashCode(object obj)
-        => obj.GetHashCode();
 }

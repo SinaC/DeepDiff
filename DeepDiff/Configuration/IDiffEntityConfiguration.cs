@@ -31,8 +31,8 @@ namespace DeepDiff.Configuration
 
         IDiffEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> deleteConfigurationAction);
 
-        IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer equalityComparer);
+        IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer);
 
-        IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer propertyEqualityComparer);
+        IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer);
     }
 }
