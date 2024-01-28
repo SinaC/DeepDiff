@@ -9,20 +9,20 @@ namespace DeepDiff.Comparers
     internal sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
         where T : class
     {
-        private Type TypeOfT { get; }
         private IReadOnlyCollection<PropertyInfo> Properties { get; }
         private IReadOnlyDictionary<Type, IEqualityComparer> TypeSpecificComparers { get; }
+        private IReadOnlyDictionary<PropertyInfo, IEqualityComparer> PropertySpecificComparers { get; }
 
         public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
-            : this(properties, null)
+            : this(properties, null, null)
         {
         }
 
-        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
-            TypeOfT = typeof(T);
             Properties = properties?.ToArray();
             TypeSpecificComparers = typeSpecificComparers;
+            PropertySpecificComparers = propertySpecificComparers;
         }
 
         public new bool Equals(object? left, object? right)
@@ -35,14 +35,17 @@ namespace DeepDiff.Comparers
                 return false;
             if (right is not T)
                 return false;
-            if (TypeSpecificComparers?.TryGetValue(TypeOfT, out var typeSpecificComparer) == true)
-                return typeSpecificComparer.Equals(left, right);
             foreach (var propertyInfo in Properties)
             {
                 var existingValue = propertyInfo.GetValue(left);
                 var newValue = propertyInfo.GetValue(right);
 
-                if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                {
+                    if (!propertySpecificComparer.Equals(existingValue, newValue))
+                        return false;
+                }
+                else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
                 {
                     if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
                         return false;

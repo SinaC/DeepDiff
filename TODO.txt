@@ -4,7 +4,7 @@
 	--WithComparer(Type, IEqualityComparer) (see if possible to do WithComparer<T>(IEqualityComparer<T>))
 	--WithComparer(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer) (see if possible to do WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T>))
 	--remove additional IReadOnlyDictionary param in DiffConfiguration ctor
-	use TypeSpecificComparers and PropertySpecificComparers in CreateComparers
+	--use TypeSpecificComparers and PropertySpecificComparers in CreateComparers
 	remove IDiffConfiguration from profile ctor
 	implement ComparerValidator
 
