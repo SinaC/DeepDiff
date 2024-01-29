@@ -39,7 +39,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -80,7 +83,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -122,7 +128,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -166,7 +175,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -210,7 +222,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -254,7 +269,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -299,7 +317,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
@@ -346,7 +367,10 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         DiffConfiguration diffConfiguration = new DiffConfiguration();
-        diffConfiguration.PersistEntity<EntityLevel0>()
+        diffConfiguration.Entity<EntityLevel0>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 

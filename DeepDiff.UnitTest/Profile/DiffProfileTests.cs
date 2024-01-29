@@ -105,7 +105,7 @@ namespace DeepDiff.UnitTest.Profile
 
             //
             var diffConfiguration = new DiffConfiguration();
-            diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
+            diffConfiguration.AddProfile<CapacityAvailabilityProfileNoCustomComparer>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffSingle(existing, calculated);
 
@@ -154,12 +154,7 @@ namespace DeepDiff.UnitTest.Profile
             };
 
             //
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) },
-                { typeof(decimal), new DecimalComparer(6) }
-            };
-            var diffConfiguration = new DiffConfiguration(typeSpecificComparers);
+            var diffConfiguration = new DiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffSingle(existing, calculated);

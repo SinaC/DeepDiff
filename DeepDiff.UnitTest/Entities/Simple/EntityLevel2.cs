@@ -10,6 +10,8 @@ internal class EntityLevel2 : PersistEntity
 
     public decimal Value1 { get; set; }
     public decimal? Value2 { get; set; }
+    public decimal Value3 { get; set; }
+    public decimal? Value4 { get; set; }
 
     // FK to EntityLevel1
     public Guid EntityLevel1Id { get; set; }

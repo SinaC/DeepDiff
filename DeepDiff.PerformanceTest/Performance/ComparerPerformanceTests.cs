@@ -161,7 +161,7 @@ public class ComparerPerformanceTests
     }
 
     [Fact]
-    public void NaiveEqualityComparerByProperty_4Field_CustomComparer()
+    public void NaiveEqualityComparerByProperty_4Fields_CustomComparer()
     {
         var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
             {
@@ -190,7 +190,7 @@ public class ComparerPerformanceTests
 
         var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
         diffEntityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties, typeSpecificComparers);
+        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties, typeSpecificComparers, null);
 
         sw.Restart();
         foreach (var existingEntity in existingEntities)
@@ -205,7 +205,7 @@ public class ComparerPerformanceTests
     }
 
     [Fact]
-    public void PrecompiledEqualityComparerByProperty_4Field_CustomComparer()
+    public void PrecompiledEqualityComparerByProperty_4Fields_CustomComparer()
     {
         var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
             {
@@ -234,7 +234,7 @@ public class ComparerPerformanceTests
 
         var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
         diffEntityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties, typeSpecificComparers);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties, typeSpecificComparers, null);
 
         sw.Restart();
         foreach (var existingEntity in existingEntities)

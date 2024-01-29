@@ -14,13 +14,13 @@ namespace DeepDiff.Comparers
         private Func<T, int> Hasher { get; init; }
 
         public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
-            : this(properties, null)
+            : this(properties, null, null)
         {
         }
 
-        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
-            Comparer = ExpressionGenerater.GenerateComparer<T>(properties, typeSpecificComparers);
+            Comparer = ExpressionGenerater.GenerateComparer<T>(properties, typeSpecificComparers, propertySpecificComparers);
             Hasher = ExpressionGenerater.GenerateHasher<T>(properties);
         }
 
@@ -61,13 +61,18 @@ namespace DeepDiff.Comparers
               .Single(methodInfo => methodInfo.Name == nameof(ExpressionGenerater.AddHashCodeMembersForCollection));
         }
 
-        private static Expression GenerateEqualityExpression(ParameterExpression left, ParameterExpression right, PropertyInfo propInfo, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        private static Expression GenerateEqualityExpression(ParameterExpression left, ParameterExpression right, PropertyInfo propInfo, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
             Type propertyType = propInfo.PropertyType;
 
             MethodInfo equalMethod;
             Expression equalCall;
-            if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Converter.Equals((object)left, (object)right)
+            if (propertySpecificComparers?.TryGetValue(propInfo, out var propertySpecificComparer) == true)
+            {
+                equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
+                equalCall = Expression.Call(Expression.Constant(propertySpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
+            }
+            else if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Converter.Equals((object)left, (object)right)
             {
                 equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
                 equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
@@ -109,7 +114,7 @@ namespace DeepDiff.Comparers
             }
         }
 
-        internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers)
+        internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
             var comparers = new List<Expression>();
             ParameterExpression left = Expression.Parameter(typeof(T), "left");
@@ -117,7 +122,8 @@ namespace DeepDiff.Comparers
 
             foreach (PropertyInfo propInfo in properties)
             {
-                comparers.Add(GenerateEqualityExpression(left, right, propInfo, typeSpecificComparers));
+                var equalityExpression = GenerateEqualityExpression(left, right, propInfo, typeSpecificComparers, propertySpecificComparers);
+                comparers.Add(equalityExpression);
             }
             Expression ands = comparers.Aggregate((left, right) => Expression.AndAlso(left, right));
             CompareFunc<T>? andComparer = Expression.Lambda<CompareFunc<T>>(ands, left, right).Compile();

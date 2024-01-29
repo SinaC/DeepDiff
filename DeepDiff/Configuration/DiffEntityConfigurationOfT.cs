@@ -24,10 +24,8 @@ namespace DeepDiff.Configuration
         {
             // TODO: can only be set once
             var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(keyProperties, Configuration.TypeSpecificComparers);
-            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(keyProperties, Configuration.TypeSpecificComparers);
 
-            var config = Configuration.SetKey(keyProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
+            var config = Configuration.SetKey(keyProperties);
             keyConfigurationAction?.Invoke(config);
             return this;
         }
@@ -39,9 +37,7 @@ namespace DeepDiff.Configuration
         {
             // TODO: can only be set once
             var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var precompiledEqualityComparerByPropertInfo = new PrecompiledEqualityComparerByProperty<TEntity>(valueProperties, Configuration.TypeSpecificComparers);
-            var naiveEqualityComparerByPropertyInfo = new NaiveEqualityComparerByProperty<TEntity>(valueProperties, Configuration.TypeSpecificComparers);
-            var config = Configuration.SetValues(valueProperties, precompiledEqualityComparerByPropertInfo, naiveEqualityComparerByPropertyInfo);
+            var config = Configuration.SetValues(valueProperties);
             valuesConfigurationAction?.Invoke(config);
             return this;
         }
@@ -97,6 +93,26 @@ namespace DeepDiff.Configuration
             var config = Configuration.GetOrSetOnDelete();
             var configOfT = new DeleteConfiguration<TEntity>(config);
             DeleteConfigurationAction?.Invoke(configOfT);
+            return this;
+        }
+
+        public IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer)
+        {
+            // TODO: can only be set once
+            var comparer = NonGenericEqualityComparer.Create(equalityComparer);
+            var propertyType = typeof(T);
+            var config = Configuration.GetOrSetWithComparer();
+            config.TypeSpecificComparers.Add(propertyType, comparer);
+            return this;
+        }
+
+        public IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer)
+        {
+            // TODO: can only be set once
+            var comparer = NonGenericEqualityComparer.Create(propertyEqualityComparer);
+            var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();
+            var config = Configuration.GetOrSetWithComparer();
+            config.PropertySpecificComparers.Add(propertyInfo, comparer);
             return this;
         }
     }

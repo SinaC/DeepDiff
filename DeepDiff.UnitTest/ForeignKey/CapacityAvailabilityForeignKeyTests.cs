@@ -240,11 +240,17 @@ namespace DeepDiff.UnitTest.ForeignKey
         private IDeepDiff CreateDiffWithoutNavigationKey()
         {
             var diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<Entities.CapacityAvailability.CapacityAvailability>()
+            diffConfiguration.Entity<Entities.CapacityAvailability.CapacityAvailability>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
                 .HasValues(x => x.IsEnergyContrained)
                 .HasMany(x => x.CapacityAvailabilityDetails);
-            diffConfiguration.PersistEntity<CapacityAvailabilityDetail>()
+            diffConfiguration.Entity<CapacityAvailabilityDetail>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
                 .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
@@ -255,11 +261,17 @@ namespace DeepDiff.UnitTest.ForeignKey
         private IDeepDiff CreateDiffWithNavigationKey()
         {
             var diffConfiguration = new DiffConfiguration();
-            diffConfiguration.PersistEntity<Entities.CapacityAvailability.CapacityAvailability>()
+            diffConfiguration.Entity<Entities.CapacityAvailability.CapacityAvailability>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
                 .HasValues(x => x.IsEnergyContrained)
                 .HasMany(x => x.CapacityAvailabilityDetails, cfg => cfg.HasNavigationKey(x => x.CapacityAvailabilityId, x => x.Id));
-            diffConfiguration.PersistEntity<CapacityAvailabilityDetail>()
+            diffConfiguration.Entity<CapacityAvailabilityDetail>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.ObligatedVolume, x.AvailableVolume, x.MissingVolume })
                 .OnUpdate(cfg => cfg.CopyValues(x => x.Status));

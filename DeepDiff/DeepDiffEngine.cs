@@ -295,6 +295,7 @@ namespace DeepDiff
             if (diffEntityConfiguration.UpdateConfiguration != null)
             {
                 var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
+                // TODO: create an UpdateDiffOperation and fill sub collection in new methods SetValue, CopyPropertyValues (copy only if check if differnt), AdditionalCopyPropertyValues
                 // generate operations
                 GenerateUpdateDiffOperations(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
                 // use SetValue from UpdateConfiguration
@@ -417,7 +418,22 @@ namespace DeepDiff
                     {
                         var existingValue = propertyInfo.GetValue(existingEntity);
                         var newValue = propertyInfo.GetValue(newEntity);
-                        if (!Equals(existingValue, newValue))
+
+                        var equals = true;
+                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                        {
+                            if (!propertySpecificComparer.Equals(existingValue, newValue))
+                                equals = false;
+                        }
+                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                        {
+                            if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
+                                equals = false;
+                        }
+                        else
+                            equals = Equals(existingValue, newValue);
+
+                        if (!equals)
                             updatedProperties.Add(new UpdateDiffOperationPropertyInfo
                             {
                                 PropertyName = propertyInfo.Name,
@@ -432,13 +448,12 @@ namespace DeepDiff
                 {
                     var existingValue = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.DestinationProperty.GetValue(existingEntity);
                     var newValue = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.Value;
-                    if (!Equals(existingValue, newValue))
-                        setValueProperties.Add(new UpdateDiffOperationPropertyInfo
-                        {
-                            PropertyName = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.DestinationProperty.Name,
-                            ExistingValue = existingValue?.ToString(),
-                            NewValue = newValue?.ToString()
-                        });
+                    setValueProperties.Add(new UpdateDiffOperationPropertyInfo
+                    {
+                        PropertyName = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.DestinationProperty.Name,
+                        ExistingValue = existingValue?.ToString(),
+                        NewValue = newValue?.ToString()
+                    });
                 }
                 // CopyValues
                 var copyValuesProperties = new List<UpdateDiffOperationPropertyInfo>();
@@ -448,13 +463,12 @@ namespace DeepDiff
                     {
                         var existingValue = propertyInfo.GetValue(existingEntity);
                         var newValue = propertyInfo.GetValue(newEntity);
-                        if (!Equals(existingValue, newValue))
-                            copyValuesProperties.Add(new UpdateDiffOperationPropertyInfo
-                            {
-                                PropertyName = propertyInfo.Name,
-                                ExistingValue = existingValue?.ToString(),
-                                NewValue = newValue?.ToString()
-                            });
+                        copyValuesProperties.Add(new UpdateDiffOperationPropertyInfo
+                        {
+                            PropertyName = propertyInfo.Name,
+                            ExistingValue = existingValue?.ToString(),
+                            NewValue = newValue?.ToString()
+                        });
                     }
                 }
                 //

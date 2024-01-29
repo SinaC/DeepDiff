@@ -70,7 +70,7 @@ public readonly struct Date : IEquatable<Date>, IComparable, IComparable<Date>
         return DayCountSinceBaseDate == other.DayCountSinceBaseDate;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is Date date && Equals(date);
     }
@@ -80,7 +80,7 @@ public readonly struct Date : IEquatable<Date>, IComparable, IComparable<Date>
         return DayCountSinceBaseDate;
     }
 
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
     {
         switch (obj)
         {
