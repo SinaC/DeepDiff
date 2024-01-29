@@ -420,12 +420,12 @@ namespace DeepDiff
                         var newValue = propertyInfo.GetValue(newEntity);
 
                         var equals = true;
-                        if (diffEntityConfiguration.ComparerConfiguration.PropertySpecificComparers.TryGetValue(propertyInfo, out var propertySpecificComparer))
+                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
                         {
                             if (!propertySpecificComparer.Equals(existingValue, newValue))
                                 equals = false;
                         }
-                        else if (diffEntityConfiguration.ComparerConfiguration.TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
                         {
                             if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
                                 equals = false;

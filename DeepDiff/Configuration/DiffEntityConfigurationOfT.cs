@@ -98,6 +98,7 @@ namespace DeepDiff.Configuration
 
         public IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer)
         {
+            // TODO: can only be set once
             var comparer = NonGenericEqualityComparer.Create(equalityComparer);
             var propertyType = typeof(T);
             var config = Configuration.GetOrSetWithComparer();
@@ -107,6 +108,7 @@ namespace DeepDiff.Configuration
 
         public IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer)
         {
+            // TODO: can only be set once
             var comparer = NonGenericEqualityComparer.Create(propertyEqualityComparer);
             var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();
             var config = Configuration.GetOrSetWithComparer();
