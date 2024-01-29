@@ -406,6 +406,7 @@ namespace DeepDiff
             }
         }
 
+        // TODO: create an UpdateDiffOperation and fill sub collection in new methods SetValue, CopyPropertyValues (copy only if check if differnt), AdditionalCopyPropertyValues
         private void GenerateUpdateDiffOperations(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations) 
         {
             if (DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.UpdateConfiguration == null || diffEntityConfiguration.UpdateConfiguration.GenerateOperations))
@@ -420,12 +421,12 @@ namespace DeepDiff
                         var newValue = propertyInfo.GetValue(newEntity);
 
                         var equals = true;
-                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificNonGenericComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
                         {
                             if (!propertySpecificComparer.Equals(existingValue, newValue))
                                 equals = false;
                         }
-                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificNonGenericComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
                         {
                             if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
                                 equals = false;

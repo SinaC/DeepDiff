@@ -7,11 +7,11 @@ using System.Reflection;
 
 namespace DeepDiff.Comparers
 {
-    internal sealed class PrecompiledEqualityComparerByProperty<T> : IEqualityComparer
+    internal sealed class PrecompiledEqualityComparerByProperty<T> : IComparerByProperty
         where T : class
     {
-        private CompareFunc<T> Comparer { get; init; }
-        private Func<T, int> Hasher { get; init; }
+        private EqualsFunc<T> EqualsFunc { get; init; }
+        private Func<T, int> HasherFunc { get; init; }
 
         public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
             : this(properties, null, null)
@@ -20,20 +20,23 @@ namespace DeepDiff.Comparers
 
         public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
-            Comparer = ExpressionGenerater.GenerateComparer<T>(properties, typeSpecificComparers, propertySpecificComparers);
-            Hasher = ExpressionGenerater.GenerateHasher<T>(properties);
+            EqualsFunc = ExpressionGenerater.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
+            HasherFunc = ExpressionGenerater.GenerateHasherFunc<T>(properties);
         }
 
         public new bool Equals(object? left, object? right)
             => object.ReferenceEquals(left, right)
-          || (left is T leftAsT && right is T rightAsT && this.Comparer(leftAsT, rightAsT));
+          || (left is T leftAsT && right is T rightAsT && this.EqualsFunc(leftAsT, rightAsT));
 
         public int GetHashCode(object obj)
-            => obj is T objAsT ? this.Hasher(objAsT) : obj.GetHashCode();
+            => obj is T objAsT ? this.HasherFunc(objAsT) : obj.GetHashCode();
+
+        public IEnumerable<ComparerByPropertyResult> Compare(object? x, object? y)
+            => throw new NotImplementedException(); // TODO
     }
 
     // most code has been ripped from https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
-    internal delegate bool CompareFunc<T>(T left, T right);
+    internal delegate bool EqualsFunc<T>(T left, T right);
 
     internal static class ExpressionGenerater
     {
@@ -114,20 +117,20 @@ namespace DeepDiff.Comparers
             }
         }
 
-        internal static CompareFunc<T> GenerateComparer<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
+        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
         {
-            var comparers = new List<Expression>();
+            var equals = new List<Expression>();
             ParameterExpression left = Expression.Parameter(typeof(T), "left");
             ParameterExpression right = Expression.Parameter(typeof(T), "right");
 
             foreach (PropertyInfo propInfo in properties)
             {
                 var equalityExpression = GenerateEqualityExpression(left, right, propInfo, typeSpecificComparers, propertySpecificComparers);
-                comparers.Add(equalityExpression);
+                equals.Add(equalityExpression);
             }
-            Expression ands = comparers.Aggregate((left, right) => Expression.AndAlso(left, right));
-            CompareFunc<T>? andComparer = Expression.Lambda<CompareFunc<T>>(ands, left, right).Compile();
-            return andComparer;
+            Expression ands = equals.Aggregate((left, right) => Expression.AndAlso(left, right));
+            EqualsFunc<T>? andEquals = Expression.Lambda<EqualsFunc<T>>(ands, left, right).Compile();
+            return andEquals;
         }
 
         internal static int AddHashCodeMembersForCollection<T>(IEnumerable<T> coll)
@@ -143,7 +146,7 @@ namespace DeepDiff.Comparers
             return hashCode.ToHashCode();
         }
 
-        internal static Func<T, int> GenerateHasher<T>(IEnumerable<PropertyInfo> properties)
+        internal static Func<T, int> GenerateHasherFunc<T>(IEnumerable<PropertyInfo> properties)
         {
             // Generates the equivalent of
             // var hash = new HashCode();

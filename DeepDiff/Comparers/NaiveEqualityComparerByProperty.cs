@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace DeepDiff.Comparers
 {
-    internal sealed class NaiveEqualityComparerByProperty<T> : IEqualityComparer
+    internal sealed class NaiveEqualityComparerByProperty<T> : IComparerByProperty
         where T : class
     {
         private IReadOnlyCollection<PropertyInfo> Properties { get; }
@@ -78,5 +78,8 @@ namespace DeepDiff.Comparers
             }
             return hashCode.ToHashCode();
         }
+
+        public IEnumerable<ComparerByPropertyResult> Compare(object? x, object? y)
+            => throw new NotImplementedException(); // TODO
     }
 }

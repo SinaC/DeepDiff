@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
@@ -104,11 +103,11 @@ namespace DeepDiff.Configuration
         {
             var propertyType = typeof(T);
             var config = Configuration.GetOrSetWithComparer();
-            if (config.TypeSpecificComparers.ContainsKey(propertyType))
+            if (config.TypeSpecificGenericComparers.ContainsKey(propertyType) || config.TypeSpecificNonGenericComparers.ContainsKey(propertyType))
                 throw new DuplicateTypeSpecificComparerConfigurationException(typeof(TEntity), propertyType);
 
-            var comparer = NonGenericEqualityComparer.Create(equalityComparer);
-            config.TypeSpecificComparers.Add(propertyType, comparer);
+            config.TypeSpecificNonGenericComparers.Add(propertyType, NonGenericEqualityComparer.Create(equalityComparer));
+            config.TypeSpecificGenericComparers.Add(propertyType, equalityComparer);
             return this;
         }
 
@@ -116,11 +115,11 @@ namespace DeepDiff.Configuration
         {
             var config = Configuration.GetOrSetWithComparer();
             var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();
-            if (config.PropertySpecificComparers.ContainsKey(propertyInfo))
+            if (config.PropertySpecificGenericComparers.ContainsKey(propertyInfo) || config.PropertySpecificNonGenericComparers.ContainsKey(propertyInfo))
                 throw new DuplicatePropertySpecificComparerConfigurationException(typeof(TEntity), propertyInfo);
 
-            var comparer = NonGenericEqualityComparer.Create(propertyEqualityComparer);
-            config.PropertySpecificComparers.Add(propertyInfo, comparer);
+            config.PropertySpecificNonGenericComparers.Add(propertyInfo, NonGenericEqualityComparer.Create(propertyEqualityComparer));
+            config.PropertySpecificGenericComparers.Add(propertyInfo, propertyEqualityComparer);
             return this;
         }
     }
