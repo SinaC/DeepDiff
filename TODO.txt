@@ -1,16 +1,5 @@
-1.4.0
-	--don't create anymore Naive/Precompiled comparer in HasKey, HasValues but in CreateDeepDiff
-	--new configuration:
-	--WithComparer(Type, IEqualityComparer)
-	--WithComparer(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer)
-	--remove additional IReadOnlyDictionary param in DiffConfiguration ctor
-	--use TypeSpecificComparers and PropertySpecificComparers in CreateComparers
-	--try to implement WithComparer<T>(IEqualityComparer<T>)
-	--try to implement WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> expression, IEqualityComparer<T>
-	--diff profile reverted to previous version
-
 1.4.1
-	add new exception to raise issue when using more then once HasKey, HasMany, WithComparer<T>
+	--add new exception to raise issue when using more then once HasKey, HasMany, WithComparer<T>
 	store object instead of IEqualityComparer in TypeSpecificComparers and PropertySpecificComparers
 	convert to IEquality<T> with
 		Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
