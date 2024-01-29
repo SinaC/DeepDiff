@@ -72,7 +72,7 @@ namespace DeepDiff.Comparers
                 equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
                 equalCall = Expression.Call(Expression.Constant(propertySpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
             }
-            else if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Converter.Equals((object)left, (object)right)
+            else if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Comparer.Equals((object)left, (object)right)
             {
                 equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
                 equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));

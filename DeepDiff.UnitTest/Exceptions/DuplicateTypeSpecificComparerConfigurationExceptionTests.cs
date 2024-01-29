@@ -8,7 +8,7 @@ namespace DeepDiff.UnitTest.Exceptions
     public class DuplicateTypeSpecificComparerConfigurationExceptionTests
     {
         [Fact]
-        public void DuplicateTypeSpecificConverter()
+        public void DuplicateTypeSpecificComparer()
         {
             var diffConfiguration = new DiffConfiguration();
             var diffEntityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
