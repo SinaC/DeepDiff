@@ -420,21 +420,21 @@ namespace DeepDiff
                         var existingValue = propertyInfo.GetValue(existingEntity);
                         var newValue = propertyInfo.GetValue(newEntity);
 
-                        var equals = true;
-                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificNonGenericComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
-                        {
-                            if (!propertySpecificComparer.Equals(existingValue, newValue))
-                                equals = false;
-                        }
-                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificNonGenericComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
-                        {
-                            if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
-                                equals = false;
-                        }
-                        else
-                            equals = Equals(existingValue, newValue);
+                        //var equals = true;
+                        //if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificNonGenericComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                        //{
+                        //    if (!propertySpecificComparer.Equals(existingValue, newValue))
+                        //        equals = false;
+                        //}
+                        //else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificNonGenericComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                        //{
+                        //    if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
+                        //        equals = false;
+                        //}
+                        //else
+                        //    equals = Equals(existingValue, newValue);
 
-                        if (!equals)
+                        //if (!equals)
                             updatedProperties.Add(new UpdateDiffOperationPropertyInfo
                             {
                                 PropertyName = propertyInfo.Name,

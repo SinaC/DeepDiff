@@ -1,10 +1,10 @@
 1.4.1
 	--add new exception to raise issue when using more then once HasKey, HasMany, WithComparer<T>
-	store object instead of IEqualityComparer in TypeSpecificComparers and PropertySpecificComparers
-	convert to IEquality<T> with
-		Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
-        if (equalityComparerType.IsAssignableFrom(propertyType))
-			call equals from equalityComparerType
+	--store object instead of IEqualityComparer in TypeSpecificComparers and PropertySpecificComparers
+	--convert to IEquality<T> with
+	--	Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
+    --    if (equalityComparerType.IsAssignableFrom(propertyType))
+	--		call equals from equalityComparerType
 	--change NaiveEqualityComparerByProperty and PrecompiledEqualityComparerByProperty, add new interface IComparerByProperty : IEqualityComparer
 	--	should return list of modified properties (or additional method which should be use to compare Values -> then used to copy only modified properties)
 	change GenerateUpdateDiffOperations to use result from new method described above

@@ -1,7 +1,6 @@
 ﻿using DeepDiff.Comparers;
 using DeepDiff.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,7 +14,7 @@ namespace DeepDiff.UnitTest.Comparer
         public NaiveEqualityComparerByProperty<TEntity> CreateNaiveComparer<TKey>(Expression<Func<TEntity, TKey>> expression)
             => CreateNaiveComparer(expression, null!, null!);
 
-        public NaiveEqualityComparerByProperty<TEntity> CreateNaiveComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
+        public NaiveEqualityComparerByProperty<TEntity> CreateNaiveComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
         {
             var properties = expression.GetSimplePropertyAccessList().Select(p => p.Single());
             return new NaiveEqualityComparerByProperty<TEntity>(properties, typeSpecificComparers, propertySpecificComparers);

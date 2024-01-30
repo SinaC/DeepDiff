@@ -1,5 +1,4 @@
-﻿using DeepDiff.Comparers;
-using DeepDiff.UnitTest.Entities.Simple;
+﻿using DeepDiff.UnitTest.Entities.Simple;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -244,9 +243,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void Decimal6_Different()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal), GenericToNonGenericEqualityComparer.Create(new DecimalComparer(6)) }
+                { typeof(decimal), new DecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Power, typeSpecificComparers, null!);
@@ -268,9 +267,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal6_DifferentAfterSixthDecimal()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
@@ -292,9 +291,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal6_EqualNull()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
@@ -316,9 +315,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal6_LeftNull()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
@@ -340,9 +339,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal6_RightNull()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
@@ -364,9 +363,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void MultipleValues_Different()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
@@ -390,10 +389,10 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void MultipleValues_Equal()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) },
-                { typeof(decimal), GenericToNonGenericEqualityComparer.Create(new DecimalComparer(6)) }
+                { typeof(decimal?), new NullableDecimalComparer(6) },
+                { typeof(decimal), new DecimalComparer(6) }
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
@@ -417,9 +416,9 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void MultipleValues_DifferentAtSeventhDecimalsAndNoSpecificComparer()
         {
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) },
+                { typeof(decimal?), new NullableDecimalComparer(6) },
             };
 
             var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
@@ -445,14 +444,14 @@ namespace DeepDiff.UnitTest.Comparer
         {
             var comparerFactory = new ComparerFactory<EntityLevel1>();
 
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(3)) },
+                { typeof(decimal?), new NullableDecimalComparer(3) },
             };
 
-            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, IEqualityComparer>
+            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
             {
-                { comparerFactory.GetPropertyInfo(x => x.Price), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
+                { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(6) }
             };
 
             var comparer = comparerFactory.CreateNaiveComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
@@ -476,14 +475,14 @@ namespace DeepDiff.UnitTest.Comparer
         {
             var comparerFactory = new ComparerFactory<EntityLevel1>();
 
-            var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+            var typeSpecificComparers = new Dictionary<Type, object>
             {
-                { typeof(decimal?), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) },
+                { typeof(decimal?), new NullableDecimalComparer(6) },
             };
 
-            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, IEqualityComparer>
+            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
             {
-                { comparerFactory.GetPropertyInfo(x => x.Price), GenericToNonGenericEqualityComparer.Create(new NullableDecimalComparer(3)) }
+                { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(3) }
             };
 
             var comparer = comparerFactory.CreateNaiveComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
