@@ -130,7 +130,7 @@ namespace DeepDiff.Comparers
                 var equalMethod = equalityComparerType.GetMethod(nameof(Equals), new[] { propertyInfo.PropertyType, propertyInfo.PropertyType });
                 return (bool)equalMethod.Invoke(equalityComparer, new object[] { left, right });
             }
-            throw new InvalidComparerForPropertyTypeException(propertyInfo.PropertyType);
+            throw new InvalidComparerForPropertyTypeException(propertyInfo.PropertyType); // should never been raised
         }
     }
 }
