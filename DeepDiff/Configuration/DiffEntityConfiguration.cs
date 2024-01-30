@@ -90,7 +90,7 @@ namespace DeepDiff.Configuration
         public void CreateComparers()
         {
             KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
-            ValuesConfiguration.CreateComparers(EntityType, ComparerConfiguration);
+            ValuesConfiguration?.CreateComparers(EntityType, ComparerConfiguration);
         }
     }
 }
