@@ -7,9 +7,9 @@
 	--		call equals from equalityComparerType
 	--change NaiveEqualityComparerByProperty and PrecompiledEqualityComparerByProperty, add new interface IComparerByProperty : IEqualityComparer
 	--	should return list of modified properties (or additional method which should be use to compare Values -> then used to copy only modified properties)
-	change GenerateUpdateDiffOperations to use result from new method described above
-	when updating, copy only different values
-	implement ComparerValidator
+	--change GenerateUpdateDiffOperations to use result from new method described above
+	--when updating, copy only different values
+	--implement ComparerValidator
 
 more tests
 	complex scenario (see aFRR Activation Control)
