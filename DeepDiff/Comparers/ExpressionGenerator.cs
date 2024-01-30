@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace DeepDiff.Comparers
 {
@@ -72,17 +73,20 @@ namespace DeepDiff.Comparers
             statements.Add(createDetails);
             foreach (var propertyInfo in properties)
             {
-                // generate equality expression
                 var leftValue = Expression.Property(left, propertyInfo);
                 var rightValue = Expression.Property(right, propertyInfo);
+
+                // debug purpose, add detail to details
+                //var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Convert(leftValue, typeof(object)), Expression.Convert(rightValue, typeof(object)));
+                //var addToListExpression = Expression.Call(detailsParam, AddListOfCompareByPropertyResultDetailCodeMethod, newDetail);
+                //statements.Add(addToListExpression);
+
+                // generate equality expression
                 var equalExpression = GenerateEqualityExpression(leftValue, rightValue, propertyInfo, typeSpecificComparers, propertySpecificComparers);
                 // generate new CompareByPropertyResultDetail
-                //var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), leftValue, rightValue);
-                //var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Constant(leftValue), Expression.Constant(rightValue));
-                //var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Constant(null), Expression.Constant(null));
                 var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Convert(leftValue, typeof(object)), Expression.Convert(rightValue, typeof(object)));
 
-                // generate add details
+                // generate add detail to details
                 var addToListExpression = Expression.Call(detailsParam, AddListOfCompareByPropertyResultDetailCodeMethod, newDetail);
 
                 // generate if !isEqual then add to details
@@ -91,49 +95,15 @@ namespace DeepDiff.Comparers
                     addToListExpression);
 
                 statements.Add(ifThen);
-
-                //
-                //// Expression.Constant(leftValue)
-                //// Expression.Constant(leftValue, typeof(object))
-                //// Expression.Constant(Expression.Convert(leftValue, typeof(object)))
-                //// Expression.Convert(Expression.Constant(leftValue), typeof(object))
-                //var leftValue = Expression.Convert(Expression.Property(left, propertyInfo), typeof(object));
-                //var rightValue = Expression.Convert(Expression.Property(right, propertyInfo), typeof(object));
-
-
-                //var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), leftValue, rightValue);
-                ////var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Constant(leftValue), Expression.Constant(rightValue));
-                ////var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Convert(leftValue, typeof(object)), Expression.Convert(rightValue, typeof(object)));
-                ////var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Constant(Expression.Convert(leftValue, typeof(object))), Expression.Constant(Expression.Convert(rightValue, typeof(object))));
-                ////var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Convert(Expression.Constant(leftValue), typeof(object)), Expression.Convert(Expression.Constant(rightValue), typeof(object)));
-                ////var newDetail = Expression.New(compareByPropertyResultDetailCtor, Expression.Constant(propertyInfo), Expression.Constant(leftValue, typeof(object)), Expression.Constant(rightValue, typeof(object)));
-                //var addToListExpression = Expression.Call(detailsParam, AddListOfCompareByPropertyResultDetailCodeMethod, newDetail);
-
-                //
-                //var propertyInfoParam = Expression.Parameter(typeof(PropertyInfo), "propertyInfo");
-                //var propertyInfoProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.PropertyInfo));
-                //var propertyInfoAssignment = Expression.Bind(propertyInfoProperty, propertyInfoParam);
-
-                //var oldValueParam = Expression.Parameter(typeof(object), "oldValue");
-                //var oldValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.OldValue));
-                //var oldValueAssignment = Expression.Bind(oldValueProperty, oldValueParam);
-
-                //var newValueParam = Expression.Parameter(typeof(object), "newValue");
-                //var newValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.NewValue));
-                //var newValueAssignment = Expression.Bind(newValueProperty, newValueParam);
-
-                //var compareByPropertyResultDetailMemberInit = Expression.MemberInit(compareByPropertyResultDetailCtor, propertyInfoAssignment, oldValueAssignment, newValueAssignment);
-                //var addToListExpression = Expression.Call(detailsParam, AddListOfCompareByPropertyResultDetailCodeMethod, compareByPropertyResultDetailMemberInit);
-
-                //statements.Add(addToListExpression);
             }
             var createResult = Expression.Assign(resultVariable, Expression.New(typeof(CompareByPropertyResult).GetConstructors().Single(x => x.GetParameters().First().ParameterType == typeof(IReadOnlyCollection<CompareByPropertyResultDetail>)), detailsParam));
             statements.Add(createResult);
 
             var block = Expression.Block
             (
-                new[] { left, right, detailsParam, resultVariable },
-                statements
+                type: typeof(CompareByPropertyResult),
+                variables: new[] { detailsParam, resultVariable },
+                expressions: statements
             );
 
             CompareFunc<T> convertFunc = Expression.Lambda<CompareFunc<T>>(block, left, right).Compile();
