@@ -1,4 +1,5 @@
-﻿using DeepDiff.Configuration;
+﻿using DeepDiff.Comparers;
+using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
 using DeepDiff.Extensions;
 using DeepDiff.Operations;
@@ -51,19 +52,19 @@ namespace DeepDiff
                     diffEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
             }
 
-            bool areNewValuesEquals = false;
+            CompareByPropertyResult compareByPropertyResult = null;
             if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
-                    ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
-                    : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
+                compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                    ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
+                    : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
             }
 
             var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
-            if (!areKeysEqual || !areNewValuesEquals || diffModificationsFound) // update
+            if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound) // update
             {
-                if (!areKeysEqual || !areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
-                    OnUpdate(diffEntityConfiguration, existingEntity, newEntity, !areNewValuesEquals, diffOperations); // new values are different -> copy new values and dump differences
+                if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
+                    OnUpdate(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
                 return existingEntity;
             }
 
@@ -119,15 +120,15 @@ namespace DeepDiff
                 {
                     if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                     {
-                        var areNewValuesEquals = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
-                            ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
-                            : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
+                        var compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                            ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
+                            : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
 
                         var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
-                        if (!areNewValuesEquals || diffModificationsFound)
+                        if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound)
                         {
-                            if (!areNewValuesEquals || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
-                                OnUpdate(diffEntityConfiguration, existingEntity, newEntity, !areNewValuesEquals, diffOperations); // new values are different -> copy new values and dump differences
+                            if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
+                                OnUpdate(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
                             results.Add(existingEntity);
                         }
                     }
@@ -290,22 +291,102 @@ namespace DeepDiff
             PropagateUsingNavigation(diffEntityConfiguration, childEntity, (childDiffEntityConfiguration, parentNavigationConfiguration, child, parent) => CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, parentNavigationConfiguration, child, parent));
         }
 
-        private void OnUpdate(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, bool copyPropertyValues, IList<DiffOperationBase> diffOperations)
+        private void OnUpdate(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, IList<DiffOperationBase> diffOperations)
         {
             if (diffEntityConfiguration.UpdateConfiguration != null)
             {
                 var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
-                // TODO: create an UpdateDiffOperation and fill sub collection in new methods SetValue, CopyPropertyValues (copy only if check if differnt), AdditionalCopyPropertyValues
-                // generate operations
-                GenerateUpdateDiffOperations(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
+                var generateOperations = DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.UpdateConfiguration == null || diffEntityConfiguration.UpdateConfiguration.GenerateOperations);
                 // use SetValue from UpdateConfiguration
-                updateConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(existingEntity, updateConfiguration.SetValueConfiguration.Value);
+                var setValueProperties = OnUpdateSetValue(updateConfiguration, existingEntity, generateOperations);
                 // use CopyValues from UpdateConfiguration
-                updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
-                // copy values from ValuesConfiguration
-                if (copyPropertyValues)
-                    diffEntityConfiguration.ValuesConfiguration.ValuesProperties.CopyPropertyValues(existingEntity, newEntity);
+                var copyValuesProperties = OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity, generateOperations);
+                // copy values from ValuesConfiguration, only updated ones
+                var updatedProperties = OnUpdateCopyModifiedValues(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, generateOperations);
+                //
+                if (generateOperations)
+                {
+                    var keys = GenerateKeysForOperation(diffEntityConfiguration.KeyConfiguration, existingEntity);
+                    diffOperations.Add(new UpdateDiffOperation
+                    {
+                        Keys = keys,
+                        EntityName = existingEntity.GetType().Name,
+                        UpdatedProperties = updatedProperties,
+                        SetValueProperties = setValueProperties,
+                        CopyValuesProperties = copyValuesProperties
+                    });
+                }
             }
+        }
+
+        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyModifiedValues(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, bool generateOperations)
+        {
+            var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
+            if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
+            {
+                foreach (var detail in compareByPropertyResult.Details.Where(x => diffEntityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
+                {
+                    if (generateOperations)
+                    {
+                        updateDiffOperationPropertyInfos.Add(new UpdateDiffOperationPropertyInfo
+                        {
+                            PropertyName = detail.PropertyInfo.Name,
+                            ExistingValue = detail.OldValue?.ToString(),
+                            NewValue = detail.NewValue?.ToString()
+                        });
+                    }
+                    //
+                    detail.PropertyInfo.SetValue(existingEntity, detail.NewValue);
+                }
+            }
+            return updateDiffOperationPropertyInfos;
+        }
+
+        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateSetValue(UpdateConfiguration updateConfiguration, object existingEntity, bool generateOperations)
+        {
+            var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
+            if (updateConfiguration.SetValueConfiguration != null)
+            {
+                if (generateOperations)
+                {
+                    var existingValue = updateConfiguration.SetValueConfiguration.DestinationProperty.GetValue(existingEntity);
+                    var newValue = updateConfiguration.SetValueConfiguration.Value;
+                    updateDiffOperationPropertyInfos.Add(new UpdateDiffOperationPropertyInfo
+                    {
+                        PropertyName = updateConfiguration.SetValueConfiguration.DestinationProperty.Name,
+                        ExistingValue = existingValue?.ToString(),
+                        NewValue = newValue?.ToString()
+                    });
+                }
+                //
+                updateConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(existingEntity, updateConfiguration.SetValueConfiguration.Value);
+            }
+            return updateDiffOperationPropertyInfos;
+        }
+
+        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyValues(UpdateConfiguration updateConfiguration, object existingEntity, object newEntity, bool generateOperations)
+        {
+            var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
+            if (updateConfiguration.CopyValuesConfiguration != null)
+            {
+                if (generateOperations)
+                {
+                    foreach (var propertyInfo in updateConfiguration.CopyValuesConfiguration.CopyValuesProperties)
+                    {
+                        var existingValue = propertyInfo.GetValue(existingEntity);
+                        var newValue = propertyInfo.GetValue(newEntity);
+                        updateDiffOperationPropertyInfos.Add(new UpdateDiffOperationPropertyInfo
+                        {
+                            PropertyName = propertyInfo.Name,
+                            ExistingValue = existingValue?.ToString(),
+                            NewValue = newValue?.ToString()
+                        });
+                    }
+                }
+                //
+                updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
+            }
+            return updateDiffOperationPropertyInfos;
         }
 
         private void OnInsertAndPropagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object newEntity, IList<DiffOperationBase> diffOperations)
@@ -403,87 +484,6 @@ namespace DeepDiff
                     EntityName = entity.GetType().Name,
                     Keys = keys
                 });
-            }
-        }
-
-        private void GenerateUpdateDiffOperations(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations) 
-        {
-            if (DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.UpdateConfiguration == null || diffEntityConfiguration.UpdateConfiguration.GenerateOperations))
-            {
-                // Values
-                var updatedProperties = new List<UpdateDiffOperationPropertyInfo>();
-                if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
-                {
-                    foreach (var propertyInfo in diffEntityConfiguration.ValuesConfiguration.ValuesProperties)
-                    {
-                        var existingValue = propertyInfo.GetValue(existingEntity);
-                        var newValue = propertyInfo.GetValue(newEntity);
-
-                        var equals = true;
-                        if (diffEntityConfiguration.ComparerConfiguration?.PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
-                        {
-                            if (!propertySpecificComparer.Equals(existingValue, newValue))
-                                equals = false;
-                        }
-                        else if (diffEntityConfiguration.ComparerConfiguration?.TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
-                        {
-                            if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
-                                equals = false;
-                        }
-                        else
-                            equals = Equals(existingValue, newValue);
-
-                        if (!equals)
-                            updatedProperties.Add(new UpdateDiffOperationPropertyInfo
-                            {
-                                PropertyName = propertyInfo.Name,
-                                ExistingValue = existingValue?.ToString(),
-                                NewValue = newValue?.ToString()
-                            });
-                    }
-                }
-                // SetValue
-                var setValueProperties = new List<UpdateDiffOperationPropertyInfo>();
-                if (diffEntityConfiguration.UpdateConfiguration?.SetValueConfiguration != null)
-                {
-                    var existingValue = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.DestinationProperty.GetValue(existingEntity);
-                    var newValue = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.Value;
-                    setValueProperties.Add(new UpdateDiffOperationPropertyInfo
-                    {
-                        PropertyName = diffEntityConfiguration.UpdateConfiguration.SetValueConfiguration.DestinationProperty.Name,
-                        ExistingValue = existingValue?.ToString(),
-                        NewValue = newValue?.ToString()
-                    });
-                }
-                // CopyValues
-                var copyValuesProperties = new List<UpdateDiffOperationPropertyInfo>();
-                if (diffEntityConfiguration.UpdateConfiguration?.CopyValuesConfiguration != null)
-                {
-                    foreach (var propertyInfo in diffEntityConfiguration.UpdateConfiguration.CopyValuesConfiguration.CopyValuesProperties)
-                    {
-                        var existingValue = propertyInfo.GetValue(existingEntity);
-                        var newValue = propertyInfo.GetValue(newEntity);
-                        copyValuesProperties.Add(new UpdateDiffOperationPropertyInfo
-                        {
-                            PropertyName = propertyInfo.Name,
-                            ExistingValue = existingValue?.ToString(),
-                            NewValue = newValue?.ToString()
-                        });
-                    }
-                }
-                //
-                if (updatedProperties.Any() || setValueProperties.Any() || copyValuesProperties.Any())
-                {
-                    var keys = GenerateKeysForOperation(diffEntityConfiguration.KeyConfiguration, existingEntity);
-                    diffOperations.Add(new UpdateDiffOperation
-                    {
-                        Keys = keys,
-                        EntityName = existingEntity.GetType().Name,
-                        UpdatedProperties = updatedProperties,
-                        SetValueProperties = setValueProperties,
-                        CopyValuesProperties = copyValuesProperties
-                    });
-                }
             }
         }
 

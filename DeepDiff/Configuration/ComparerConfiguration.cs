@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -7,7 +6,9 @@ namespace DeepDiff.Configuration
 {
     internal sealed class ComparerConfiguration
     {
-        public Dictionary<Type, IEqualityComparer> TypeSpecificComparers { get; set; } = new Dictionary<Type, IEqualityComparer>();
-        public Dictionary<PropertyInfo, IEqualityComparer> PropertySpecificComparers { get; set; } = new Dictionary<PropertyInfo, IEqualityComparer>();
+        public Dictionary<Type, object> TypeSpecificNonGenericComparers { get; set; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<Type, object> TypeSpecificGenericComparers { get; set; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<PropertyInfo, object> PropertySpecificNonGenericComparers { get; set; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<PropertyInfo, object> PropertySpecificGenericComparers { get; set; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
     }
 }

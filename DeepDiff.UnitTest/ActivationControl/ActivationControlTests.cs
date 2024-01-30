@@ -1,11 +1,7 @@
 using DeepDiff.Configuration;
 using DeepDiff.Operations;
-using DeepDiff.UnitTest.Comparer;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 

@@ -1,6 +1,4 @@
-using DeepDiff.Comparers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -91,8 +89,8 @@ namespace DeepDiff.Configuration
 
         public void CreateComparers()
         {
-            KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration?.TypeSpecificComparers, ComparerConfiguration?.PropertySpecificComparers);
-            ValuesConfiguration.CreateComparers(EntityType, ComparerConfiguration?.TypeSpecificComparers, ComparerConfiguration?.PropertySpecificComparers);
+            KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
+            ValuesConfiguration.CreateComparers(EntityType, ComparerConfiguration);
         }
     }
 }
