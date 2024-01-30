@@ -117,7 +117,6 @@ namespace DeepDiff.Comparers
                         isEqualByProperty = false;
                 }
                 if (!isEqualByProperty)
-                    //details.Add(new CompareByPropertyResultDetail(propertyInfo,oldValue,newValue));
                     details.Add(new CompareByPropertyResultDetail { PropertyInfo = propertyInfo, OldValue = oldValue, NewValue = newValue });
             }
             return new CompareByPropertyResult(details);

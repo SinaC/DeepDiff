@@ -3,12 +3,12 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Comparer
 {
-    public class NonGenericEqualityComparerTests
+    public class GenericToNonGenericEqualityComparerTests
     {
         [Fact]
         public void Decimal3_Same()
         {
-            var comparer = NonGenericEqualityComparer.Create(new DecimalComparer(3));
+            var comparer = GenericToNonGenericEqualityComparer.Create(new DecimalComparer(3));
 
             var equals = comparer.Equals(3.123456789m, 3.1234987654m);
 
@@ -18,7 +18,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void Decimal_Different()
         {
-            var comparer = NonGenericEqualityComparer.Create(new DecimalComparer(3));
+            var comparer = GenericToNonGenericEqualityComparer.Create(new DecimalComparer(3));
 
             var equals = comparer.Equals(3.123456789m, 3.1934987654m);
 

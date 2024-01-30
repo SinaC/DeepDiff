@@ -106,7 +106,7 @@ namespace DeepDiff.Configuration
             if (config.TypeSpecificGenericComparers.ContainsKey(propertyType) || config.TypeSpecificNonGenericComparers.ContainsKey(propertyType))
                 throw new DuplicateTypeSpecificComparerConfigurationException(typeof(TEntity), propertyType);
 
-            config.TypeSpecificNonGenericComparers.Add(propertyType, NonGenericEqualityComparer.Create(equalityComparer));
+            config.TypeSpecificNonGenericComparers.Add(propertyType, GenericToNonGenericEqualityComparer.Create(equalityComparer));
             config.TypeSpecificGenericComparers.Add(propertyType, equalityComparer);
             return this;
         }
@@ -118,7 +118,7 @@ namespace DeepDiff.Configuration
             if (config.PropertySpecificGenericComparers.ContainsKey(propertyInfo) || config.PropertySpecificNonGenericComparers.ContainsKey(propertyInfo))
                 throw new DuplicatePropertySpecificComparerConfigurationException(typeof(TEntity), propertyInfo);
 
-            config.PropertySpecificNonGenericComparers.Add(propertyInfo, NonGenericEqualityComparer.Create(propertyEqualityComparer));
+            config.PropertySpecificNonGenericComparers.Add(propertyInfo, GenericToNonGenericEqualityComparer.Create(propertyEqualityComparer));
             config.PropertySpecificGenericComparers.Add(propertyInfo, propertyEqualityComparer);
             return this;
         }

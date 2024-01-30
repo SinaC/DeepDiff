@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace DeepDiff.Comparers
 {
-    internal class NonGenericEqualityComparer : IEqualityComparer
+    internal class GenericToNonGenericEqualityComparer : IEqualityComparer
     {
         private Func<object, object, bool> Comparer { get; set; } = null!;
         private Func<object, int> Hasher { get; set; } = null!;
 
-        public static NonGenericEqualityComparer Create<T>(IEqualityComparer<T> equalityComparerOfT)
+        public static GenericToNonGenericEqualityComparer Create<T>(IEqualityComparer<T> equalityComparerOfT)
         {
-            NonGenericEqualityComparer comparer = new NonGenericEqualityComparer
+            GenericToNonGenericEqualityComparer comparer = new GenericToNonGenericEqualityComparer
             {
                 Comparer = (left, right) => equalityComparerOfT.Equals((T)left, (T)right),
                 Hasher = x => equalityComparerOfT.GetHashCode((T)x)
