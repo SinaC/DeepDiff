@@ -24,7 +24,7 @@ namespace DeepDiff.UnitTest.Comparer
         public PrecompiledEqualityComparerByProperty<TEntity> CreatePrecompiledComparer<TKey>(Expression<Func<TEntity, TKey>> expression)
             => CreatePrecompiledComparer(expression, null!, null!);
 
-        public PrecompiledEqualityComparerByProperty<TEntity> CreatePrecompiledComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
+        public PrecompiledEqualityComparerByProperty<TEntity> CreatePrecompiledComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
         {
             var properties = expression.GetSimplePropertyAccessList().Select(p => p.Single());
             return new PrecompiledEqualityComparerByProperty<TEntity>(properties, typeSpecificComparers, propertySpecificComparers);

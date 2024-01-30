@@ -1,6 +1,5 @@
 using DeepDiff.Comparers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -25,7 +24,7 @@ namespace DeepDiff.Configuration
             NaiveEqualityComparer = (IComparerByProperty)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificNonGenericComparers, comparerConfiguration?.PropertySpecificNonGenericComparers);
 
             var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificNonGenericComparers, comparerConfiguration?.PropertySpecificNonGenericComparers);
+            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificGenericComparers, comparerConfiguration?.PropertySpecificGenericComparers);
         }
     }
 }

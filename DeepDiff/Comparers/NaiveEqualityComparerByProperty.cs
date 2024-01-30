@@ -37,27 +37,27 @@ namespace DeepDiff.Comparers
                 return false;
             foreach (var propertyInfo in Properties)
             {
-                var existingValue = propertyInfo.GetValue(left);
+                var oldValue = propertyInfo.GetValue(left);
                 var newValue = propertyInfo.GetValue(right);
 
                 if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
                 {
-                    if (!propertySpecificComparer.Equals(existingValue, newValue))
+                    if (!propertySpecificComparer.Equals(oldValue, newValue))
                         return false;
                 }
                 else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
                 {
-                    if (!propertyTypeSpecificComparer.Equals(existingValue, newValue))
+                    if (!propertyTypeSpecificComparer.Equals(oldValue, newValue))
                         return false;
                 }
                 else if (propertyInfo.PropertyType.IsValueType)
                 {
-                    if (!object.Equals(existingValue, newValue))
+                    if (!object.Equals(oldValue, newValue))
                         return false;
                 }
                 else
                 {
-                    if (!object.ReferenceEquals(existingValue, newValue) && (existingValue == null || !existingValue.Equals(newValue)))
+                    if (!object.ReferenceEquals(oldValue, newValue) && (oldValue == null || !oldValue.Equals(newValue)))
                         return false;
                 }
             }
@@ -79,7 +79,48 @@ namespace DeepDiff.Comparers
             return hashCode.ToHashCode();
         }
 
-        public IEnumerable<ComparerByPropertyResult> Compare(object? x, object? y)
-            => throw new NotImplementedException(); // TODO
+        public CompareByPropertyResult Compare(object? left, object? right)
+        {
+            if (object.ReferenceEquals(left, right)) // will handle left == right == null
+                return new CompareByPropertyResult(true);
+            if (Properties == null)
+                return new CompareByPropertyResult(left == null || left.Equals(right));
+            if (left is not T)
+                return new CompareByPropertyResult(false);
+            if (right is not T)
+                return new CompareByPropertyResult(false);
+            var details = new List<CompareByPropertyResultDetail>();
+            foreach (var propertyInfo in Properties)
+            {
+                var isEqualByProperty = true; // equal by default
+                var oldValue = propertyInfo.GetValue(left);
+                var newValue = propertyInfo.GetValue(right);
+
+                if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                {
+                    if (!propertySpecificComparer.Equals(oldValue, newValue))
+                        isEqualByProperty = false;
+                }
+                else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                {
+                    if (!propertyTypeSpecificComparer.Equals(oldValue, newValue))
+                        isEqualByProperty = false;
+                }
+                else if (propertyInfo.PropertyType.IsValueType)
+                {
+                    if (!object.Equals(oldValue, newValue))
+                        isEqualByProperty = false;
+                }
+                else
+                {
+                    if (!object.ReferenceEquals(oldValue, newValue) && (oldValue == null || !oldValue.Equals(newValue)))
+                        isEqualByProperty = false;
+                }
+                if (!isEqualByProperty)
+                    //details.Add(new CompareByPropertyResultDetail(propertyInfo,oldValue,newValue));
+                    details.Add(new CompareByPropertyResultDetail { PropertyInfo = propertyInfo, OldValue = oldValue, NewValue = newValue });
+            }
+            return new CompareByPropertyResult(details);
+        }
     }
 }

@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DeepDiff.Comparers
@@ -12,16 +9,18 @@ namespace DeepDiff.Comparers
     {
         private EqualsFunc<T> EqualsFunc { get; init; }
         private Func<T, int> HasherFunc { get; init; }
+        private CompareFunc<T> CompareFunc { get; init; }
 
         public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
             : this(properties, null, null)
         {
         }
 
-        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
+        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
-            EqualsFunc = ExpressionGenerater.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
-            HasherFunc = ExpressionGenerater.GenerateHasherFunc<T>(properties);
+            EqualsFunc = ExpressionGenerator.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
+            HasherFunc = ExpressionGenerator.GenerateHasherFunc<T>(properties);
+            CompareFunc = ExpressionGenerator.GenerateCompareFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
         }
 
         public new bool Equals(object? left, object? right)
@@ -31,155 +30,15 @@ namespace DeepDiff.Comparers
         public int GetHashCode(object obj)
             => obj is T objAsT ? this.HasherFunc(objAsT) : obj.GetHashCode();
 
-        public IEnumerable<ComparerByPropertyResult> Compare(object? x, object? y)
-            => throw new NotImplementedException(); // TODO
-    }
-
-    // most code has been ripped from https://blogs.u2u.be/peter/post/implementing-value-object-s-gethashcode
-    internal delegate bool EqualsFunc<T>(T left, T right);
-
-    internal static class ExpressionGenerater
-    {
-        internal static MethodInfo SequenceEqualMethod { get; }
-        internal static MethodInfo SequenceHashCodeMethod { get; }
-        internal static MethodInfo AddHashCodeMethod { get; }
-        internal static MethodInfo ToHashCodeMethod { get; }
-        internal static MethodInfo AddCollectionHashCodeMethod { get; }
-
-        static ExpressionGenerater()
+        public CompareByPropertyResult Compare(object? left, object? right)
         {
-            SequenceEqualMethod = typeof(Enumerable)
-             .GetMethods(bindingAttr: BindingFlags.Public | BindingFlags.Static)
-             .Single(methodInfo => methodInfo.Name == nameof(Enumerable.SequenceEqual) && methodInfo.GetParameters().Length == 2);
-
-            Type hashCodeType = typeof(HashCode);
-            AddHashCodeMethod = hashCodeType.GetMethods()
-              .Single(method => method.Name == nameof(HashCode.Add) && method.GetParameters().Length == 1);
-            AddCollectionHashCodeMethod = AddHashCodeMethod.MakeGenericMethod(typeof(int));
-            ToHashCodeMethod =
-              hashCodeType.GetMethod(nameof(HashCode.ToHashCode), BindingFlags.Public | BindingFlags.Instance)!;
-
-            SequenceHashCodeMethod = typeof(ExpressionGenerater)
-              .GetMethods(bindingAttr: BindingFlags.NonPublic | BindingFlags.Static)
-              .Single(methodInfo => methodInfo.Name == nameof(ExpressionGenerater.AddHashCodeMembersForCollection));
-        }
-
-        private static Expression GenerateEqualityExpression(ParameterExpression left, ParameterExpression right, PropertyInfo propInfo, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
-        {
-            Type propertyType = propInfo.PropertyType;
-
-            MethodInfo equalMethod;
-            Expression equalCall;
-            if (propertySpecificComparers?.TryGetValue(propInfo, out var propertySpecificComparer) == true)
-            {
-                equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
-                equalCall = Expression.Call(Expression.Constant(propertySpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
-            }
-            else if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Comparer.Equals((object)left, (object)right)
-            {
-                equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
-                equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, Expression.Convert(Expression.Property(left, propInfo), typeof(object)), Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
-            }
-            else
-            {
-                Type equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
-                if (equitableType.IsAssignableFrom(propertyType)) // generates left.Equals(right)
-                {
-                    equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType });
-                    equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Property(right, propInfo));
-                }
-                else // generates left.Equals((object)right)
-                {
-                    equalMethod = propertyType.GetMethod(nameof(Equals), new Type[] { typeof(object) });
-                    equalCall = Expression.Call(Expression.Property(left, propInfo), equalMethod, Expression.Convert(Expression.Property(right, propInfo), typeof(object)));
-                }
-            }
-
-            if (propInfo.PropertyType.IsValueType)
-            {
-                // property is value type, no need to check for null, so directly call Equals
-                return equalCall;
-            }
-            else
-            {
-                // generate
-                //       Expression<Func<T, T, bool>> ce = (T x, T y) => object.ReferenceEquals(x, y) || (x != null && x.Equals(y));
-
-                Expression leftValue = Expression.Property(left, propInfo);
-                Expression rightValue = Expression.Property(right, propInfo);
-                Expression refEqual = Expression.ReferenceEqual(leftValue, rightValue);
-                Expression nullConst = Expression.Constant(null);
-                Expression leftIsNotNull = Expression.Not(Expression.ReferenceEqual(leftValue, nullConst));
-                Expression leftIsNotNullAndIsEqual = Expression.AndAlso(leftIsNotNull, equalCall);
-                Expression either = Expression.OrElse(refEqual, leftIsNotNullAndIsEqual);
-
-                return either;
-            }
-        }
-
-        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, IEqualityComparer> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, IEqualityComparer> propertySpecificComparers)
-        {
-            var equals = new List<Expression>();
-            ParameterExpression left = Expression.Parameter(typeof(T), "left");
-            ParameterExpression right = Expression.Parameter(typeof(T), "right");
-
-            foreach (PropertyInfo propInfo in properties)
-            {
-                var equalityExpression = GenerateEqualityExpression(left, right, propInfo, typeSpecificComparers, propertySpecificComparers);
-                equals.Add(equalityExpression);
-            }
-            Expression ands = equals.Aggregate((left, right) => Expression.AndAlso(left, right));
-            EqualsFunc<T>? andEquals = Expression.Lambda<EqualsFunc<T>>(ands, left, right).Compile();
-            return andEquals;
-        }
-
-        internal static int AddHashCodeMembersForCollection<T>(IEnumerable<T> coll)
-        {
-            var hashCode = new HashCode();
-            if (coll != null)
-            {
-                foreach (T el in coll)
-                {
-                    hashCode.Add(el != null ? el.GetHashCode() : 0);
-                }
-            }
-            return hashCode.ToHashCode();
-        }
-
-        internal static Func<T, int> GenerateHasherFunc<T>(IEnumerable<PropertyInfo> properties)
-        {
-            // Generates the equivalent of
-            // var hash = new HashCode();
-            // hash.Add(this.Price);
-            // hash.Add(this.When);
-            // AddHasCodeMembersForCollection(hash, this.Hobbies) where this.Hobbies has DeepCompare attribute.
-            // return hash.ToHashCode();
-            ParameterExpression obj = Expression.Parameter(typeof(T), "obj");
-            ParameterExpression hashCode = Expression.Variable(typeof(HashCode), "hashCode");
-
-            List<Expression> parts = GenerateAddToHashCodeExpressions(obj, hashCode, properties);
-            parts.Insert(0, Expression.Assign(hashCode, Expression.New(typeof(HashCode))));
-            parts.Add(Expression.Call(hashCode, ToHashCodeMethod));
-            Expression[] body = parts.ToArray();
-
-            BlockExpression block = Expression.Block(
-              type: typeof(int),
-              variables: new ParameterExpression[] { hashCode },
-              expressions: body);
-
-            Func<T, int> hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
-            return hasher;
-        }
-
-        private static List<Expression> GenerateAddToHashCodeExpressions(ParameterExpression obj, ParameterExpression hashCode, IEnumerable<PropertyInfo> properties)
-        {
-            var adders = new List<Expression>();
-            foreach (PropertyInfo propInfo in properties)
-            {
-                MethodInfo boundAddMethod = AddHashCodeMethod.MakeGenericMethod(propInfo.PropertyType);
-                adders.Add(Expression.Call(instance: hashCode, boundAddMethod, Expression.Property(obj, propInfo)));
-            }
-            return adders;
+            if (object.ReferenceEquals(left, right)) // will handle left == right == null
+                return new CompareByPropertyResult(true);
+            if (left is not T leftAsT)
+                return new CompareByPropertyResult(false);
+            if (right is not T rightAsT)
+                return new CompareByPropertyResult(false);
+            return CompareFunc(leftAsT, rightAsT);
         }
     }
 }

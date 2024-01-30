@@ -8,12 +8,12 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Comparer
 {
-    public class PrecompiledEqualityComparerByPropertyTests
+    public class NaiveEqualityComparerByPropertyEqualTests
     {
         [Fact]
         public void Decimal_Equal()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Power);
 
             var existingEntity = new EntityLevel1
             {
@@ -32,7 +32,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void Decimal_Different()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Power);
 
             var existingEntity = new EntityLevel1
             {
@@ -51,7 +51,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal_Equal_NonNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price);
 
             var existingEntity = new EntityLevel1
             {
@@ -70,7 +70,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal_Equal_Null()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price);
 
             var existingEntity = new EntityLevel1
             {
@@ -89,7 +89,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal_Different_LeftNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price);
 
             var existingEntity = new EntityLevel1
             {
@@ -108,7 +108,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal_Different_RightNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price);
 
             var existingEntity = new EntityLevel1
             {
@@ -128,7 +128,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void NullableDecimal_Different_NonNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price);
 
             var existingEntity = new EntityLevel1
             {
@@ -148,7 +148,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void String_Equal_NonNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Comment);
 
             var existingEntity = new EntityLevel1
             {
@@ -167,7 +167,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void String_Equal_Null()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Comment);
 
             var existingEntity = new EntityLevel1
             {
@@ -186,7 +186,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void String_Different_LeftNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Comment);
 
             var existingEntity = new EntityLevel1
             {
@@ -205,7 +205,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void String_Different_RightNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Comment);
 
             var existingEntity = new EntityLevel1
             {
@@ -225,7 +225,7 @@ namespace DeepDiff.UnitTest.Comparer
         [Fact]
         public void String_Different_NonNull()
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Comment);
 
             var existingEntity = new EntityLevel1
             {
@@ -249,7 +249,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal), NonGenericEqualityComparer.Create(new DecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Power, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -273,7 +273,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -297,7 +297,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -321,7 +321,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -345,7 +345,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => x.Price, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -369,7 +369,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -396,7 +396,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal), NonGenericEqualityComparer.Create(new DecimalComparer(6)) }
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -422,7 +422,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { typeof(decimal?), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) },
             };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+            var comparer = new ComparerFactory<EntityLevel1>().CreateNaiveComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
 
             var existingEntity = new EntityLevel1
             {
@@ -455,7 +455,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { comparerFactory.GetPropertyInfo(x => x.Price), NonGenericEqualityComparer.Create(new NullableDecimalComparer(6)) }
             };
 
-            var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
+            var comparer = comparerFactory.CreateNaiveComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
 
             var existingEntity = new EntityLevel1
             {
@@ -486,7 +486,7 @@ namespace DeepDiff.UnitTest.Comparer
                 { comparerFactory.GetPropertyInfo(x => x.Price), NonGenericEqualityComparer.Create(new NullableDecimalComparer(3)) }
             };
 
-            var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
+            var comparer = comparerFactory.CreateNaiveComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
 
             var existingEntity = new EntityLevel1
             {

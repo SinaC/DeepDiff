@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 
 namespace DeepDiff.Benchmark;
 

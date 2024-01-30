@@ -207,7 +207,7 @@ public class ComparerPerformanceTests
     [Fact]
     public void PrecompiledEqualityComparerByProperty_4Fields_CustomComparer()
     {
-        var typeSpecificComparers = new Dictionary<Type, IEqualityComparer>
+        var typeSpecificComparers = new Dictionary<Type, object>
             {
                 { typeof(decimal?), new NullableDecimalComparer(6) },
                 { typeof(decimal), new DecimalComparer(6) }
