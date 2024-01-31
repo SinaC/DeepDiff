@@ -16,7 +16,7 @@ namespace DeepDiff.UnitTest.Simple
             var (existingEntity, newEntity) = GenerateEntities();
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
@@ -49,7 +49,7 @@ namespace DeepDiff.UnitTest.Simple
             var (existingEntity, newEntity) = GenerateEntities();
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
@@ -87,7 +87,7 @@ namespace DeepDiff.UnitTest.Simple
             var (existingEntity, newEntity) = GenerateEntities();
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
@@ -126,7 +126,7 @@ namespace DeepDiff.UnitTest.Simple
             var (existingEntity, newEntity) = GenerateEntities();
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })

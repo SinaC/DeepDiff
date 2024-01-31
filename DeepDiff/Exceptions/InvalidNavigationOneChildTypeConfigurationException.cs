@@ -2,7 +2,7 @@ using System;
 
 namespace DeepDiff.Exceptions
 {
-    public sealed class InvalidNavigationOneChildTypeConfigurationException : DiffEntityConfigurationException
+    public sealed class InvalidNavigationOneChildTypeConfigurationException : EntityConfigurationException
     {
         public string PropertyName { get; }
 

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
-    internal sealed class DiffEntityConfiguration
+    internal sealed class EntityConfiguration
     {
         public Type EntityType { get; }
 
@@ -18,7 +18,7 @@ namespace DeepDiff.Configuration
         public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
         public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
 
-        internal DiffEntityConfiguration(Type entityType)
+        internal EntityConfiguration(Type entityType)
         {
             EntityType = entityType;
         }

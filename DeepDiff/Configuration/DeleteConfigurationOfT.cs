@@ -18,8 +18,7 @@ namespace DeepDiff.Configuration
         public IDeleteConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
-            var config = Configuration.SetSetValueConfiguration(destinationProperty, value);
-            Configuration.SetValueConfiguration = config;
+            Configuration.SetSetValueConfiguration(destinationProperty, value);
             return this;
         }
 

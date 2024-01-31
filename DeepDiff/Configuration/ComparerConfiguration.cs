@@ -6,9 +6,9 @@ namespace DeepDiff.Configuration
 {
     internal sealed class ComparerConfiguration
     {
-        public Dictionary<Type, object> TypeSpecificNonGenericComparers { get; set; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
-        public Dictionary<Type, object> TypeSpecificGenericComparers { get; set; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
-        public Dictionary<PropertyInfo, object> PropertySpecificNonGenericComparers { get; set; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
-        public Dictionary<PropertyInfo, object> PropertySpecificGenericComparers { get; set; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<Type, object> TypeSpecificNonGenericComparers { get; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<Type, object> TypeSpecificGenericComparers { get; } = new Dictionary<Type, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<PropertyInfo, object> PropertySpecificNonGenericComparers { get; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
+        public Dictionary<PropertyInfo, object> PropertySpecificGenericComparers { get; } = new Dictionary<PropertyInfo, object>(); // IEqualityComparer<T> stored as object
     }
 }

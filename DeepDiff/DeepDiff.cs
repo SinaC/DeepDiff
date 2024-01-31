@@ -13,9 +13,9 @@ namespace DeepDiff
 {
     internal sealed class DeepDiff : IDeepDiff
     {
-        private DiffConfiguration Configuration { get; }
+        private DeepDiffConfiguration Configuration { get; }
 
-        internal DeepDiff(DiffConfiguration configuration)
+        internal DeepDiff(DeepDiffConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -27,15 +27,15 @@ namespace DeepDiff
         public DiffSingleResult<TEntity> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.DiffEntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var diffEntityConfiguration))
+            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var diffSingleConfiguration = new DiffSingleConfiguration();
             diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.DiffEntityConfigurationByTypes, diffSingleConfiguration);
+            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffSingleConfiguration);
             var diffOperations = new List<DiffOperationBase>();
-            var diffEntity = engine.InternalDiffSingle(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
+            var diffEntity = engine.InternalDiffSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
             return new DiffSingleResult<TEntity> 
             {
                 Entity = (TEntity)diffEntity,
@@ -50,15 +50,15 @@ namespace DeepDiff
         public DiffManyResult<TEntity> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.DiffEntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var diffEntityConfiguration))
+            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var diffManyConfiguration = new DiffManyConfiguration();
             diffManyConfigurationAction?.Invoke(diffManyConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.DiffEntityConfigurationByTypes, diffManyConfiguration);
+            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffManyConfiguration);
             var diffOperations = new List<DiffOperationBase>();
-            var diffEntities = engine.InternalDiffMany(diffEntityConfiguration, existingEntities, newEntities, diffOperations);
+            var diffEntities = engine.InternalDiffMany(entityConfiguration, existingEntities, newEntities, diffOperations);
             return new DiffManyResult<TEntity>
             {
                 Entities = diffEntities.Cast<TEntity>(),

@@ -1,6 +1,6 @@
 ﻿namespace DeepDiff.Configuration
 {
-    internal sealed class DiffManyConfiguration : DiffSingleOrManyConfigurationBase, IDiffManyConfiguration
+    internal sealed class DiffManyConfiguration : DiffConfigurationBase, IDiffManyConfiguration
     {
         public IDiffManyConfiguration DisableHashTable()
         {
@@ -19,6 +19,7 @@
             OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = true;
             return this;
         }
+
         public IDiffManyConfiguration DisableOperationsGeneration()
         {
             GenerateOperations = false;

@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Simple
         [Fact]
         public void ComparersOnType_Modifications()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel2>()
                 .WithComparer(new DecimalComparer(3))
                 .WithComparer(new NullableDecimalComparer(5))
@@ -56,7 +56,7 @@ namespace DeepDiff.UnitTest.Simple
         [Fact]
         public void ComparersOnType_NoModifications()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel2>()
                 .WithComparer(new DecimalComparer(3))
                 .WithComparer(new NullableDecimalComparer(5))
@@ -93,7 +93,7 @@ namespace DeepDiff.UnitTest.Simple
         [Fact]
         public void ComparersOnType_ComparerOnProperty_Modifications()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel2>()
                 .WithComparer(new DecimalComparer(3))
                 .WithComparer(new NullableDecimalComparer(5))

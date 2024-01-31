@@ -30,9 +30,9 @@ public class HashPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
-        diffEntityConfiguration.HasKey(x => x.Timestamp);
-        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
+        entityConfiguration.HasKey(x => x.Timestamp);
+        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
 
         sw.Restart();
         foreach(var entity in entities)
@@ -53,9 +53,9 @@ public class HashPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
-        diffEntityConfiguration.HasKey(x => x.Timestamp);
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
+        entityConfiguration.HasKey(x => x.Timestamp);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
 
         sw.Restart();
         foreach (var entity in entities)
@@ -79,9 +79,9 @@ public class HashPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
-        diffEntityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
+        entityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
+        var comparer = new NaiveEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
 
         sw.Restart();
         foreach (var entity in entities)
@@ -105,9 +105,9 @@ public class HashPerformanceTests
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
-        var diffEntityConfiguration = new DiffEntityConfiguration<EntityLevel1>(new DiffEntityConfiguration(typeof(EntityLevel1)));
-        diffEntityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(diffEntityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
+        entityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
 
         sw.Restart();
         foreach (var entity in entities)

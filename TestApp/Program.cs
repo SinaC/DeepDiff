@@ -20,7 +20,7 @@ class Program
                     .CreateLogger();
 
         var serviceCollection = new ServiceCollection();
-        var diffConfiguration = new DiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.AddProfiles(typeof(Program).Assembly);
         var deepDiff = diffConfiguration.CreateDeepDiff();
         serviceCollection.AddSingleton(typeof(IDeepDiff), deepDiff);

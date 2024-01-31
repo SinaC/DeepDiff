@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace DeepDiff.Exceptions
 {
-    public sealed class AlreadyDefinedPropertyException : DiffEntityConfigurationException
+    public sealed class AlreadyDefinedPropertyException : EntityConfigurationException
     {
         public string[] AlreadyDefinedPropertyNames { get; }
 

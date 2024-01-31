@@ -6,12 +6,12 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Exceptions
 {
-    public class DuplicateDiffEntityConfigurationExceptionTests
+    public class DuplicateEntityConfigurationExceptionTests
     {
         [Fact]
         public void DuplicateAddDiffConfiguration()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -19,7 +19,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.StartsOn);
 
-            Assert.Throws<DuplicateDiffEntityConfigurationException>(() => diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            Assert.Throws<DuplicateEntityConfigurationException>(() => diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -30,18 +30,18 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void DuplicateAddProfile()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
 
-            Assert.Throws<DuplicateDiffEntityConfigurationException>(() => diffConfiguration.AddProfile<CapacityAvailabilityProfile>());
+            Assert.Throws<DuplicateEntityConfigurationException>(() => diffConfiguration.AddProfile<CapacityAvailabilityProfile>());
         }
 
         [Fact]
-        public void DuplicateCreateDiffEntityConfiguration()
+        public void DuplicateCreateEntityConfiguration()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
 
-            Assert.Throws<DuplicateDiffEntityConfigurationException>(() => diffConfiguration.AddProfile<DuplicateCapacityAvailabilityProfile>());
+            Assert.Throws<DuplicateEntityConfigurationException>(() => diffConfiguration.AddProfile<DuplicateCapacityAvailabilityProfile>());
         }
     }
 }

@@ -11,7 +11,7 @@ namespace DeepDiff.Configuration
         public IComparerByProperty PrecompiledEqualityComparer { get; set; } = null!;
         public IComparerByProperty NaiveEqualityComparer { get; set; } = null!;
 
-        public bool UsePrecompiledEqualityComparer { get; set; } = true;
+        public bool UsePrecompiledEqualityComparer { get; private set; } = true;
 
         public void DisablePrecompiledEqualityComparer()
         {

@@ -10,7 +10,7 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void Values_AlsoInKey()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -24,7 +24,7 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void AdditionalValuesToCopy_AlsoInKey()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -38,7 +38,7 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void AdditionalValuesToCopy_AlsoInValues()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

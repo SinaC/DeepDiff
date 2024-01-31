@@ -19,7 +19,7 @@ public class LoadNoNavigation
     {
         Random = new Random();
 
-        var noHashtableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         noHashtableNaiveComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
@@ -29,7 +29,7 @@ public class LoadNoNavigation
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHashtableNaiveComparerDeepDiff = noHashtableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
-        var noHastablePrecompiledComparerDiffConfiguration = new DiffConfiguration();
+        var noHastablePrecompiledComparerDiffConfiguration = new DeepDiffConfiguration();
         noHastablePrecompiledComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
@@ -39,7 +39,7 @@ public class LoadNoNavigation
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHastablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
 
-        var hastableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference }, opt => opt.DisablePrecompiledEqualityComparer())
@@ -49,7 +49,7 @@ public class LoadNoNavigation
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         HastableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
-        var hashtableDiffConfiguration = new DiffConfiguration();
+        var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
             .Entity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })

@@ -10,7 +10,7 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void MissingNavigationOneChildConfigurationException()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

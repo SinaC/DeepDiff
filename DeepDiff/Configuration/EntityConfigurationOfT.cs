@@ -7,20 +7,20 @@ using System.Linq.Expressions;
 
 namespace DeepDiff.Configuration
 {
-    internal sealed class DiffEntityConfiguration<TEntity> : IDiffEntityConfiguration<TEntity>
+    internal sealed class EntityConfiguration<TEntity> : IEntityConfiguration<TEntity>
         where TEntity : class
     {
-        public DiffEntityConfiguration Configuration { get; private set; }
+        public EntityConfiguration Configuration { get; private set; }
 
-        internal DiffEntityConfiguration(DiffEntityConfiguration diffEntityConfiguration)
+        internal EntityConfiguration(EntityConfiguration entityConfiguration)
         {
-            Configuration = diffEntityConfiguration;
+            Configuration = entityConfiguration;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
+        public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
             => HasKey(keyExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction)
+        public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction)
         {
             if (Configuration.KeyConfiguration != null)
                 throw new DuplicateKeyConfigurationException(typeof(TEntity));
@@ -31,10 +31,10 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
+        public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
             => HasValues(valuesExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration> valuesConfigurationAction)
+        public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration> valuesConfigurationAction)
         {
             if (Configuration.ValuesConfiguration != null)
                 throw new DuplicateValuesConfigurationException(typeof(TEntity));
@@ -44,11 +44,11 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression)
+        public IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression)
             where TChildEntity : class
             => HasMany(navigationPropertyExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration<TEntity, TChildEntity>> navigationManyConfigurationAction)
+        public IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration<TEntity, TChildEntity>> navigationManyConfigurationAction)
             where TChildEntity : class
         {
             var navigationManyPropertyInfo = navigationPropertyExpression.GetSimplePropertyAccess().Single();
@@ -59,11 +59,11 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression)
+        public IEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression)
             where TChildEntity : class
             => HasOne(navigationPropertyExpression, null);
 
-        public IDiffEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration<TEntity, TChildEntity>> navigationOneConfigurationAction)
+        public IEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration<TEntity, TChildEntity>> navigationOneConfigurationAction)
             where TChildEntity : class
         {
             var navigationOnePropertyInfo = navigationPropertyExpression.GetSimplePropertyAccess().Single();
@@ -74,7 +74,7 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction)
+        public IEntityConfiguration<TEntity> OnUpdate(Action<IUpdateConfiguration<TEntity>> updateConfigurationAction)
         {
             var config = Configuration.GetOrSetOnUpdate();
             var configOfT = new UpdateConfiguration<TEntity>(config);
@@ -82,7 +82,7 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> InsertConfigurationAction)
+        public IEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> InsertConfigurationAction)
         {
             var config = Configuration.GetOrSetOnInsert();
             var configOfT = new InsertConfiguration<TEntity>(config);
@@ -90,7 +90,7 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> DeleteConfigurationAction)
+        public IEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> DeleteConfigurationAction)
         {
             var config = Configuration.GetOrSetOnDelete();
             var configOfT = new DeleteConfiguration<TEntity>(config);
@@ -98,7 +98,7 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer)
+        public IEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer)
         {
             var propertyType = typeof(T);
             var config = Configuration.GetOrSetWithComparer();
@@ -110,7 +110,7 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer)
+        public IEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer)
         {
             var config = Configuration.GetOrSetWithComparer();
             var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();

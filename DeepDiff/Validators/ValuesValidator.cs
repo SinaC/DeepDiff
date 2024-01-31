@@ -11,9 +11,9 @@ namespace DeepDiff.Validators
     {
         // if not null, cannot be empty
         // every property must be different and cannot be found in key configuration
-        public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
-            var configuration = diffEntityConfiguration.ValuesConfiguration;
+            var configuration = entityConfiguration.ValuesConfiguration;
             if (configuration != null)
             {
                 // cannot be empty
@@ -26,9 +26,9 @@ namespace DeepDiff.Validators
                     if (duplicates.Length > 0)
                         yield return new DuplicatePropertyConfigurationException(entityType, NameOf<ValuesConfiguration>(), duplicates.Select(x => x.Name));
                     // cannot be defined in keys
-                    if (diffEntityConfiguration.KeyConfiguration?.KeyProperties != null)
+                    if (entityConfiguration.KeyConfiguration?.KeyProperties != null)
                     {
-                        var alreadyDefinedInKey = configuration.ValuesProperties.Intersect(diffEntityConfiguration.KeyConfiguration.KeyProperties).ToArray();
+                        var alreadyDefinedInKey = configuration.ValuesProperties.Intersect(entityConfiguration.KeyConfiguration.KeyProperties).ToArray();
                         if (alreadyDefinedInKey.Length > 0)
                             yield return new AlreadyDefinedPropertyException(entityType, NameOf<ValuesConfiguration>(), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
                     }

@@ -10,7 +10,7 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void MissingConfigurationException()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
             Assert.Throws<MissingConfigurationException>(() => deepDiff.DiffMany(Enumerable.Empty<Entities.Simple.EntityLevel0>(), Enumerable.Empty<Entities.Simple.EntityLevel0>()).Entities.ToArray());

@@ -10,8 +10,8 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void DuplicatePropertySpecificComparer()
         {
-            var diffConfiguration = new DiffConfiguration();
-            var diffEntityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var diffConfiguration = new DeepDiffConfiguration();
+            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -19,7 +19,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => x.RequestedPower)
                 .WithComparer(x => x.RequestedPower, new DecimalComparer(6));
 
-            Assert.Throws<DuplicatePropertySpecificComparerConfigurationException>(() => diffEntityConfiguration.WithComparer(x => x.RequestedPower, new DecimalComparer(6)));
+            Assert.Throws<DuplicatePropertySpecificComparerConfigurationException>(() => entityConfiguration.WithComparer(x => x.RequestedPower, new DecimalComparer(6)));
         }
     }
 }

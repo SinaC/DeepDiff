@@ -14,6 +14,7 @@ namespace DeepDiff.UnitTest.Profile
                 .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
                 .HasValues(x => x.IsEnergyContrained)
                 .HasMany(x => x.CapacityAvailabilityDetails);
+
             CreateConfiguration<Entities.CapacityAvailability.CapacityAvailabilityDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

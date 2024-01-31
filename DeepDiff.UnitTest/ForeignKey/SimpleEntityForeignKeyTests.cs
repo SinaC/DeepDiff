@@ -70,7 +70,7 @@ namespace DeepDiff.UnitTest.ForeignKey
                 }
             };
 
-            DiffConfiguration diffConfiguration = new DiffConfiguration();
+            DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -162,7 +162,7 @@ namespace DeepDiff.UnitTest.ForeignKey
                 }
             };
 
-            DiffConfiguration diffConfiguration = new DiffConfiguration();
+            DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -268,7 +268,7 @@ namespace DeepDiff.UnitTest.ForeignKey
                 }
             };
 
-            DiffConfiguration diffConfiguration = new DiffConfiguration();
+            DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

@@ -93,7 +93,7 @@ public class DiffPerformanceTests
 
     private static IDeepDiff CreateDeepDiff()
     {
-        var diffConfiguration = new DiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.PersistEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })

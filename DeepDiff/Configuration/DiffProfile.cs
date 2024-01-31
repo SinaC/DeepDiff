@@ -6,19 +6,19 @@ namespace DeepDiff.Configuration
 {
     public abstract class DiffProfile
     {
-        internal Dictionary<Type, DiffEntityConfiguration> DiffEntityConfigurations { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
+        internal Dictionary<Type, EntityConfiguration> EntityConfigurations { get; private set; } = new Dictionary<Type, EntityConfiguration>();
 
-        protected IDiffEntityConfiguration<TEntity> CreateConfiguration<TEntity>()
+        protected IEntityConfiguration<TEntity> CreateConfiguration<TEntity>()
             where TEntity : class
         {
             var entityType = typeof(TEntity);
-            if (DiffEntityConfigurations.ContainsKey(entityType))
-                throw new DuplicateDiffEntityConfigurationException(entityType);
+            if (EntityConfigurations.ContainsKey(entityType))
+                throw new DuplicateEntityConfigurationException(entityType);
 
-            var diffEntityConfiguration = new DiffEntityConfiguration(entityType);
-            DiffEntityConfigurations.Add(entityType, diffEntityConfiguration);
+            var entityConfiguration = new EntityConfiguration(entityType);
+            EntityConfigurations.Add(entityType, entityConfiguration);
 
-            return new DiffEntityConfiguration<TEntity>(diffEntityConfiguration);
+            return new EntityConfiguration<TEntity>(entityConfiguration);
         }
     }
 }

@@ -50,7 +50,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        var diffConfiguration = new DiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -118,7 +118,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        var diffConfiguration = new DiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -185,7 +185,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -252,7 +252,7 @@ public class SimpleEntityNavigationManyTests
             }
         };
 
-        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

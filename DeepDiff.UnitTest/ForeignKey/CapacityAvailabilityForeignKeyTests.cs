@@ -239,7 +239,7 @@ namespace DeepDiff.UnitTest.ForeignKey
 
         private IDeepDiff CreateDiffWithoutNavigationKey()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.CapacityAvailability.CapacityAvailability>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -260,7 +260,7 @@ namespace DeepDiff.UnitTest.ForeignKey
 
         private IDeepDiff CreateDiffWithNavigationKey()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.CapacityAvailability.CapacityAvailability>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

@@ -7,9 +7,9 @@ namespace DeepDiff.Validators
 {
     internal sealed class ComparerValidator : ValidatorBase
     {
-        // TODO: check if equality comparer are able to convert type or property
-        public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
+            // no validation for the moment
             return Enumerable.Empty<Exception>();
         }
     }
