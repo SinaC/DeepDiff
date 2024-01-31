@@ -20,7 +20,7 @@ public class LoadNavigation
     {
         Random = new Random();
 
-        var noHashtableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         noHashtableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel0>()
            .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.DisablePrecompiledEqualityComparer())
@@ -49,7 +49,7 @@ public class LoadNavigation
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHashtableNaiveComparerDeepDiff = noHashtableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
-        var noHastablePrecompiledComparerDiffConfiguration = new DiffConfiguration();
+        var noHastablePrecompiledComparerDiffConfiguration = new DeepDiffConfiguration();
         noHastablePrecompiledComparerDiffConfiguration
             .Entity<NavigationEntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
@@ -78,7 +78,7 @@ public class LoadNavigation
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         NoHastablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
 
-        var hastableNaiveComparerDiffConfiguration = new DiffConfiguration();
+        var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel0>()
            .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.DisablePrecompiledEqualityComparer())
@@ -107,7 +107,7 @@ public class LoadNavigation
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         HastableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
-        var hashtableDiffConfiguration = new DiffConfiguration();
+        var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
             .Entity<NavigationEntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
@@ -214,11 +214,11 @@ public class LoadNavigation
         foreach (var entity0 in NewEntities)
         {
             if (Random.Next(3) == 0)
-                entity0.StartsOn = entity0.StartsOn.AddMonths(1);
+                entity0.StartsOn = entity0.StartsOn.AddMonths(-1); // substract to ensure no conflict with other data
             foreach (var entity1 in entity0.SubEntities)
             {
                 if (Random.Next(4) == 0)
-                    entity1.Timestamp = entity1.Timestamp.AddMonths(1);
+                    entity1.Timestamp = entity1.Timestamp.AddMonths(-1); // substract to ensure no conflict with other data
                 foreach (var entity2 in entity1.SubEntities)
                 {
                     if (Random.Next(5) == 0)

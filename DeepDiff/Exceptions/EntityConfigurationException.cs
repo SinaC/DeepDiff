@@ -2,11 +2,11 @@ using System;
 
 namespace DeepDiff.Exceptions
 {
-    public abstract class DiffEntityConfigurationException : Exception
+    public abstract class EntityConfigurationException : Exception
     {
         public Type EntityType { get; }
 
-        public DiffEntityConfigurationException(string message, Type entityType)
+        public EntityConfigurationException(string message, Type entityType)
             : base(message)
         {
             EntityType = entityType;

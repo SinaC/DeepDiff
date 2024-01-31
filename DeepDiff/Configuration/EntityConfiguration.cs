@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
-    internal sealed class DiffEntityConfiguration
+    internal sealed class EntityConfiguration
     {
         public Type EntityType { get; }
 
@@ -18,47 +18,33 @@ namespace DeepDiff.Configuration
         public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
         public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
 
-        internal DiffEntityConfiguration(Type entityType)
+        internal EntityConfiguration(Type entityType)
         {
             EntityType = entityType;
         }
 
         public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
         {
-            KeyConfiguration = new KeyConfiguration
-            {
-                KeyProperties = keyProperties.ToArray(),
-            };
+            KeyConfiguration = new KeyConfiguration(keyProperties.ToArray());
             return KeyConfiguration;
         }
 
         public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties)
         {
-            ValuesConfiguration = new ValuesConfiguration
-            {
-                ValuesProperties = valuesProperties.ToArray(),
-            };
+            ValuesConfiguration = new ValuesConfiguration(valuesProperties);
             return ValuesConfiguration;
         }
 
         public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
         {
-            var navigationManyConfiguration = new NavigationManyConfiguration
-            {
-                NavigationProperty = navigationManyProperty,
-                NavigationChildType = navigationManyDestinationType
-            };
+            var navigationManyConfiguration = new NavigationManyConfiguration(navigationManyProperty, navigationManyDestinationType);
             NavigationManyConfigurations.Add(navigationManyConfiguration);
             return navigationManyConfiguration;
         }
 
         public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty, Type navigationOneChildType)
         {
-            var navigationOneConfiguration = new NavigationOneConfiguration
-            {
-                NavigationProperty = navigationOneProperty,
-                NavigationChildType = navigationOneChildType
-            };
+            var navigationOneConfiguration = new NavigationOneConfiguration(navigationOneProperty, navigationOneChildType);
             NavigationOneConfigurations.Add(navigationOneConfiguration);
             return navigationOneConfiguration;
         }

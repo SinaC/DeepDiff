@@ -4,7 +4,13 @@ namespace DeepDiff.Configuration
 {
     internal sealed class SetValueConfiguration
     {
-        public PropertyInfo DestinationProperty { get; set; } = null!;
-        public object Value { get; set; } = null!;
+        public PropertyInfo DestinationProperty { get; } = null!;
+        public object Value { get; } = null!;
+
+        public SetValueConfiguration(PropertyInfo destinationProperty, object value)
+        {
+            DestinationProperty = destinationProperty;
+            Value = value;
+        }
     }
 }

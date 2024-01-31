@@ -10,29 +10,29 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void DuplicateHasKey_OnDifferentKey()
         {
-            var diffConfiguration = new DiffConfiguration();
-            var diffEntityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var diffConfiguration = new DeepDiffConfiguration();
+            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.RequestedPower);
 
-            Assert.Throws<DuplicateKeyConfigurationException>(() => diffEntityConfiguration.HasKey(x => x.Id));
+            Assert.Throws<DuplicateKeyConfigurationException>(() => entityConfiguration.HasKey(x => x.Id));
         }
 
         [Fact]
         public void DuplicateHasKey_OnSameKey()
         {
-            var diffConfiguration = new DiffConfiguration();
-            var diffEntityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var diffConfiguration = new DeepDiffConfiguration();
+            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.RequestedPower);
 
-            Assert.Throws<DuplicateKeyConfigurationException>(() => diffEntityConfiguration.HasKey(x => new { x.StartsOn, x.Direction }));
+            Assert.Throws<DuplicateKeyConfigurationException>(() => entityConfiguration.HasKey(x => new { x.StartsOn, x.Direction }));
         }
     }
 }

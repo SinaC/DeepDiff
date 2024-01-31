@@ -18,7 +18,7 @@ namespace DeepDiff.UnitTest.Profile
         {
             var entities = GenerateCapacityAvailabilities();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
@@ -44,7 +44,7 @@ namespace DeepDiff.UnitTest.Profile
         {
             var entities = GenerateCapacityAvailabilities();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
@@ -103,7 +103,7 @@ namespace DeepDiff.UnitTest.Profile
             };
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfileNoCustomComparer>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffSingle(existing, calculated);
@@ -153,7 +153,7 @@ namespace DeepDiff.UnitTest.Profile
             };
 
             //
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var diff = deepDiff.DiffSingle(existing, calculated);

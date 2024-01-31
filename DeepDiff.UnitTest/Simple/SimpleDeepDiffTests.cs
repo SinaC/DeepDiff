@@ -58,7 +58,7 @@ public partial class SimpleDeepDiffTests
             }).ToList(),
         }).ToArray();
 
-        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -151,7 +151,7 @@ public partial class SimpleDeepDiffTests
             }).ToList(),
         }).ToArray();
 
-        DiffConfiguration diffConfiguration = new DiffConfiguration();
+        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -168,7 +168,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer().DisableOperationsGeneration());
         var results = diff.Entities.ToArray();
 
         // deleted: 0

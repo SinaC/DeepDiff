@@ -6,27 +6,20 @@ namespace DeepDiff.Configuration
 {
     internal sealed class UpdateConfiguration
     {
-        public SetValueConfiguration SetValueConfiguration { get; set; } = null!;
-        public CopyValuesConfiguration CopyValuesConfiguration { get; set; } = null!;
-        public bool GenerateOperations { get; set; } = true;
+        public SetValueConfiguration SetValueConfiguration { get; private set; } = null!;
+        public CopyValuesConfiguration CopyValuesConfiguration { get; private set; } = null!;
+        public bool GenerateOperations { get; private set; } = true;
 
         public SetValueConfiguration SetSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {
-            var config = new SetValueConfiguration
-            {
-                DestinationProperty = destinationProperty,
-                Value = value
-            };
+            var config = new SetValueConfiguration(destinationProperty, value);
             SetValueConfiguration = config;
             return config;
         }
 
         public CopyValuesConfiguration SetCopyValuesConfiguration(IEnumerable<PropertyInfo> copyValuesProperties)
         {
-            var config = new CopyValuesConfiguration
-            {
-                CopyValuesProperties = copyValuesProperties.ToArray()
-            };
+            var config = new CopyValuesConfiguration(copyValuesProperties.ToArray());
             CopyValuesConfiguration = config;
             return config;
         }

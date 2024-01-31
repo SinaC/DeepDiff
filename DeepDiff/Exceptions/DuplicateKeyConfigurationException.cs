@@ -2,7 +2,7 @@
 
 namespace DeepDiff.Exceptions
 {
-    public class DuplicateKeyConfigurationException : DiffEntityConfigurationException
+    public class DuplicateKeyConfigurationException : EntityConfigurationException
     {
         public DuplicateKeyConfigurationException(Type entityType)
             : base($"HasKey has already been configured for {entityType}", entityType)

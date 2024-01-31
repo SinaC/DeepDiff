@@ -2,9 +2,9 @@
 
 namespace DeepDiff.Exceptions
 {
-    public sealed class DuplicateDiffEntityConfigurationException : DiffEntityConfigurationException
+    public sealed class DuplicateEntityConfigurationException : EntityConfigurationException
     {
-        public DuplicateDiffEntityConfigurationException(Type entityType)
+        public DuplicateEntityConfigurationException(Type entityType)
             : base($"A configuration for {entityType} has already been defined", entityType)
         {
         }

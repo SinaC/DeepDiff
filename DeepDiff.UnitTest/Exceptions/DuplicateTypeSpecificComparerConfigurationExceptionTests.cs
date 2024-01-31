@@ -10,8 +10,8 @@ namespace DeepDiff.UnitTest.Exceptions
         [Fact]
         public void DuplicateTypeSpecificComparer()
         {
-            var diffConfiguration = new DiffConfiguration();
-            var diffEntityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var diffConfiguration = new DeepDiffConfiguration();
+            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -19,7 +19,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => x.RequestedPower)
                 .WithComparer(new DecimalComparer(6));
 
-            Assert.Throws<DuplicateTypeSpecificComparerConfigurationException>(() => diffEntityConfiguration.WithComparer(new DecimalComparer(6)));
+            Assert.Throws<DuplicateTypeSpecificComparerConfigurationException>(() => entityConfiguration.WithComparer(new DecimalComparer(6)));
         }
     }
 }

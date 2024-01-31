@@ -15,7 +15,7 @@ namespace DeepDiff.UnitTest.Operations
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -40,11 +40,11 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void UpdateDisableOperationGeneration()
+        public void UpdateDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -72,11 +72,11 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void InsertDisableOperationGeneration()
+        public void InsertDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -105,11 +105,11 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void DeleteDisableOperationGeneration()
+        public void DeleteDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -142,7 +142,7 @@ namespace DeepDiff.UnitTest.Operations
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

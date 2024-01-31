@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     internal sealed class InsertConfiguration<TEntity> : IInsertConfiguration<TEntity>
         where TEntity : class
     {
-        public InsertConfiguration Configuration { get; private set; }
+        public InsertConfiguration Configuration { get; }
 
         public InsertConfiguration(InsertConfiguration InsertConfiguration)
         {
@@ -18,14 +18,19 @@ namespace DeepDiff.Configuration
         public IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
-            var config = Configuration.SetSetValueConfiguration(destinationProperty, value);
-            Configuration.SetValueConfiguration = config;
+            Configuration.SetSetValueConfiguration(destinationProperty, value);
             return this;
         }
 
         public IInsertConfiguration<TEntity> DisableOperationsGeneration()
         {
             Configuration.SetGenerationOperations(false);
+            return this;
+        }
+
+        public IInsertConfiguration<TEntity> EnableOperationsGeneration()
+        {
+            Configuration.SetGenerationOperations(true);
             return this;
         }
     }

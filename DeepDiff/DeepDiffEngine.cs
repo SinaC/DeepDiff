@@ -12,16 +12,16 @@ namespace DeepDiff
 {
     internal sealed class DeepDiffEngine
     {
-        private IReadOnlyDictionary<Type, DiffEntityConfiguration> DiffEntityConfigurationByTypes { get; }
-        private DiffSingleOrManyConfigurationBase DiffSingleOrManyConfiguration { get; }
+        private IReadOnlyDictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; }
+        private DiffConfigurationBase DiffSingleOrManyConfiguration { get; }
 
-        public DeepDiffEngine(IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes, DiffSingleOrManyConfigurationBase diffSingleOrManyConfiguration)
+        public DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffConfigurationBase diffSingleOrManyConfiguration)
         {
-            DiffEntityConfigurationByTypes = diffEntityConfigurationByTypes;
+            EntityConfigurationByTypes = entityConfigurationByTypes;
             DiffSingleOrManyConfiguration = diffSingleOrManyConfiguration;
         }
 
-        public object InternalDiffSingle(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        public object InternalDiffSingle(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -30,48 +30,48 @@ namespace DeepDiff
             // no existing entity -> return new entity as inserted
             if (existingEntity == null)
             {
-                OnInsertAndPropagateUsingNavigation(diffEntityConfiguration, newEntity, diffOperations);
+                OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity, diffOperations);
                 return newEntity;
             }
 
             // if no new entity -> return existing as deleted
             if (newEntity == null)
             {
-                OnDeleteAndPropagateUsingNavigation(diffEntityConfiguration, existingEntity, diffOperations);
+                OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity, diffOperations);
                 return existingEntity;
             }
 
             // was existing and is new -> maybe an update
             bool areKeysEqual = false;
-            if (diffEntityConfiguration.KeyConfiguration.KeyProperties != null)
+            if (entityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
-                    ? diffEntityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
-                    : diffEntityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
+                areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                    ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
+                    : entityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
                 if (!areKeysEqual) // keys are different -> copy keys
-                    diffEntityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
+                    entityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
             }
 
             CompareByPropertyResult compareByPropertyResult = null;
-            if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
+            if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
-                    ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
-                    : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
+                compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                    ? entityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
+                    : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
             }
 
-            var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
+            var diffModificationsFound = DiffUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
             if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound) // update
             {
                 if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
-                    OnUpdate(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
+                    OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
                 return existingEntity;
             }
 
             return null;
         }
 
-        public IList<object> InternalDiffMany(DiffEntityConfiguration diffEntityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
+        public IList<object> InternalDiffMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
         {
             var results = new List<object>();
 
@@ -84,7 +84,7 @@ namespace DeepDiff
             {
                 foreach (var newEntity in newEntities)
                 {
-                    OnInsertAndPropagateUsingNavigation(diffEntityConfiguration, newEntity, diffOperations); // once an entity is inserted, it's children will also be inserted
+                    OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity, diffOperations); // once an entity is inserted, it's children will also be inserted
                     results.Add(newEntity);
                 }
                 return results;
@@ -95,7 +95,7 @@ namespace DeepDiff
             {
                 foreach (var existingEntity in existingEntities)
                 {
-                    OnDeleteAndPropagateUsingNavigation(diffEntityConfiguration, existingEntity, diffOperations); // once an entity is deleted, it's children will also be deleted
+                    OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity, diffOperations); // once an entity is deleted, it's children will also be deleted
                     results.Add(existingEntity);
                 }
                 return results;
@@ -103,10 +103,10 @@ namespace DeepDiff
 
             // we are sure there is at least one existing and one new entity
             var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)
-                ? InitializeHashtable(diffEntityConfiguration.KeyConfiguration, existingEntities)
+                ? InitializeHashtable(entityConfiguration.KeyConfiguration, existingEntities)
                 : null;
             var newEntitiesHashtable = CheckIfHashtablesShouldBeUsed(newEntities)
-                ? InitializeHashtable(diffEntityConfiguration.KeyConfiguration, newEntities)
+                ? InitializeHashtable(entityConfiguration.KeyConfiguration, newEntities)
                 : null;
 
             // search if every existing entity is found in new entities -> this will detect update and delete
@@ -114,21 +114,21 @@ namespace DeepDiff
             {
                 var newEntity = newEntitiesHashtable != null
                     ? newEntitiesHashtable[existingEntity]
-                    : SearchMatchingEntityByKey(diffEntityConfiguration.KeyConfiguration, newEntities, existingEntity);
+                    : SearchMatchingEntityByKey(entityConfiguration.KeyConfiguration, newEntities, existingEntity);
                 // existing entity found in new entities -> if values are different it's an update
                 if (newEntity != null)
                 {
-                    if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
+                    if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                     {
-                        var compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && diffEntityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
-                            ? diffEntityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
-                            : diffEntityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
+                        var compareByPropertyResult = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                            ? entityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
+                            : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
 
-                        var diffModificationsFound = DiffUsingNavigation(diffEntityConfiguration, existingEntity, newEntity, diffOperations);
+                        var diffModificationsFound = DiffUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
                         if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound)
                         {
                             if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && DiffSingleOrManyConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel))
-                                OnUpdate(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
+                                OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations); // new values are different -> copy new values and dump differences
                             results.Add(existingEntity);
                         }
                     }
@@ -136,7 +136,7 @@ namespace DeepDiff
                 // existing entity not found in new entities -> it's a delete
                 else
                 {
-                    OnDeleteAndPropagateUsingNavigation(diffEntityConfiguration, existingEntity, diffOperations); // once an entity is deleted, it's children will also be deleted
+                    OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity, diffOperations); // once an entity is deleted, it's children will also be deleted
                     results.Add(existingEntity);
                 }
             }
@@ -146,11 +146,11 @@ namespace DeepDiff
             {
                 var newEntityFoundInExistingEntities = existingEntitiesHashtable != null
                     ? existingEntitiesHashtable.ContainsKey(newEntity)
-                    : SearchMatchingEntityByKey(diffEntityConfiguration.KeyConfiguration, existingEntities, newEntity) != null;
+                    : SearchMatchingEntityByKey(entityConfiguration.KeyConfiguration, existingEntities, newEntity) != null;
                 // new entity not found in existing entity -> it's an insert
                 if (!newEntityFoundInExistingEntities)
                 {
-                    OnInsertAndPropagateUsingNavigation(diffEntityConfiguration, newEntity, diffOperations); // once an entity is inserted, it's children will also be inserted
+                    OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity, diffOperations); // once an entity is inserted, it's children will also be inserted
                     results.Add(newEntity);
                 }
             }
@@ -185,17 +185,17 @@ namespace DeepDiff
             return hashtable;
         }
 
-        private bool DiffUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        private bool DiffUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             var modificationsDetected = false;
-            if (diffEntityConfiguration.NavigationManyConfigurations != null)
+            if (entityConfiguration.NavigationManyConfigurations != null)
             {
-                foreach (var navigationManyConfiguration in diffEntityConfiguration.NavigationManyConfigurations)
+                foreach (var navigationManyConfiguration in entityConfiguration.NavigationManyConfigurations)
                     modificationsDetected |= DiffUsingNavigationMany(navigationManyConfiguration, existingEntity, newEntity, diffOperations);
             }
-            if (diffEntityConfiguration.NavigationOneConfigurations != null)
+            if (entityConfiguration.NavigationOneConfigurations != null)
             {
-                foreach (var navigationOneConfiguration in diffEntityConfiguration.NavigationOneConfigurations)
+                foreach (var navigationOneConfiguration in entityConfiguration.NavigationOneConfigurations)
                     modificationsDetected |= DiffUsingNavigationOne(navigationOneConfiguration, existingEntity, newEntity, diffOperations);
             }
             return modificationsDetected;
@@ -209,7 +209,7 @@ namespace DeepDiff
             if (childType == null)
                 return false;
 
-            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+            if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
 
             // get children
@@ -219,7 +219,7 @@ namespace DeepDiff
             // diff children
             var existingChildren = (IEnumerable<object>)existingEntityChildren!;
             var newChildren = (IEnumerable<object>)newEntityChildren!;
-            var diffChildren = InternalDiffMany(childDiffEntityConfiguration, existingChildren, newChildren, diffOperations);
+            var diffChildren = InternalDiffMany(childEntityConfiguration, existingChildren, newChildren, diffOperations);
 
             // convert diff children from IEnumerable<object> to List<ChildType>
             var listType = typeof(List<>).MakeGenericType(childType);
@@ -235,7 +235,7 @@ namespace DeepDiff
                 if (navigationManyConfiguration.NavigationKeyConfigurations != null)
                 {
                     foreach (var child in list)
-                        CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, navigationManyConfiguration, child, existingEntity);
+                        CopyNavigationKeyAndProgagateUsingNavigation(childEntityConfiguration, navigationManyConfiguration, child, existingEntity);
                 }
                 return true;
             }
@@ -250,7 +250,7 @@ namespace DeepDiff
             if (childType == null)
                 return false;
 
-            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+            if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
 
             // get child
@@ -258,7 +258,7 @@ namespace DeepDiff
             var newEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(newEntity);
 
             // diff child
-            var diff = InternalDiffSingle(childDiffEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
+            var diff = InternalDiffSingle(childEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
 
             // set navigation one property to diff child
             navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, diff);
@@ -271,13 +271,13 @@ namespace DeepDiff
             if (diff == newEntityChild)
             {
                 if (navigationOneConfiguration.NavigationKeyConfigurations != null)
-                    CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, navigationOneConfiguration, newEntityChild, existingEntity);
+                    CopyNavigationKeyAndProgagateUsingNavigation(childEntityConfiguration, navigationOneConfiguration, newEntityChild, existingEntity);
             }
 
             return true;
         }
 
-        private void CopyNavigationKeyAndProgagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, NavigationConfigurationBase navigationConfiguration, object childEntity, object parentEntity)
+        private void CopyNavigationKeyAndProgagateUsingNavigation(EntityConfiguration entityConfiguration, NavigationConfigurationBase navigationConfiguration, object childEntity, object parentEntity)
         {
             if (navigationConfiguration.NavigationKeyConfigurations != null)
             {
@@ -288,25 +288,25 @@ namespace DeepDiff
                     navigationKeyConfiguration.ChildNavigationKeyProperty.SetValue(childEntity, keyValue);
                 }
             }
-            PropagateUsingNavigation(diffEntityConfiguration, childEntity, (childDiffEntityConfiguration, parentNavigationConfiguration, child, parent) => CopyNavigationKeyAndProgagateUsingNavigation(childDiffEntityConfiguration, parentNavigationConfiguration, child, parent));
+            PropagateUsingNavigation(entityConfiguration, childEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => CopyNavigationKeyAndProgagateUsingNavigation(childEntityConfiguration, parentNavigationConfiguration, child, parent));
         }
 
-        private void OnUpdate(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, IList<DiffOperationBase> diffOperations)
+        private void OnUpdate(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, IList<DiffOperationBase> diffOperations)
         {
-            if (diffEntityConfiguration.UpdateConfiguration != null)
+            if (entityConfiguration.UpdateConfiguration != null)
             {
-                var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
-                var generateOperations = DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.UpdateConfiguration == null || diffEntityConfiguration.UpdateConfiguration.GenerateOperations);
+                var updateConfiguration = entityConfiguration.UpdateConfiguration;
+                var generateOperations = DiffSingleOrManyConfiguration.GenerateOperations && (entityConfiguration.UpdateConfiguration == null || entityConfiguration.UpdateConfiguration.GenerateOperations);
                 // use SetValue from UpdateConfiguration
                 var setValueProperties = OnUpdateSetValue(updateConfiguration, existingEntity, generateOperations);
                 // use CopyValues from UpdateConfiguration
                 var copyValuesProperties = OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity, generateOperations);
                 // copy values from ValuesConfiguration, only updated ones
-                var updatedProperties = OnUpdateCopyModifiedValues(diffEntityConfiguration, existingEntity, newEntity, compareByPropertyResult, generateOperations);
+                var updatedProperties = OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, generateOperations);
                 //
                 if (generateOperations)
                 {
-                    var keys = GenerateKeysForOperation(diffEntityConfiguration.KeyConfiguration, existingEntity);
+                    var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, existingEntity);
                     diffOperations.Add(new UpdateDiffOperation
                     {
                         Keys = keys,
@@ -319,12 +319,12 @@ namespace DeepDiff
             }
         }
 
-        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyModifiedValues(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, bool generateOperations)
+        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, bool generateOperations)
         {
             var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
             {
-                foreach (var detail in compareByPropertyResult.Details.Where(x => diffEntityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
+                foreach (var detail in compareByPropertyResult.Details.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
                 {
                     if (generateOperations)
                     {
@@ -389,47 +389,47 @@ namespace DeepDiff
             return updateDiffOperationPropertyInfos;
         }
 
-        private void OnInsertAndPropagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object newEntity, IList<DiffOperationBase> diffOperations)
+        private void OnInsertAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object newEntity, IList<DiffOperationBase> diffOperations)
         {
-            if (diffEntityConfiguration.InsertConfiguration != null)
+            if (entityConfiguration.InsertConfiguration != null)
             {
-                var insertConfiguration = diffEntityConfiguration.InsertConfiguration;
+                var insertConfiguration = entityConfiguration.InsertConfiguration;
                 // generate operations
-                GenerateInsertDiffOperation(diffEntityConfiguration, newEntity, diffOperations);
+                GenerateInsertDiffOperation(entityConfiguration, newEntity, diffOperations);
                 // use SetValue from InsertConfiguration
                 insertConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(newEntity, insertConfiguration.SetValueConfiguration.Value);
             }
-            PropagateUsingNavigation(diffEntityConfiguration, newEntity, (childDiffEntityConfiguration, parentNavigationConfiguration, child, parent) => OnInsertAndPropagateUsingNavigation(childDiffEntityConfiguration, child, diffOperations));
+            PropagateUsingNavigation(entityConfiguration, newEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnInsertAndPropagateUsingNavigation(childEntityConfiguration, child, diffOperations));
         }
 
-        private void OnDeleteAndPropagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object existingEntity, IList<DiffOperationBase> diffOperations)
+        private void OnDeleteAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, IList<DiffOperationBase> diffOperations)
         {
-            if (diffEntityConfiguration.DeleteConfiguration != null)
+            if (entityConfiguration.DeleteConfiguration != null)
             {
-                var deleteConfiguration = diffEntityConfiguration.DeleteConfiguration;
+                var deleteConfiguration = entityConfiguration.DeleteConfiguration;
                 // generate options
-                GenerateDeleteDiffOperation(diffEntityConfiguration, existingEntity, diffOperations);
+                GenerateDeleteDiffOperation(entityConfiguration, existingEntity, diffOperations);
                 // use SetValue from DeleteConfiguration
                 deleteConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(existingEntity, deleteConfiguration.SetValueConfiguration.Value);
             }
-            PropagateUsingNavigation(diffEntityConfiguration, existingEntity, (childDiffEntityConfiguration, parentNavigationConfiguration, child, parent) => OnDeleteAndPropagateUsingNavigation(childDiffEntityConfiguration, child, diffOperations));
+            PropagateUsingNavigation(entityConfiguration, existingEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnDeleteAndPropagateUsingNavigation(childEntityConfiguration, child, diffOperations));
         }
 
-        private void PropagateUsingNavigation(DiffEntityConfiguration diffEntityConfiguration, object entity, Action<DiffEntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigation(EntityConfiguration entityConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
         {
-            if (diffEntityConfiguration.NavigationManyConfigurations != null)
+            if (entityConfiguration.NavigationManyConfigurations != null)
             {
-                foreach (var navigationManyConfiguration in diffEntityConfiguration.NavigationManyConfigurations)
+                foreach (var navigationManyConfiguration in entityConfiguration.NavigationManyConfigurations)
                     PropagateUsingNavigationMany(navigationManyConfiguration, entity, operation);
             }
-            if (diffEntityConfiguration.NavigationOneConfigurations != null)
+            if (entityConfiguration.NavigationOneConfigurations != null)
             {
-                foreach (var navigationOneConfiguration in diffEntityConfiguration.NavigationOneConfigurations)
+                foreach (var navigationOneConfiguration in entityConfiguration.NavigationOneConfigurations)
                     PropagateUsingNavigationOne(navigationOneConfiguration, entity, operation);
             }
         }
 
-        private void PropagateUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object entity, Action<DiffEntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
         {
             if (navigationManyConfiguration.NavigationProperty == null)
                 return;
@@ -439,14 +439,14 @@ namespace DeepDiff
             var childType = navigationManyConfiguration.NavigationChildType;
             if (childType == null)
                 return;
-            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+            if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
             var children = (IEnumerable<object>)childrenValue;
             foreach (var child in children)
-                operation(childDiffEntityConfiguration, navigationManyConfiguration, child, entity);
+                operation(childEntityConfiguration, navigationManyConfiguration, child, entity);
         }
 
-        private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object entity, Action<DiffEntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
         {
             if (navigationOneConfiguration.NavigationProperty == null)
                 return;
@@ -456,16 +456,16 @@ namespace DeepDiff
             var childType = navigationOneConfiguration.NavigationChildType;
             if (childType == null)
                 return;
-            if (!DiffEntityConfigurationByTypes.TryGetValue(childType, out var childDiffEntityConfiguration))
+            if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
-            operation(childDiffEntityConfiguration, navigationOneConfiguration, child, entity);
+            operation(childEntityConfiguration, navigationOneConfiguration, child, entity);
         }
 
-        private void GenerateInsertDiffOperation(DiffEntityConfiguration diffEntityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
+        private void GenerateInsertDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.InsertConfiguration == null || diffEntityConfiguration.InsertConfiguration.GenerateOperations))
+            if (DiffSingleOrManyConfiguration.GenerateOperations && (entityConfiguration.InsertConfiguration == null || entityConfiguration.InsertConfiguration.GenerateOperations))
             {
-                var keys = GenerateKeysForOperation(diffEntityConfiguration.KeyConfiguration, entity);
+                var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new InsertDiffOperation
                 {
                     EntityName = entity.GetType().Name,
@@ -474,11 +474,11 @@ namespace DeepDiff
             }
         }
 
-        private void GenerateDeleteDiffOperation(DiffEntityConfiguration diffEntityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
+        private void GenerateDeleteDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffSingleOrManyConfiguration.GenerateOperations && (diffEntityConfiguration.DeleteConfiguration == null || diffEntityConfiguration.DeleteConfiguration.GenerateOperations))
+            if (DiffSingleOrManyConfiguration.GenerateOperations && (entityConfiguration.DeleteConfiguration == null || entityConfiguration.DeleteConfiguration.GenerateOperations))
             {
-                var keys = GenerateKeysForOperation(diffEntityConfiguration.KeyConfiguration, entity);
+                var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new DeleteDiffOperation
                 {
                     EntityName = entity.GetType().Name,

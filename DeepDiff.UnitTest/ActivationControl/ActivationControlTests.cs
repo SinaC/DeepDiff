@@ -151,7 +151,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
         private static IDeepDiff CreateDeepDiff()
         {
-            var diffConfiguration = new DiffConfiguration();
+            var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.ActivationControl.ActivationControl>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

@@ -7,28 +7,24 @@ using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
-    public sealed class DiffConfiguration : IDiffConfiguration
+    public sealed class DeepDiffConfiguration : IDeepDiffConfiguration
     {
-        internal Dictionary<Type, DiffEntityConfiguration> DiffEntityConfigurationByTypes { get; private set; } = new Dictionary<Type, DiffEntityConfiguration>();
+        internal Dictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; } = new Dictionary<Type, EntityConfiguration>();
 
-        public DiffConfiguration()
-        {
-        }
-
-        public IDiffEntityConfiguration<TEntity> Entity<TEntity>()
+        public IEntityConfiguration<TEntity> Entity<TEntity>()
             where TEntity : class
         {
             var entityType = typeof(TEntity);
-            if (DiffEntityConfigurationByTypes.ContainsKey(entityType))
-                throw new DuplicateDiffEntityConfigurationException(entityType);
+            if (EntityConfigurationByTypes.ContainsKey(entityType))
+                throw new DuplicateEntityConfigurationException(entityType);
 
-            var diffEntityConfiguration = new DiffEntityConfiguration(entityType);
-            DiffEntityConfigurationByTypes.Add(entityType, diffEntityConfiguration);
+            var entityConfiguration = new EntityConfiguration(entityType);
+            EntityConfigurationByTypes.Add(entityType, entityConfiguration);
 
-            return new DiffEntityConfiguration<TEntity>(diffEntityConfiguration);
+            return new EntityConfiguration<TEntity>(entityConfiguration);
         }
 
-        public IDiffConfiguration AddProfile<TProfile>()
+        public IDeepDiffConfiguration AddProfile<TProfile>()
             where TProfile : DiffProfile
         {
             var diffProfileInstance = CreateProfileInstance(typeof(TProfile));
@@ -36,13 +32,13 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IDiffConfiguration AddProfile(DiffProfile diffProfile)
+        public IDeepDiffConfiguration AddProfile(DiffProfile diffProfile)
         {
             AddProfileFromInstance(diffProfile);
             return this;
         }
 
-        public IDiffConfiguration AddProfiles(params Assembly[] assembliesToScan)
+        public IDeepDiffConfiguration AddProfiles(params Assembly[] assembliesToScan)
         {
             if (assembliesToScan != null && assembliesToScan.Length > 0)
             {
@@ -83,11 +79,11 @@ namespace DeepDiff.Configuration
                 new ComparerValidator(),
             };
 
-            foreach (var (type, diffEntityConfiguration) in DiffEntityConfigurationByTypes)
+            foreach (var (type, entityConfiguration) in EntityConfigurationByTypes)
             {
                 foreach (var validator in validators)
                 {
-                    var validationExceptions = validator.Validate(type, diffEntityConfiguration, DiffEntityConfigurationByTypes);
+                    var validationExceptions = validator.Validate(type, entityConfiguration, EntityConfigurationByTypes);
                     exceptions.AddRange(validationExceptions);
                 }
             }
@@ -99,8 +95,8 @@ namespace DeepDiff.Configuration
 
         private void CreateComparers()
         {
-            foreach (var (_, diffEntityConfiguration) in DiffEntityConfigurationByTypes)
-                diffEntityConfiguration.CreateComparers();
+            foreach (var (_, entityConfiguration) in EntityConfigurationByTypes)
+                entityConfiguration.CreateComparers();
         }
 
         private static DiffProfile CreateProfileInstance(Type diffProfileType)
@@ -110,7 +106,7 @@ namespace DeepDiff.Configuration
             {
                 diffProfileInstance = (DiffProfile)Activator.CreateInstance(diffProfileType)!;
             }
-            catch (TargetInvocationException ex) when (ex.InnerException is DuplicateDiffEntityConfigurationException)
+            catch (TargetInvocationException ex) when (ex.InnerException is DuplicateEntityConfigurationException)
             {
                 throw ex.InnerException;
             }
@@ -119,11 +115,11 @@ namespace DeepDiff.Configuration
 
         private void AddProfileFromInstance(DiffProfile diffProfile)
         {
-            foreach (var typeAndDiffEntityConfiguration in diffProfile.DiffEntityConfigurations)
+            foreach (var typeAndEntityConfiguration in diffProfile.EntityConfigurations)
             {
-                if (DiffEntityConfigurationByTypes.ContainsKey(typeAndDiffEntityConfiguration.Key))
-                    throw new DuplicateDiffEntityConfigurationException(typeAndDiffEntityConfiguration.Key);
-                DiffEntityConfigurationByTypes.Add(typeAndDiffEntityConfiguration.Key, typeAndDiffEntityConfiguration.Value);
+                if (EntityConfigurationByTypes.ContainsKey(typeAndEntityConfiguration.Key))
+                    throw new DuplicateEntityConfigurationException(typeAndEntityConfiguration.Key);
+                EntityConfigurationByTypes.Add(typeAndEntityConfiguration.Key, typeAndEntityConfiguration.Value);
             }
         }
     }

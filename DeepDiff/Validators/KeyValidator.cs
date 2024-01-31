@@ -11,9 +11,9 @@ namespace DeepDiff.Validators
     {
         // cannot be null or empty
         // every property must be different
-        public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
-            var configuration = diffEntityConfiguration.KeyConfiguration;
+            var configuration = entityConfiguration.KeyConfiguration;
             // cannot be null
             if (configuration == null)
                 yield return new MissingKeyConfigurationException(entityType);

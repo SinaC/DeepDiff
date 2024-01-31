@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     internal sealed class DeleteConfiguration<TEntity> : IDeleteConfiguration<TEntity>
         where TEntity : class
     {
-        public DeleteConfiguration Configuration { get; private set; }
+        public DeleteConfiguration Configuration { get; }
 
         public DeleteConfiguration(DeleteConfiguration DeleteConfiguration)
         {
@@ -18,14 +18,19 @@ namespace DeepDiff.Configuration
         public IDeleteConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
-            var config = Configuration.SetSetValueConfiguration(destinationProperty, value);
-            Configuration.SetValueConfiguration = config;
+            Configuration.SetSetValueConfiguration(destinationProperty, value);
             return this;
         }
 
         public IDeleteConfiguration<TEntity> DisableOperationsGeneration()
         {
             Configuration.SetGenerationOperations(false);
+            return this;
+        }
+
+        public IDeleteConfiguration<TEntity> EnableOperationsGeneration()
+        {
+            Configuration.SetGenerationOperations(true);
             return this;
         }
     }

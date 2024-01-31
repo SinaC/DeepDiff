@@ -12,9 +12,9 @@ namespace DeepDiff.Validators
         // cannot be null
         // must contain SetValue
         // if copy values, cannot contain duplicate, cannot be found in key nor values configuration
-        public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
-            var updateConfiguration = diffEntityConfiguration.UpdateConfiguration;
+            var updateConfiguration = entityConfiguration.UpdateConfiguration;
             if (updateConfiguration != null)
             {
                 // set value
@@ -35,16 +35,16 @@ namespace DeepDiff.Validators
                         if (duplicates.Length > 0)
                             yield return new DuplicatePropertyConfigurationException(entityType, NameOf<CopyValuesConfiguration>(), duplicates.Select(x => x.Name));
                         // cannot be defined in keys
-                        if (diffEntityConfiguration.KeyConfiguration?.KeyProperties != null)
+                        if (entityConfiguration.KeyConfiguration?.KeyProperties != null)
                         {
-                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(diffEntityConfiguration.KeyConfiguration.KeyProperties).ToArray();
+                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(entityConfiguration.KeyConfiguration.KeyProperties).ToArray();
                             if (alreadyDefinedInKey.Length > 0)
                                 yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
                         }
                         // cannot be found in values
-                        if (diffEntityConfiguration.ValuesConfiguration?.ValuesProperties != null)
+                        if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                         {
-                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(diffEntityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
+                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(entityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
                             if (alreadyDefinedInKey.Length > 0)
                                 yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<ValuesConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
                         }

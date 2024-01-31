@@ -9,9 +9,9 @@ namespace DeepDiff.Validators
     {
         // cannot be null
         // must contain SetValue
-        public override IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
-            var insertConfiguration = diffEntityConfiguration.InsertConfiguration;
+            var insertConfiguration = entityConfiguration.InsertConfiguration;
             if (insertConfiguration != null)
             {
                 if (insertConfiguration.SetValueConfiguration == null)

@@ -6,7 +6,7 @@ namespace DeepDiff.Validators
 {
     internal abstract class ValidatorBase
     {
-        public abstract IEnumerable<Exception> Validate(Type entityType, DiffEntityConfiguration diffEntityConfiguration, IReadOnlyDictionary<Type, DiffEntityConfiguration> diffEntityConfigurationByTypes);
+        public abstract IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes);
 
         protected static string NameOf<T>()
             => typeof(T).Name.Replace("Configuration", string.Empty);

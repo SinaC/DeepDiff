@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     internal sealed class UpdateConfiguration<TEntity> : IUpdateConfiguration<TEntity>
         where TEntity : class
     {
-        public UpdateConfiguration Configuration { get; private set; }
+        public UpdateConfiguration Configuration { get; }
 
         public UpdateConfiguration(UpdateConfiguration updateConfiguration)
         {
@@ -18,22 +18,26 @@ namespace DeepDiff.Configuration
         public IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
-            var config = Configuration.SetSetValueConfiguration(destinationProperty, value);
-            Configuration.SetValueConfiguration = config;
+            Configuration.SetSetValueConfiguration(destinationProperty, value);
             return this;
         }
 
         public IUpdateConfiguration<TEntity> CopyValues<TValue>(Expression<Func<TEntity, TValue>> copyValuesExpression)
         {
             var copyValuesProperties = copyValuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            var config = Configuration.SetCopyValuesConfiguration(copyValuesProperties);
-            Configuration.CopyValuesConfiguration = config;
+            Configuration.SetCopyValuesConfiguration(copyValuesProperties);
             return this;
         }
 
         public IUpdateConfiguration<TEntity> DisableOperationsGeneration()
         {
             Configuration.SetGenerationOperations(false);
+            return this;
+        }
+
+        public IUpdateConfiguration<TEntity> EnableOperationsGeneration()
+        {
+            Configuration.SetGenerationOperations(true);
             return this;
         }
     }
