@@ -9,7 +9,7 @@ namespace DeepDiff.Configuration
 {
     public sealed class DeepDiffConfiguration : IDeepDiffConfiguration
     {
-        internal Dictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; private set; } = new Dictionary<Type, EntityConfiguration>();
+        internal Dictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; } = new Dictionary<Type, EntityConfiguration>();
 
         public IEntityConfiguration<TEntity> Entity<TEntity>()
             where TEntity : class

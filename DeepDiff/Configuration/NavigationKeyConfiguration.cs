@@ -4,7 +4,13 @@ namespace DeepDiff.Configuration
 {
     internal sealed class NavigationKeyConfiguration
     {
-        public PropertyInfo ChildNavigationKeyProperty { get; set; }
-        public PropertyInfo NavigationKeyProperty { get; set; }
+        public PropertyInfo ChildNavigationKeyProperty { get; } = null!;
+        public PropertyInfo NavigationKeyProperty { get; } = null!;
+
+        public NavigationKeyConfiguration(PropertyInfo childNavigationKeyProperty, PropertyInfo navigationKeyProperty)
+        {
+            ChildNavigationKeyProperty = childNavigationKeyProperty;
+            NavigationKeyProperty = navigationKeyProperty;
+        }
     }
 }

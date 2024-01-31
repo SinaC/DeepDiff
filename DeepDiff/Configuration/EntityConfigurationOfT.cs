@@ -10,7 +10,7 @@ namespace DeepDiff.Configuration
     internal sealed class EntityConfiguration<TEntity> : IEntityConfiguration<TEntity>
         where TEntity : class
     {
-        public EntityConfiguration Configuration { get; private set; }
+        public EntityConfiguration Configuration { get; }
 
         internal EntityConfiguration(EntityConfiguration entityConfiguration)
         {
@@ -20,27 +20,28 @@ namespace DeepDiff.Configuration
         public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
             => HasKey(keyExpression, null);
 
-        public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration> keyConfigurationAction)
+        public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration<TEntity>> keyConfigurationAction)
         {
             if (Configuration.KeyConfiguration != null)
                 throw new DuplicateKeyConfigurationException(typeof(TEntity));
             var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-
             var config = Configuration.SetKey(keyProperties);
-            keyConfigurationAction?.Invoke(config);
+            var configOfT = new KeyConfiguration<TEntity>(config);
+            keyConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
         public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
             => HasValues(valuesExpression, null);
 
-        public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration> valuesConfigurationAction)
+        public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration<TEntity>> valuesConfigurationAction)
         {
             if (Configuration.ValuesConfiguration != null)
                 throw new DuplicateValuesConfigurationException(typeof(TEntity));
             var valueProperties = valuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
             var config = Configuration.SetValues(valueProperties);
-            valuesConfigurationAction?.Invoke(config);
+            var configOfT = new ValuesConfiguration<TEntity>(config);
+            valuesConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
@@ -102,11 +103,9 @@ namespace DeepDiff.Configuration
         {
             var propertyType = typeof(T);
             var config = Configuration.GetOrSetWithComparer();
-            if (config.TypeSpecificGenericComparers.ContainsKey(propertyType) || config.TypeSpecificNonGenericComparers.ContainsKey(propertyType))
+            if (config.ContainsTypeSpecificComparer(propertyType))
                 throw new DuplicateTypeSpecificComparerConfigurationException(typeof(TEntity), propertyType);
-
-            config.TypeSpecificNonGenericComparers.Add(propertyType, equalityComparer);
-            config.TypeSpecificGenericComparers.Add(propertyType, equalityComparer);
+            config.AddTypeSpecificComparer(propertyType, equalityComparer);
             return this;
         }
 
@@ -114,11 +113,9 @@ namespace DeepDiff.Configuration
         {
             var config = Configuration.GetOrSetWithComparer();
             var propertyInfo = propertyExpression.GetSimplePropertyAccess().Single();
-            if (config.PropertySpecificGenericComparers.ContainsKey(propertyInfo) || config.PropertySpecificNonGenericComparers.ContainsKey(propertyInfo))
+            if (config.ContainsPropertySpecificComparer(propertyInfo))
                 throw new DuplicatePropertySpecificComparerConfigurationException(typeof(TEntity), propertyInfo);
-
-            config.PropertySpecificNonGenericComparers.Add(propertyInfo, propertyEqualityComparer);
-            config.PropertySpecificGenericComparers.Add(propertyInfo, propertyEqualityComparer);
+            config.AddPropertySpecificComparer(propertyInfo, propertyEqualityComparer);
             return this;
         }
     }

@@ -1,9 +1,11 @@
 1.5.0
-	Refactoring
+	Renaming
 		IDiffConfiguration renamed to IDeepDiffConfiguration same for interface
 		DiffSingleOrManyConfiguration renamed to DiffConfiguration
 		DiffEntityConfiguration renamed to EntityConfiguration same for interface
 		DiffEntityConfigurationOfT renamed to EntityConfigurationOfT
+	Refactoring
+		almost every Configuration classes has been reviewed
 
 more tests
 	complex scenario (see aFRR Activation Control)

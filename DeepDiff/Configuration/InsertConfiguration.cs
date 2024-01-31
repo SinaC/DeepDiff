@@ -9,11 +9,7 @@ namespace DeepDiff.Configuration
 
         public SetValueConfiguration SetSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {
-            var config = new SetValueConfiguration
-            {
-                DestinationProperty = destinationProperty,
-                Value = value
-            };
+            var config = new SetValueConfiguration(destinationProperty, value);
             SetValueConfiguration = config;
             return config;
         }

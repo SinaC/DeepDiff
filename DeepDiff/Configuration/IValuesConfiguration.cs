@@ -1,6 +1,7 @@
 namespace DeepDiff.Configuration
 {
-    public interface IValuesConfiguration
+    public interface IValuesConfiguration<TEntity>
+        where TEntity : class
     {
         void DisablePrecompiledEqualityComparer();
     }

@@ -1,30 +1,37 @@
 using DeepDiff.Comparers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace DeepDiff.Configuration
 {
-    internal sealed class ValuesConfiguration : IValuesConfiguration
+    internal sealed class ValuesConfiguration
     {
-        public IReadOnlyCollection<PropertyInfo> ValuesProperties { get; set; } = null!;
-        public IComparerByProperty PrecompiledEqualityComparer { get; set; } = null!;
-        public IComparerByProperty NaiveEqualityComparer { get; set; } = null!;
+        public IReadOnlyCollection<PropertyInfo> ValuesProperties { get; } = null!;
 
-        public bool UsePrecompiledEqualityComparer { get; set; } = true;
+        public IComparerByProperty PrecompiledEqualityComparer { get; private set; } = null!;
+        public IComparerByProperty NaiveEqualityComparer { get; private set; } = null!;
+        public bool UsePrecompiledEqualityComparer { get; private set; } = true;
 
-        public void DisablePrecompiledEqualityComparer()
+        public ValuesConfiguration(IEnumerable<PropertyInfo> valuesProperties)
         {
-            UsePrecompiledEqualityComparer = false;
+            ValuesProperties = valuesProperties.ToArray();
+        }
+
+        public void SetUsePrecompiledEqualityComparer(bool usePrecompiledEqualityComparer)
+        {
+            UsePrecompiledEqualityComparer = usePrecompiledEqualityComparer;
         }
 
         public void CreateComparers(Type typeOfT, ComparerConfiguration comparerConfiguration)
         {
             var naiveEqualityComparerByPropertyTypeOfT = typeof(NaiveEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            NaiveEqualityComparer = (IComparerByProperty)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, ValuesProperties, comparerConfiguration?.TypeSpecificNonGenericComparers, comparerConfiguration?.PropertySpecificNonGenericComparers);
+            NaiveEqualityComparer = (IComparerByProperty)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, ValuesProperties, comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers);
 
             var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, ValuesProperties, comparerConfiguration?.TypeSpecificGenericComparers, comparerConfiguration?.PropertySpecificGenericComparers);
+            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, ValuesProperties, comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers);
         }
+
     }
 }
