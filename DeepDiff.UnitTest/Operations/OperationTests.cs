@@ -40,7 +40,7 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void UpdateDisableOperationGeneration()
+        public void UpdateDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
@@ -72,7 +72,7 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void InsertDisableOperationGeneration()
+        public void InsertDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 
@@ -105,7 +105,7 @@ namespace DeepDiff.UnitTest.Operations
         }
 
         [Fact]
-        public void DeleteDisableOperationGeneration()
+        public void DeleteDisableOperationsGeneration()
         {
             var (existingEntity, newEntity) = GenerateModifications();
 

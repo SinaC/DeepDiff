@@ -10,9 +10,16 @@ namespace DeepDiff.Configuration
             Configuration = keyConfiguration;
         }
 
-        public void DisablePrecompiledEqualityComparer()
+        public IKeyConfiguration<TEntity> DisablePrecompiledEqualityComparer()
         {
             Configuration.SetUsePrecompiledEqualityComparer(false);
+            return this;
+        }
+
+        public IKeyConfiguration<TEntity> EnablePrecompiledEqualityComparer()
+        {
+            Configuration.SetUsePrecompiledEqualityComparer(false);
+            return this;
         }
     }
 }

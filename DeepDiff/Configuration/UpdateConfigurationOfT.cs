@@ -34,5 +34,11 @@ namespace DeepDiff.Configuration
             Configuration.SetGenerationOperations(false);
             return this;
         }
+
+        public IUpdateConfiguration<TEntity> EnableOperationsGeneration()
+        {
+            Configuration.SetGenerationOperations(true);
+            return this;
+        }
     }
 }

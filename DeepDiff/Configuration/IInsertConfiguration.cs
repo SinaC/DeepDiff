@@ -8,5 +8,6 @@ namespace DeepDiff.Configuration
     {
         IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
         IInsertConfiguration<TEntity> DisableOperationsGeneration();
+        IInsertConfiguration<TEntity> EnableOperationsGeneration();
     }
 }

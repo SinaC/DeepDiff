@@ -3,6 +3,7 @@ namespace DeepDiff.Configuration
     public interface IValuesConfiguration<TEntity>
         where TEntity : class
     {
-        void DisablePrecompiledEqualityComparer();
+        IValuesConfiguration<TEntity> DisablePrecompiledEqualityComparer();
+        IValuesConfiguration<TEntity> EnablePrecompiledEqualityComparer();
     }
 }
