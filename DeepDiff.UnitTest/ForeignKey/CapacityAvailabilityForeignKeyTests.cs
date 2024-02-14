@@ -89,7 +89,7 @@ namespace DeepDiff.UnitTest.ForeignKey
         }
 
         [Fact]
-        public void NoExisting()
+        public void NoExisting_PropagateNavigationKeyOnPureInsert_Enabled()
         {
             var deepDiff = CreateDiffWithNavigationKey();
 
@@ -108,6 +108,29 @@ namespace DeepDiff.UnitTest.ForeignKey
             Assert.Empty(result.CapacityAvailabilityDetails.Where(x => x.PersistChange == PersistChange.Update));
             Assert.Equal(3, result.CapacityAvailabilityDetails.Count(x => x.PersistChange == PersistChange.Insert));
             // check if FK are not set
+            Assert.All(result.CapacityAvailabilityDetails, x => Assert.Equal(result.Id, x.CapacityAvailabilityId));
+        }
+
+        [Fact]
+        public void NoExisting_PropagateNavigationKeyOnPureInsert_Disabled()
+        {
+            var deepDiff = CreateDiffWithNavigationKey();
+
+            //
+            var (_, newEntity) = GenerateEntities();
+            var diff = deepDiff.DiffSingle(null, newEntity, cfg => cfg.DisablePropagateNavigationKeyOnPureInsert());
+            var result = diff.Entity;
+
+            //
+            Assert.NotNull(result);
+            Assert.Equal(PersistChange.Insert, result.PersistChange);
+            Assert.True(result.IsEnergyContrained);
+            // 3 insert
+            Assert.Equal(3, result.CapacityAvailabilityDetails.Count);
+            Assert.Empty(result.CapacityAvailabilityDetails.Where(x => x.PersistChange == PersistChange.Delete));
+            Assert.Empty(result.CapacityAvailabilityDetails.Where(x => x.PersistChange == PersistChange.Update));
+            Assert.Equal(3, result.CapacityAvailabilityDetails.Count(x => x.PersistChange == PersistChange.Insert));
+            // check if FK are set
             Assert.All(result.CapacityAvailabilityDetails, x => Assert.NotEqual(result.Id, x.CapacityAvailabilityId));
         }
 

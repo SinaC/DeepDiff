@@ -35,7 +35,7 @@ namespace DeepDiff
 
             var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffSingleConfiguration);
             var diffOperations = new List<DiffOperationBase>();
-            var diffEntity = engine.InternalDiffSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
+            var diffEntity = engine.InternalDiffSingle(entityConfiguration, existingEntity, newEntity, diffOperations, 0);
             return new DiffSingleResult<TEntity> 
             {
                 Entity = (TEntity)diffEntity,
@@ -58,7 +58,7 @@ namespace DeepDiff
 
             var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffManyConfiguration);
             var diffOperations = new List<DiffOperationBase>();
-            var diffEntities = engine.InternalDiffMany(entityConfiguration, existingEntities, newEntities, diffOperations);
+            var diffEntities = engine.InternalDiffMany(entityConfiguration, existingEntities, newEntities, diffOperations, 0);
             return new DiffManyResult<TEntity>
             {
                 Entities = diffEntities.Cast<TEntity>(),

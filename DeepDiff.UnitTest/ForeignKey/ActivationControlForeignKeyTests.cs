@@ -91,7 +91,7 @@ namespace DeepDiff.UnitTest.ForeignKey
         }
 
         [Fact]
-        public void NoExisting()
+        public void NoExisting_PropagateNavigationKeyOnPureInsert_Enabled()
         {
             var deepDiff = CreateDeepDiff();
 
@@ -99,6 +99,28 @@ namespace DeepDiff.UnitTest.ForeignKey
             var (_, newEntity) = GenerateEntities();
 
             var diff = deepDiff.DiffSingle(null, newEntity);
+            var result = diff.Entity;
+
+            //
+            Assert.NotNull(result);
+            Assert.Equal(PersistChange.Insert, result.PersistChange);
+            Assert.All(result.ActivationControlDetails, x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+            // check FK are set
+            Assert.All(result.ActivationControlDetails, x => Assert.All(x.TimestampDetails, y => Assert.Equal(x.StartsOn, y.StartsOn)));
+            Assert.All(result.ActivationControlDetails, x => Assert.All(x.DpDetails, y => Assert.Equal(x.StartsOn, y.StartsOn)));
+            Assert.All(result.ActivationControlDetails, x => Assert.All(x.DpDetails, y => Assert.All(y.TimestampDetails, z => Assert.Equal(x.StartsOn, z.StartsOn))));
+            Assert.All(result.ActivationControlDetails, x => Assert.All(x.DpDetails, y => Assert.All(y.TimestampDetails, z => Assert.Equal(y.DeliveryPointEan, z.DeliveryPointEan))));
+        }
+
+        [Fact]
+        public void NoExisting_PropagateNavigationKeyOnPureInsert_Disabled()
+        {
+            var deepDiff = CreateDeepDiff();
+
+            //
+            var (_, newEntity) = GenerateEntities();
+
+            var diff = deepDiff.DiffSingle(null, newEntity, cfg => cfg.DisablePropagateNavigationKeyOnPureInsert());
             var result = diff.Entity;
 
             //
