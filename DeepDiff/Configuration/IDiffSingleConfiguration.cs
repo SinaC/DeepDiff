@@ -7,5 +7,6 @@
         IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
         IDiffSingleConfiguration DisableOperationsGeneration();
         IDiffSingleConfiguration DisablePrecompiledEqualityComparer();
+        IDiffSingleConfiguration DisablePropagateNavigationKeyOnPureInsert();
     }
 }
