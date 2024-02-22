@@ -31,11 +31,5 @@
             UsePrecompiledEqualityComparer = false;
             return this;
         }
-
-        public IDiffManyConfiguration DisablePropagateNavigationKeyOnPureInsert()
-        {
-            PropagateNavigationKeyOnPureInsert = false;
-            return this;
-        }
     }
 }

@@ -10,5 +10,8 @@ namespace DeepDiff.Validators
 
         protected static string NameOf<T>()
             => typeof(T).Name.Replace("Configuration", string.Empty);
+
+        protected static string NameOf<T>(string prefix)
+            => prefix + "." + typeof(T).Name.Replace("Configuration", string.Empty);
     }
 }

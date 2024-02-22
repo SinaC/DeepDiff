@@ -7,19 +7,23 @@ using System.Linq;
 
 namespace DeepDiff.Validators
 {
-    internal sealed class UpdateValidator : ValidatorBase
+    internal sealed class UpdateValidator : OperationValidatorBase
     {
+        protected override string OperationConfigurationName { get; } = "OnUpdate";
+
         // cannot be null
         // must contain SetValue
-        // if copy values, cannot contain duplicate, cannot be found in key nor values configuration
+        // set value cannot be found in key nor values configuration (not in copy values will be validated in copy values validation)
+        // if copy values, cannot contain duplicate, cannot be found in key nor values not set value configuration
         public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
             var updateConfiguration = entityConfiguration.UpdateConfiguration;
             if (updateConfiguration != null)
             {
                 // set value
-                if (updateConfiguration.SetValueConfiguration == null)
-                    yield return new MissingSetValueConfigurationException(entityType, "OnUpdate");
+                var setValueExceptions = ValidateSetValue(entityType, entityConfiguration, updateConfiguration.SetValueConfiguration);
+                foreach (var setValueEception in setValueExceptions)
+                    yield return setValueEception;
 
                 // copy values
                 var copyValuesConfigurations = updateConfiguration.CopyValuesConfiguration;
@@ -39,14 +43,21 @@ namespace DeepDiff.Validators
                         {
                             var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(entityConfiguration.KeyConfiguration.KeyProperties).ToArray();
                             if (alreadyDefinedInKey.Length > 0)
-                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
+                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<KeyConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
                         }
                         // cannot be found in values
                         if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                         {
-                            var alreadyDefinedInKey = copyValuesConfigurations.CopyValuesProperties.Intersect(entityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
-                            if (alreadyDefinedInKey.Length > 0)
-                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(), NameOf<ValuesConfiguration>(), alreadyDefinedInKey.Select(x => x.Name));
+                            var alreadyDefinedInValues = copyValuesConfigurations.CopyValuesProperties.Intersect(entityConfiguration.ValuesConfiguration.ValuesProperties).ToArray();
+                            if (alreadyDefinedInValues.Length > 0)
+                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<ValuesConfiguration>(), alreadyDefinedInValues.Select(x => x.Name));
+                        }
+                        // cannot be found in set value
+                        if (updateConfiguration.SetValueConfiguration?.DestinationProperty != null)
+                        {
+                            var alreadyDefinedInSetValue = copyValuesConfigurations.CopyValuesProperties.Contains(updateConfiguration.SetValueConfiguration.DestinationProperty);
+                            if (alreadyDefinedInSetValue)
+                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<SetValueConfiguration>(), new[] { updateConfiguration.SetValueConfiguration.DestinationProperty.Name });
                         }
                     }
                 }
