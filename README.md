@@ -8,7 +8,7 @@ var diffConfiguration = new DiffConfiguration();
 diffConfiguration.Entity<Entity>()
    .HasKey(x => new { x.StartsOn, x.Name })
    .HasValues(x => new { x.Price, x.Volume })
-   .HasMany(x => x.SubEntities, cfg => cfg.HasNavigationKey(child => child.EntityId, parent => parent.Id))
+   .HasMany(x => x.SubEntities)
    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
    .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
    .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
