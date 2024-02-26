@@ -21,7 +21,7 @@ namespace DeepDiff.Validators
             if (updateConfiguration != null)
             {
                 // set value
-                var setValueExceptions = ValidateSetValue(entityType, entityConfiguration, updateConfiguration.SetValueConfiguration);
+                var setValueExceptions = ValidateSetValueConfigurations(entityType, entityConfiguration, updateConfiguration.SetValueConfigurations);
                 foreach (var setValueEception in setValueExceptions)
                     yield return setValueEception;
 
@@ -53,11 +53,17 @@ namespace DeepDiff.Validators
                                 yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<ValuesConfiguration>(), alreadyDefinedInValues.Select(x => x.Name));
                         }
                         // cannot be found in set value
-                        if (updateConfiguration.SetValueConfiguration?.DestinationProperty != null)
+                        if (updateConfiguration.SetValueConfigurations != null && updateConfiguration.SetValueConfigurations.Count > 0)
                         {
-                            var alreadyDefinedInSetValue = copyValuesConfigurations.CopyValuesProperties.Contains(updateConfiguration.SetValueConfiguration.DestinationProperty);
-                            if (alreadyDefinedInSetValue)
-                                yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<SetValueConfiguration>(), new[] { updateConfiguration.SetValueConfiguration.DestinationProperty.Name });
+                            foreach (var setValueConfiguration in updateConfiguration.SetValueConfigurations)
+                            {
+                                if (setValueConfiguration?.DestinationProperty != null)
+                                {
+                                    var alreadyDefinedInSetValue = copyValuesConfigurations.CopyValuesProperties.Contains(setValueConfiguration.DestinationProperty);
+                                    if (alreadyDefinedInSetValue)
+                                        yield return new AlreadyDefinedPropertyException(entityType, NameOf<CopyValuesConfiguration>(OperationConfigurationName), NameOf<SetValueConfiguration>(), new[] { setValueConfiguration.DestinationProperty.Name });
+                                }
+                            }
                         }
                     }
                 }

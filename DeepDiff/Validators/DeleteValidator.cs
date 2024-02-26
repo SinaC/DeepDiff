@@ -17,7 +17,7 @@ namespace DeepDiff.Validators
             if (deleteConfiguration != null)
             {
                 // set value
-                var setValueExceptions = ValidateSetValue(entityType, entityConfiguration, deleteConfiguration.SetValueConfiguration);
+                var setValueExceptions = ValidateSetValueConfigurations(entityType, entityConfiguration, deleteConfiguration.SetValueConfigurations);
                 foreach (var setValueEception in setValueExceptions)
                     yield return setValueEception;
             }

@@ -1,7 +1,53 @@
+using DeepDiff.Configuration;
+using DeepDiff.Exceptions;
+using DeepDiff.UnitTest.Entities;
+using System.Linq;
+using Xunit;
+
 namespace DeepDiff.UnitTest.Exceptions
 {
     public class DuplicatePropertyConfigurationExceptionTests
     {
-        // this exception cannot be tested because compiler forbids defining 2 times the same property in an anonymous type
+        [Fact]
+        public void OnInsert_SetValue_DuplicateProperty()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
+                .HasKey(x => new { x.StartsOn, x.Direction })
+                .HasValues(x => x.Penalty);
+
+            var exception = Assert.Throws<DuplicatePropertyConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Single(exception.DuplicatePropertyNames);
+            Assert.Equal(nameof(Entities.Simple.EntityLevel0.PersistChange), exception.DuplicatePropertyNames.Single());
+        }
+
+        [Fact]
+        public void OnUpdate_SetValue_DuplicateProperty()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
+                .HasKey(x => new { x.StartsOn, x.Direction })
+                .HasValues(x => x.Penalty);
+
+            var exception = Assert.Throws<DuplicatePropertyConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Single(exception.DuplicatePropertyNames);
+            Assert.Equal(nameof(Entities.Simple.EntityLevel0.PersistChange), exception.DuplicatePropertyNames.Single());
+        }
+
+        [Fact]
+        public void OnDelete_SetValue_DuplicateProperty()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
+                .HasKey(x => new { x.StartsOn, x.Direction })
+                .HasValues(x => x.Penalty);
+
+            var exception = Assert.Throws<DuplicatePropertyConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+            Assert.Single(exception.DuplicatePropertyNames);
+            Assert.Equal(nameof(Entities.Simple.EntityLevel0.PersistChange), exception.DuplicatePropertyNames.Single());
+        }
     }
 }

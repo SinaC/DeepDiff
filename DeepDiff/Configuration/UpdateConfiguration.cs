@@ -6,14 +6,14 @@ namespace DeepDiff.Configuration
 {
     internal sealed class UpdateConfiguration
     {
-        public SetValueConfiguration SetValueConfiguration { get; private set; } = null!;
+        public IList<SetValueConfiguration> SetValueConfigurations { get; private set; } = new List<SetValueConfiguration>();
         public CopyValuesConfiguration CopyValuesConfiguration { get; private set; } = null!;
         public bool GenerateOperations { get; private set; } = true;
 
-        public SetValueConfiguration SetSetValueConfiguration(PropertyInfo destinationProperty, object value)
+        public SetValueConfiguration AddSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {
             var config = new SetValueConfiguration(destinationProperty, value);
-            SetValueConfiguration = config;
+            SetValueConfigurations.Add(config);
             return config;
         }
 
