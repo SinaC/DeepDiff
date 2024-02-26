@@ -17,7 +17,7 @@ namespace DeepDiff.Validators
             if (insertConfiguration != null)
             {
                 // set value
-                var setValueExceptions = ValidateSetValue(entityType, entityConfiguration, insertConfiguration.SetValueConfiguration);
+                var setValueExceptions = ValidateSetValueConfigurations(entityType, entityConfiguration, insertConfiguration.SetValueConfigurations);
                 foreach (var setValueEception in setValueExceptions)
                     yield return setValueEception;
             }

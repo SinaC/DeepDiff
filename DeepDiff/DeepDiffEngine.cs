@@ -316,21 +316,24 @@ namespace DeepDiff
         private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateSetValue(UpdateConfiguration updateConfiguration, object existingEntity, bool generateOperations)
         {
             var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
-            if (updateConfiguration.SetValueConfiguration != null)
+            if (updateConfiguration.SetValueConfigurations != null && updateConfiguration.SetValueConfigurations.Count > 0)
             {
-                if (generateOperations)
+                foreach (var setValueConfiguration in updateConfiguration.SetValueConfigurations)
                 {
-                    var existingValue = updateConfiguration.SetValueConfiguration.DestinationProperty.GetValue(existingEntity);
-                    var newValue = updateConfiguration.SetValueConfiguration.Value;
-                    updateDiffOperationPropertyInfos.Add(new UpdateDiffOperationPropertyInfo
+                    if (generateOperations)
                     {
-                        PropertyName = updateConfiguration.SetValueConfiguration.DestinationProperty.Name,
-                        ExistingValue = existingValue?.ToString(),
-                        NewValue = newValue?.ToString()
-                    });
+                        var existingValue = setValueConfiguration.DestinationProperty.GetValue(existingEntity);
+                        var newValue = setValueConfiguration.Value;
+                        updateDiffOperationPropertyInfos.Add(new UpdateDiffOperationPropertyInfo
+                        {
+                            PropertyName = setValueConfiguration.DestinationProperty.Name,
+                            ExistingValue = existingValue?.ToString(),
+                            NewValue = newValue?.ToString()
+                        });
+                    }
+                    //
+                    setValueConfiguration?.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
                 }
-                //
-                updateConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(existingEntity, updateConfiguration.SetValueConfiguration.Value);
             }
             return updateDiffOperationPropertyInfos;
         }
@@ -368,7 +371,11 @@ namespace DeepDiff
                 // generate operations
                 GenerateInsertDiffOperation(entityConfiguration, newEntity, diffOperations);
                 // use SetValue from InsertConfiguration
-                insertConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(newEntity, insertConfiguration.SetValueConfiguration.Value);
+                if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0)
+                {
+                    foreach(var setValueConfiguration in insertConfiguration.SetValueConfigurations)
+                        setValueConfiguration.DestinationProperty.SetValue(newEntity, setValueConfiguration.Value);
+                }
             }
 
             PropagateUsingNavigation(entityConfiguration, newEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnInsertAndPropagateUsingNavigation(childEntityConfiguration, child, diffOperations));
@@ -382,7 +389,12 @@ namespace DeepDiff
                 // generate options
                 GenerateDeleteDiffOperation(entityConfiguration, existingEntity, diffOperations);
                 // use SetValue from DeleteConfiguration
-                deleteConfiguration.SetValueConfiguration?.DestinationProperty.SetValue(existingEntity, deleteConfiguration.SetValueConfiguration.Value);
+                if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0)
+                {
+                    foreach (var setValueConfiguration in deleteConfiguration.SetValueConfigurations)
+                        setValueConfiguration.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
+                }
+                
             }
             PropagateUsingNavigation(entityConfiguration, existingEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnDeleteAndPropagateUsingNavigation(childEntityConfiguration, child, diffOperations));
         }
