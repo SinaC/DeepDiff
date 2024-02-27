@@ -42,8 +42,8 @@ namespace DeepDiff
             }
 
             // was existing and is new -> maybe an update
-            bool areKeysEqual = false;
-            if (entityConfiguration.KeyConfiguration.KeyProperties != null)
+            bool areKeysEqual = true;
+            if (!entityConfiguration.NoKey && entityConfiguration.KeyConfiguration.KeyProperties != null)
             {
                 areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
                     ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
@@ -73,6 +73,9 @@ namespace DeepDiff
 
         public IList<object> InternalDiffMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
         {
+            if (entityConfiguration.NoKey)
+                throw new NoKeyEntityInDiffManyException(entityConfiguration.EntityType);
+
             var results = new List<object>();
 
             // no entities to diff
@@ -277,7 +280,7 @@ namespace DeepDiff
                 //
                 if (generateOperations)
                 {
-                    var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, existingEntity);
+                    var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity);
                     diffOperations.Add(new UpdateDiffOperation
                     {
                         Keys = keys,
@@ -449,7 +452,7 @@ namespace DeepDiff
         {
             if (DiffSingleOrManyConfiguration.GenerateOperations && (entityConfiguration.InsertConfiguration == null || entityConfiguration.InsertConfiguration.GenerateOperations))
             {
-                var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, entity);
+                var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new InsertDiffOperation
                 {
                     EntityName = entity.GetType().Name,
@@ -462,7 +465,7 @@ namespace DeepDiff
         {
             if (DiffSingleOrManyConfiguration.GenerateOperations && (entityConfiguration.DeleteConfiguration == null || entityConfiguration.DeleteConfiguration.GenerateOperations))
             {
-                var keys = GenerateKeysForOperation(entityConfiguration.KeyConfiguration, entity);
+                var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new DeleteDiffOperation
                 {
                     EntityName = entity.GetType().Name,
@@ -471,8 +474,11 @@ namespace DeepDiff
             }
         }
 
-        private string GenerateKeysForOperation(KeyConfiguration keyConfiguration, object entity)
+        private string GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
         {
+            if (entityConfiguration.NoKey)
+                return string.Empty;
+
             var keys = new List<string>();
             foreach (var propertyInfo in keyConfiguration.KeyProperties)
             {

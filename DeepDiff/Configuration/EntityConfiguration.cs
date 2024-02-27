@@ -9,6 +9,7 @@ namespace DeepDiff.Configuration
     {
         public Type EntityType { get; }
 
+        public bool NoKey { get; private set; } = false;
         public KeyConfiguration KeyConfiguration { get; private set; } = null!;
         public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
         public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
@@ -21,6 +22,11 @@ namespace DeepDiff.Configuration
         internal EntityConfiguration(Type entityType)
         {
             EntityType = entityType;
+        }
+
+        public void SetNoKey()
+        {
+            NoKey = true;
         }
 
         public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
@@ -75,7 +81,8 @@ namespace DeepDiff.Configuration
 
         public void CreateComparers()
         {
-            KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
+            if (!NoKey)
+                KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
             ValuesConfiguration?.CreateComparers(EntityType, ComparerConfiguration);
         }
     }

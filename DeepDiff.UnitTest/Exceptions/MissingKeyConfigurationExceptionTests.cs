@@ -9,7 +9,7 @@ namespace DeepDiff.UnitTest.Exceptions
     public class MissingKeyConfigurationExceptionTests
     {
         [Fact]
-        public void NoKey()
+        public void MissingKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()

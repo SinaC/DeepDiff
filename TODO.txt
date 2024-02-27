@@ -1,3 +1,5 @@
+HasKey is optional if related entity only appear in HasOne and DiffSingle
+
 more tests
 	complex scenario (see aFRR Activation Control)
 

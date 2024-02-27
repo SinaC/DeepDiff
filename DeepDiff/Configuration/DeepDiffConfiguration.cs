@@ -69,6 +69,7 @@ namespace DeepDiff.Configuration
 
             var validators = new ValidatorBase[]
             {
+                new NoKeyValidator(),
                 new KeyValidator(),
                 new ValuesValidator(),
                 new NavigationManyValidator(),
