@@ -7,6 +7,8 @@ namespace DeepDiff.Configuration
     public interface IEntityConfiguration<TEntity>
         where TEntity : class
     {
+        IEntityConfiguration<TEntity> NoKey();
+
         IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression);
         IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration<TEntity>> keyConfigurationAction);
 
