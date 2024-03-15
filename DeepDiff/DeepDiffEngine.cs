@@ -106,10 +106,10 @@ namespace DeepDiff
 
             // we are sure there is at least one existing and one new entity
             var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)
-                ? InitializeHashtable(entityConfiguration.KeyConfiguration, existingEntities)
+                ? InitializeHashtable(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntities)
                 : null;
             var newEntitiesHashtable = CheckIfHashtablesShouldBeUsed(newEntities)
-                ? InitializeHashtable(entityConfiguration.KeyConfiguration, newEntities)
+                ? InitializeHashtable(entityConfiguration, entityConfiguration.KeyConfiguration, newEntities)
                 : null;
 
             // search if every existing entity is found in new entities -> this will detect update and delete
@@ -117,7 +117,7 @@ namespace DeepDiff
             {
                 var newEntity = newEntitiesHashtable != null
                     ? newEntitiesHashtable[existingEntity]
-                    : SearchMatchingEntityByKey(entityConfiguration.KeyConfiguration, newEntities, existingEntity);
+                    : SearchMatchingEntityByKey(entityConfiguration, entityConfiguration.KeyConfiguration, newEntities, existingEntity);
                 // existing entity found in new entities -> if values are different it's an update
                 if (newEntity != null)
                 {
@@ -149,7 +149,7 @@ namespace DeepDiff
             {
                 var newEntityFoundInExistingEntities = existingEntitiesHashtable != null
                     ? existingEntitiesHashtable.ContainsKey(newEntity)
-                    : SearchMatchingEntityByKey(entityConfiguration.KeyConfiguration, existingEntities, newEntity) != null;
+                    : SearchMatchingEntityByKey(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntities, newEntity) != null;
                 // new entity not found in existing entity -> it's an insert
                 if (!newEntityFoundInExistingEntities)
                 {
@@ -164,27 +164,40 @@ namespace DeepDiff
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
             => DiffSingleOrManyConfiguration.UseHashtable && existingEntities.Count() >= DiffSingleOrManyConfiguration.HashtableThreshold;
 
-        private object SearchMatchingEntityByKey(KeyConfiguration keyConfiguration, IEnumerable<object> entities, object existingEntity)
+        private object SearchMatchingEntityByKey(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, IEnumerable<object> entities, object existingEntity)
         {
-            foreach (var entity in entities)
+            var comparer = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
+                    ? keyConfiguration.PrecompiledEqualityComparer
+                    : keyConfiguration.NaiveEqualityComparer;
+            try
             {
-                var areKeysEqual = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
-                    ? keyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, entity)
-                    : keyConfiguration.NaiveEqualityComparer.Equals(existingEntity, entity);
-                if (areKeysEqual)
-                    return entity;
+                return entities.SingleOrDefault(x => comparer.Equals(x, existingEntity));
             }
-            return null!;
+            catch(InvalidOperationException)
+            {
+                var keys = GenerateKeysForOperation(entityConfiguration, keyConfiguration, existingEntity);
+                throw new DuplicateKeyException(entityConfiguration.EntityType, keys);
+            }
         }
 
-        private Hashtable InitializeHashtable(KeyConfiguration keyConfiguration, IEnumerable<object> entities)
+        private Hashtable InitializeHashtable(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, IEnumerable<object> entities)
         {
             var equalityComparer = DiffSingleOrManyConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
                 ? keyConfiguration.PrecompiledEqualityComparer
                 : keyConfiguration.NaiveEqualityComparer;
             var hashtable = new Hashtable(equalityComparer);
             foreach (var entity in entities)
-                hashtable.Add(entity, entity);
+            {
+                try
+                {
+                    hashtable.Add(entity, entity);
+                }
+                catch (ArgumentException)
+                {
+                    var keys = GenerateKeysForOperation(entityConfiguration, keyConfiguration, entity);
+                    throw new DuplicateKeyException(entityConfiguration.EntityType, keys);
+                }
+            }
             return hashtable;
         }
 
