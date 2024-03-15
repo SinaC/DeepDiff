@@ -258,9 +258,9 @@ namespace DeepDiff.UnitTest.ActivationControl
                             .Select(y => new ActivationControlDpDetail
                             {
                                 ActivationControlId = 1,
-                                DeliveryPointEan = $"DPEAN_{x * y}",
+                                DeliveryPointEan = $"DPEAN_{(x+1) * (y+1)}",
 
-                                DeliveryPointName = $"DPNAME_{x * y}",
+                                DeliveryPointName = $"DPNAME_{(x+1) * (y+1)}",
                                 Direction = (x * y) % 2 == 0 ? Direction.Up : Direction.Down,
                                 DeliveryPointType = (2 * x * y) % 2 == 0 ? DeliveryPointType.SingleUnit : DeliveryPointType.ProvidingGroup,
                                 TotalEnergySupplied = 3 * x * y,
