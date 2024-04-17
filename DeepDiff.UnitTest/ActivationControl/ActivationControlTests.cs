@@ -2,6 +2,7 @@ using DeepDiff.Configuration;
 using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -161,7 +162,8 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasKey(x => new { x.Day, x.ContractReference })
                 .HasMany(x => x.ActivationControlDetails)
                 .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
-                .OnUpdate(cfg => cfg.CopyValues(x => x.Status));
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Status))
+                .Ignore(x => new { x.PersistChange, x.CreatedOn, x.CreatedBy, x.UpdatedOn, x.UpdatedBy, x.Id, x.InternalComment, x.TsoComment });
             diffConfiguration.Entity<ActivationControlDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -171,7 +173,8 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasKey(x => x.StartsOn)
                 .HasValues(x => new { x.OfferedVolumeUp, x.OfferedVolumeDown, x.OfferedVolumeForRedispatchingUp, x.OfferedVolumeForRedispatchingDown, x.PermittedDeviationUp, x.PermittedDeviationDown, x.RampingRate, x.HasJump })
                 .HasMany(x => x.TimestampDetails)
-                .HasMany(x => x.DpDetails);
+                .HasMany(x => x.DpDetails)
+                .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.ActivationControl });
             diffConfiguration.Entity<ActivationControlTimestampDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -179,7 +182,8 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .WithComparer(new DecimalComparer(6))
                 .WithComparer(new NullableDecimalComparer(6))
                 .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded });
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded })
+                .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.ActivationControlDetail, x.AuditedOn, x.AuditedBy });
             diffConfiguration.Entity<ActivationControlDpDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -188,7 +192,8 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .WithComparer(new NullableDecimalComparer(6))
                 .HasKey(x => x.DeliveryPointEan)
                 .HasValues(x => new { x.DeliveryPointName, x.Direction, x.DeliveryPointType, x.TotalEnergySupplied })
-                .HasMany(x => x.TimestampDetails);
+                .HasMany(x => x.TimestampDetails)
+                .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.ActivationControlDetail });
             diffConfiguration.Entity<ActivationControlDpTimestampDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -196,7 +201,11 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .WithComparer(new DecimalComparer(6))
                 .WithComparer(new NullableDecimalComparer(6))
                 .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied });
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied })
+                .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.DeliveryPointEan, x.ActivationControlDpDetail });
+
+            //diffConfiguration.ValidateIfEveryPropertiesAreReferenced(new[] { "Id", "PersistChange", "CreatedOn", "CreatedBy", "UpdatedOn", "UpdatedBy", "AuditedOn", "AuditedBy", "ActivationControlId", "InternalComment", "TsoComment" }, new[] { typeof(Enum), typeof(decimal), typeof(decimal?), typeof(Date), typeof(Date?), typeof(int), typeof(int?), typeof(DateTime), typeof(DateTime?), typeof(bool), typeof(bool?), typeof(string)});
+            diffConfiguration.ValidateIfEveryPropertiesAreReferenced();
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             return deepDiff;

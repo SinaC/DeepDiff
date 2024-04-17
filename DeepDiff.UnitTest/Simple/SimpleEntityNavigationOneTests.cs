@@ -49,22 +49,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
@@ -113,22 +98,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
 
@@ -177,22 +147,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
@@ -241,22 +196,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
 
@@ -314,22 +254,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
@@ -385,22 +310,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
 
@@ -456,22 +366,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
@@ -530,22 +425,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
         var results = diff.Entities.ToArray();
 
@@ -604,22 +484,7 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => new { x.StartsOn, x.Direction })
-            .HasValues(x => new { x.RequestedPower, x.Penalty })
-            .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
-            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-            .HasKey(x => x.Timestamp)
-            .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
+        var deepDiff = CreateDeepDiff();
         var diff = deepDiff.DiffMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
@@ -678,7 +543,56 @@ public class SimpleEntityNavigationOneTests
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var deepDiff = CreateDeepDiff();
+        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var results = diff.Entities.ToArray();
+
+        Assert.Single(results);
+        Assert.Equal(PersistChange.None, results.Single().PersistChange);
+        Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
+        Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
+    }
+
+    [Fact]
+    public void InsertHasOneNoModifOnRoot()
+    {
+        var existingEntity = new EntityLevel0
+        {
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 10m,
+            Penalty = 5m,
+            SubEntity = null!
+        };
+
+        var calculatedEntity = new EntityLevel0
+        {
+            StartsOn = DateTime.Today,
+            Direction = Direction.Up,
+            RequestedPower = 10m,
+            Penalty = 5m,
+            AdditionalValueToCopy = "SHOULD BE COPIED",
+            SubEntity = new EntityLevel1
+            {
+                Timestamp = DateTime.Today,
+                Power = 11m,
+                Price = 12m
+            }
+        };
+
+        var deepDiff = CreateDeepDiff();
+        var diff = deepDiff.DiffSingle(existingEntity, calculatedEntity);
+
+        Assert.NotNull(diff.Entity);
+        Assert.Equal(PersistChange.Update, diff.Entity.PersistChange);
+        Assert.Equal("SHOULD BE COPIED", diff.Entity.AdditionalValueToCopy);
+        Assert.NotNull(diff.Entity.SubEntity);
+        Assert.Equal(PersistChange.Insert, diff.Entity.SubEntity.PersistChange);
+    }
+
+    private static IDeepDiff CreateDeepDiff()
+    {
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -692,14 +606,6 @@ public class SimpleEntityNavigationOneTests
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power });
-
-        var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
-        var results = diff.Entities.ToArray();
-
-        Assert.Single(results);
-        Assert.Equal(PersistChange.None, results.Single().PersistChange);
-        Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
-        Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
+        return diffConfiguration.CreateDeepDiff();
     }
 }

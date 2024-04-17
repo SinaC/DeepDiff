@@ -128,5 +128,13 @@ namespace DeepDiff.Configuration
             config.AddPropertySpecificComparer(propertyInfo, propertyEqualityComparer);
             return this;
         }
+
+        public IEntityConfiguration<TEntity> Ignore<TIgnore>(Expression<Func<TEntity, TIgnore>> ignoreExpression)
+        {
+            var ignoredProperties = ignoreExpression.GetSimplePropertyAccessList().Select(p => p.Single());
+            var config = Configuration.GetOrSetIgnore();
+            config.AddIgnoredProperties(ignoredProperties);
+            return this;
+        }
     }
 }

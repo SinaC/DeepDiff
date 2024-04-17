@@ -94,6 +94,39 @@ namespace DeepDiff.Configuration
                 throw new AggregateException(exceptions);
         }
 
+        public void ValidateIfEveryPropertiesAreReferenced()
+        {
+            var validator = new CheckEveryPropertiesAreReferencedValidator();
+
+            var exceptions = new List<Exception>();
+            foreach (var (type, entityConfiguration) in EntityConfigurationByTypes)
+            {
+                var validationExceptions = validator.Validate(type, entityConfiguration);
+                exceptions.AddRange(validationExceptions);
+            }
+            if (exceptions.Count == 1)
+                throw exceptions.Single();
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+        }
+
+        public void ValidateIfEveryPropertiesAreReferenced(IEnumerable<string> ignoredPropertyNames, IEnumerable<Type> typesToCheck)
+        {
+            var checkEnum = typesToCheck?.Any(x => x == typeof(Enum)) == true;
+            var validator = new CheckEveryPropertiesAreReferencedValidator();
+
+            var exceptions = new List<Exception>();
+            foreach (var (type, entityConfiguration) in EntityConfigurationByTypes)
+            {
+                var validationExceptions = validator.Validate(type, entityConfiguration, ignoredPropertyNames, typesToCheck.Where(x => x != typeof(Enum)), checkEnum);
+                exceptions.AddRange(validationExceptions);
+            }
+            if (exceptions.Count == 1)
+                throw exceptions.Single();
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+        }
+
         private void CreateComparers()
         {
             foreach (var (_, entityConfiguration) in EntityConfigurationByTypes)

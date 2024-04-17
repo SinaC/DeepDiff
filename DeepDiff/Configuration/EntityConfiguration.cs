@@ -17,6 +17,7 @@ namespace DeepDiff.Configuration
         public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
         public InsertConfiguration InsertConfiguration { get; private set; } = null!;
         public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
+        public IgnoreConfiguration IgnoreConfiguration { get; private set; } = null!;
         public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
 
         internal EntityConfiguration(Type entityType)
@@ -77,6 +78,12 @@ namespace DeepDiff.Configuration
         {
             ComparerConfiguration ??= new ComparerConfiguration();
             return ComparerConfiguration;
+        }
+
+        public IgnoreConfiguration GetOrSetIgnore()
+        {
+            IgnoreConfiguration ??= new IgnoreConfiguration();
+            return IgnoreConfiguration;
         }
 
         public void CreateComparers()
