@@ -601,6 +601,7 @@ public class SimpleEntityNavigationOneTests
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
+            //.HasOne(x => x.SubEntity, cfg => cfg.TriggerOnUpdate());
         diffConfiguration.Entity<EntityLevel1>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
