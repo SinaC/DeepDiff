@@ -93,19 +93,19 @@ namespace DeepDiff.Configuration
             return this;
         }
 
-        public IEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> InsertConfigurationAction)
+        public IEntityConfiguration<TEntity> OnInsert(Action<IInsertConfiguration<TEntity>> insertConfigurationAction)
         {
             var config = Configuration.GetOrSetOnInsert();
             var configOfT = new InsertConfiguration<TEntity>(config);
-            InsertConfigurationAction?.Invoke(configOfT);
+            insertConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
-        public IEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> DeleteConfigurationAction)
+        public IEntityConfiguration<TEntity> OnDelete(Action<IDeleteConfiguration<TEntity>> deleteConfigurationAction)
         {
             var config = Configuration.GetOrSetOnDelete();
             var configOfT = new DeleteConfiguration<TEntity>(config);
-            DeleteConfigurationAction?.Invoke(configOfT);
+            deleteConfigurationAction?.Invoke(configOfT);
             return this;
         }
 
@@ -134,6 +134,14 @@ namespace DeepDiff.Configuration
             var ignoredProperties = ignoreExpression.GetSimplePropertyAccessList().Select(p => p.Single());
             var config = Configuration.GetOrSetIgnore();
             config.AddIgnoredProperties(ignoredProperties);
+            return this;
+        }
+
+        public IEntityConfiguration<TEntity> ForceUpdateIf(Action<IForceUpdateIfConfiguration<TEntity>> forceUpdateIfConfigurationAction)
+        {
+            var config = Configuration.GetOrSetForceUpdateIf();
+            var configOfT = new ForceUpdateIfConfiguration<TEntity>(config);
+            forceUpdateIfConfigurationAction?.Invoke(configOfT);
             return this;
         }
     }
