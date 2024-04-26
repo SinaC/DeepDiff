@@ -35,5 +35,7 @@ namespace DeepDiff.Configuration
         IEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityComparer);
 
         IEntityConfiguration<TEntity> WithComparer<TProperty>(Expression<Func<TEntity, TProperty>> propertyExpression, IEqualityComparer<TProperty> propertyEqualityComparer);
+
+        IEntityConfiguration<TEntity> Ignore<TIgnore>(Expression<Func<TEntity, TIgnore>> ignoreExpression);
     }
 }

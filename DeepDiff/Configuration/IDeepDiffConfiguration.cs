@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DeepDiff.Configuration
@@ -15,5 +17,6 @@ namespace DeepDiff.Configuration
         IDeepDiff CreateDeepDiff();
 
         void ValidateConfiguration();
+        void ValidateIfEveryPropertiesAreReferenced();
     }
 }

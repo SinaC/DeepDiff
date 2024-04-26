@@ -553,6 +553,7 @@ public class SimpleEntityNavigationOneTests
         Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
     }
 
+    //[Fact(Skip = "Wait issue 69")]
     [Fact]
     public void InsertHasOneNoModifOnRoot()
     {
@@ -581,7 +582,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+        var diff = deepDiff.DiffSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()); // TODO: will be replaced with issue 69
 
         Assert.NotNull(diff.Entity);
         Assert.Equal(PersistChange.Update, diff.Entity.PersistChange);
