@@ -18,6 +18,5 @@ namespace DeepDiff.Configuration
 
         void ValidateConfiguration();
         void ValidateIfEveryPropertiesAreReferenced();
-        void ValidateIfEveryPropertiesAreReferenced(IEnumerable<string> ignoredPropertyNames, IEnumerable<Type> typesToCheck);
     }
 }

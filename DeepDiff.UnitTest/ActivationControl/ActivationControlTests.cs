@@ -204,7 +204,6 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied })
                 .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.DeliveryPointEan, x.ActivationControlDpDetail });
 
-            //diffConfiguration.ValidateIfEveryPropertiesAreReferenced(new[] { "Id", "PersistChange", "CreatedOn", "CreatedBy", "UpdatedOn", "UpdatedBy", "AuditedOn", "AuditedBy", "ActivationControlId", "InternalComment", "TsoComment" }, new[] { typeof(Enum), typeof(decimal), typeof(decimal?), typeof(Date), typeof(Date?), typeof(int), typeof(int?), typeof(DateTime), typeof(DateTime?), typeof(bool), typeof(bool?), typeof(string)});
             diffConfiguration.ValidateIfEveryPropertiesAreReferenced();
 
             var deepDiff = diffConfiguration.CreateDeepDiff();

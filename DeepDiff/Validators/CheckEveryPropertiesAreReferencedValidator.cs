@@ -10,12 +10,6 @@ namespace DeepDiff.Validators
 {
     internal class CheckEveryPropertiesAreReferencedValidator
     {
-        public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration, IEnumerable<string> ignoredPropertyNames, IEnumerable<Type> typesToCheck, bool checkEnum)
-        {
-            var propertiesToCheck = type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true && (ignoredPropertyNames == null || !ignoredPropertyNames.Contains(x.Name)) && ((x.PropertyType.IsEnum && checkEnum) || typesToCheck?.Contains(x.PropertyType) == true));
-            return Validate(type, entityConfiguration, propertiesToCheck);
-        }
-
         public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration)
         {
             var propertiesToCheck = type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true && (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !x.IsSameAs(y))));
