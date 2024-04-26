@@ -1,6 +1,6 @@
 ﻿namespace DeepDiff.Configuration
 {
-    internal abstract class DiffConfigurationBase
+    internal abstract class DiffEngineConfigurationBase
     {
         public bool UseHashtable { get; protected set; } = true;
         public int HashtableThreshold { get; protected set; } = 15;

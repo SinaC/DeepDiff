@@ -1,6 +1,6 @@
 ﻿namespace DeepDiff.Configuration
 {
-    internal sealed class DiffManyConfiguration : DiffConfigurationBase, IDiffManyConfiguration
+    internal sealed class DiffManyConfiguration : DiffEngineConfigurationBase, IDiffManyConfiguration
     {
         public IDiffManyConfiguration DisableHashTable()
         {
