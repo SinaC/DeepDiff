@@ -152,7 +152,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -228,7 +228,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -304,7 +304,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel().DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
 
             Assert.NotNull(result);

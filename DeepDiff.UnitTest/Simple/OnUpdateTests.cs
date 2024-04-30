@@ -140,7 +140,7 @@ namespace DeepDiff.UnitTest.Simple
                     .CopyValues(x => x.AdditionalValueToCopy));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
 
             Assert.NotNull(result);

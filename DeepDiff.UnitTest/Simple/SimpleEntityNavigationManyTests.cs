@@ -134,7 +134,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -268,7 +268,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);

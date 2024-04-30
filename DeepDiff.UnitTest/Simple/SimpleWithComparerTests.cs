@@ -121,7 +121,7 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.1234567m // 7th decimal is different -> will be considered same
             };
 
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 
