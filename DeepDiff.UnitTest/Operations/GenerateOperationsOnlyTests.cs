@@ -8,7 +8,7 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Operations
 {
-    public class OperationTests
+    public class GenerateOperationsOnlyTests
     {
         [Fact]
         public void GlobalDisableOperationsGeneration()
@@ -32,11 +32,11 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(false));
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(false).OnlyGenerateOperations(true)); // meaning less
             var result = diff.Entity;
             var operations = diff.Operations;
 
-            Assert.NotNull(result);
+            Assert.Null(result);
             Assert.Empty(operations);
         }
 
@@ -63,10 +63,11 @@ namespace DeepDiff.UnitTest.Operations
                 .OnUpdate(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.OnlyGenerateOperations(true));
             var result = diff.Entity;
             var operations = diff.Operations;
 
+            Assert.Null(result);
             Assert.Empty(operations.OfType<UpdateDiffOperation>());
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>());
             Assert.NotEmpty(operations.OfType<DeleteDiffOperation>());
@@ -96,10 +97,11 @@ namespace DeepDiff.UnitTest.Operations
                 .OnInsert(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.OnlyGenerateOperations(true));
             var result = diff.Entity;
             var operations = diff.Operations;
 
+            Assert.Null(result);
             Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
             Assert.Empty(operations.OfType<InsertDiffOperation>());
             Assert.NotEmpty(operations.OfType<DeleteDiffOperation>());
@@ -129,10 +131,11 @@ namespace DeepDiff.UnitTest.Operations
                 .OnDelete(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.OnlyGenerateOperations(true));
             var result = diff.Entity;
             var operations = diff.Operations;
 
+            Assert.Null(result);
             Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>());
             Assert.Empty(operations.OfType<DeleteDiffOperation>());
@@ -160,10 +163,11 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.OnlyGenerateOperations(true));
             var result = diff.Entity;
             var operations = diff.Operations;
 
+            Assert.Null(result);
             Assert.NotEmpty(operations);
             // 1 delete
             Assert.Single(operations.OfType<DeleteDiffOperation>());
@@ -190,7 +194,7 @@ namespace DeepDiff.UnitTest.Operations
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.UpdatedProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(nameof(EntityLevel1.Power), x.PropertyName));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.NotEqual(x.ExistingValue, x.NewValue));
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue)*2, Convert.ToInt32(x.NewValue)));
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue) * 2, Convert.ToInt32(x.NewValue)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Empty(x.CopyValuesProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.SetValueProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(nameof(EntityLevel1.PersistChange), x.PropertyName));
@@ -245,7 +249,7 @@ namespace DeepDiff.UnitTest.Operations
                 }).ToList(),
             };
 
-            return (existingEntity,  newEntity);
+            return (existingEntity, newEntity);
         }
     }
 }

@@ -2,10 +2,11 @@
 {
     public interface IDiffSingleConfiguration
     {
-        IDiffSingleConfiguration DisableHashTable();
-        IDiffSingleConfiguration SetHashtableThreshold(int threshold);
-        IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel();
-        IDiffSingleConfiguration DisableOperationsGeneration();
-        IDiffSingleConfiguration DisablePrecompiledEqualityComparer();
+        IDiffSingleConfiguration UseHashtable(bool use = true);
+        IDiffSingleConfiguration HashtableThreshold(int threshold = 15);
+        IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
+        IDiffSingleConfiguration GenerateOperations(bool generate = true);
+        IDiffSingleConfiguration OnlyGenerateOperations(bool onlyGenerate = false);
+        IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
     }
 }

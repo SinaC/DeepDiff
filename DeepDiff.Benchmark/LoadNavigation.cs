@@ -23,8 +23,8 @@ public class LoadNavigation
         var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         noHashtableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel0>()
-           .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.DisablePrecompiledEqualityComparer())
-           .HasValues(x => new { x.RequestedPower, x.Penalty }, opt => opt.DisablePrecompiledEqualityComparer())
+           .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.UsePrecompiledEqualityComparer(false))
+           .HasValues(x => new { x.RequestedPower, x.Penalty }, opt => opt.UsePrecompiledEqualityComparer(false))
            .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
            .HasOne(x => x.SubEntity)
            .HasMany(x => x.SubEntities)
@@ -33,8 +33,8 @@ public class LoadNavigation
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHashtableNaiveComparerDiffConfiguration
             .Entity<NavigationEntityLevel1>()
-            .HasKey(x => x.Timestamp, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasValues(x => new { x.Power, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
+            .HasKey(x => x.Timestamp, opt => opt.UsePrecompiledEqualityComparer(false))
+            .HasValues(x => new { x.Power, x.Price }, opt => opt.UsePrecompiledEqualityComparer(false))
             .HasOne(x => x.SubEntity)
             .HasMany(x => x.SubEntities)
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -42,8 +42,8 @@ public class LoadNavigation
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHashtableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel2>()
-           .HasKey(x => x.DeliveryPointEan, opt => opt.DisablePrecompiledEqualityComparer())
-           .HasValues(x => new { x.Value1, x.Value2 }, opt => opt.DisablePrecompiledEqualityComparer())
+           .HasKey(x => x.DeliveryPointEan, opt => opt.UsePrecompiledEqualityComparer(false))
+           .HasValues(x => new { x.Value1, x.Value2 }, opt => opt.UsePrecompiledEqualityComparer(false))
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -81,8 +81,8 @@ public class LoadNavigation
         var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel0>()
-           .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.DisablePrecompiledEqualityComparer())
-           .HasValues(x => new { x.RequestedPower, x.Penalty }, opt => opt.DisablePrecompiledEqualityComparer())
+           .HasKey(x => new { x.StartsOn, x.Direction }, opt => opt.UsePrecompiledEqualityComparer(false))
+           .HasValues(x => new { x.RequestedPower, x.Penalty }, opt => opt.UsePrecompiledEqualityComparer(false))
            .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
            .HasOne(x => x.SubEntity)
            .HasMany(x => x.SubEntities)
@@ -91,8 +91,8 @@ public class LoadNavigation
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hastableNaiveComparerDiffConfiguration
             .Entity<NavigationEntityLevel1>()
-            .HasKey(x => x.Timestamp, opt => opt.DisablePrecompiledEqualityComparer())
-            .HasValues(x => new { x.Power, x.Price }, opt => opt.DisablePrecompiledEqualityComparer())
+            .HasKey(x => x.Timestamp, opt => opt.UsePrecompiledEqualityComparer(false))
+            .HasValues(x => new { x.Power, x.Price }, opt => opt.UsePrecompiledEqualityComparer(false))
             .HasOne(x => x.SubEntity)
             .HasMany(x => x.SubEntities)
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -100,8 +100,8 @@ public class LoadNavigation
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hastableNaiveComparerDiffConfiguration
            .Entity<NavigationEntityLevel2>()
-           .HasKey(x => x.DeliveryPointEan, opt => opt.DisablePrecompiledEqualityComparer())
-           .HasValues(x => new { x.Value1, x.Value2 }, opt => opt.DisablePrecompiledEqualityComparer())
+           .HasKey(x => x.DeliveryPointEan, opt => opt.UsePrecompiledEqualityComparer(false))
+           .HasValues(x => new { x.Value1, x.Value2 }, opt => opt.UsePrecompiledEqualityComparer(false))
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -166,13 +166,13 @@ public class LoadNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).Entities.ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false)).Entities.ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHastablePrecompiledComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.DisableHashTable()).Entities.ToList();
+        var results = NoHastablePrecompiledComparerDeepDiff.DiffMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false)).Entities.ToList();
     }
 
     [Benchmark]

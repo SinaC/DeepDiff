@@ -10,15 +10,9 @@ namespace DeepDiff.Configuration
             Configuration = valuesConfiguration;
         }
 
-        public IValuesConfiguration<TEntity> DisablePrecompiledEqualityComparer()
+        public IValuesConfiguration<TEntity> UsePrecompiledEqualityComparer(bool use = true)
         {
-            Configuration.SetUsePrecompiledEqualityComparer(false);
-            return this;
-        }
-
-        public IValuesConfiguration<TEntity> EnablePrecompiledEqualityComparer()
-        {
-            Configuration.SetUsePrecompiledEqualityComparer(false);
+            Configuration.SetUsePrecompiledEqualityComparer(use);
             return this;
         }
     }

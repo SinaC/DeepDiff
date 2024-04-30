@@ -1,34 +1,47 @@
 ﻿namespace DeepDiff.Configuration
 {
-    internal sealed class DiffManyConfiguration : DiffEngineConfigurationBase, IDiffManyConfiguration
+    internal sealed class DiffManyConfiguration : IDiffManyConfiguration
     {
-        public IDiffManyConfiguration DisableHashTable()
+        public DiffEngineConfiguration Configuration { get; }
+
+        public DiffManyConfiguration()
         {
-            UseHashtable = false;
+            Configuration = new DiffEngineConfiguration();
+        }
+
+        public IDiffManyConfiguration UseHashtable(bool use = true)
+        {
+            Configuration.SetUseHashtable(use);
             return this;
         }
 
-        public IDiffManyConfiguration SetHashtableThreshold(int threshold)
+        public IDiffManyConfiguration HashtableThreshold(int threshold = 15)
         {
-            HashtableThreshold = threshold;
+            Configuration.SetHashtableThreshold(threshold);
             return this;
         }
 
-        public IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel()
+        public IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
         {
-            OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = true;
+            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
             return this;
         }
 
-        public IDiffManyConfiguration DisableOperationsGeneration()
+        public IDiffManyConfiguration GenerateOperations(bool generate = true)
         {
-            GenerateOperations = false;
+            Configuration.SetGenerateOperations(generate);
             return this;
         }
 
-        public IDiffManyConfiguration DisablePrecompiledEqualityComparer()
+        public IDiffManyConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
         {
-            UsePrecompiledEqualityComparer = false;
+            Configuration.SetGenerateOperationsOnly(onlyGenerate);
+            return this;
+        }
+
+        public IDiffManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
+        {
+            Configuration.SetUsePrecompiledEqualityComparer(use);
             return this;
         }
     }

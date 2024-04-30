@@ -13,9 +13,9 @@ namespace DeepDiff
     internal sealed class DeepDiffEngine
     {
         private IReadOnlyDictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; }
-        private DiffEngineConfigurationBase DiffEngineConfiguration { get; }
+        private DiffEngineConfiguration DiffEngineConfiguration { get; }
 
-        public DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfigurationBase diffEngineConfiguration)
+        public DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration)
         {
             EntityConfigurationByTypes = entityConfigurationByTypes;
             DiffEngineConfiguration = diffEngineConfiguration;
@@ -48,11 +48,11 @@ namespace DeepDiff
                 areKeysEqual = DiffEngineConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
                     ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
                     : entityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
-                if (!areKeysEqual) // keys are different -> copy keys
+                if (!areKeysEqual && !DiffEngineConfiguration.GenerateOperationsOnly) // keys are different -> copy keys
                     entityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
             }
 
-            // cocmpare values
+            // compare values
             CompareByPropertyResult compareByPropertyResult = null;
             if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
@@ -70,7 +70,7 @@ namespace DeepDiff
             //
             if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound || forceOnUpdate) // update
             {
-                if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && (DiffEngineConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true)) || forceOnUpdate)
+                if (!areKeysEqual || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true)) || forceOnUpdate)
                     OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations);
                 return existingEntity;
             }
@@ -146,7 +146,7 @@ namespace DeepDiff
                     //
                     if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || diffModificationsFound || forceOnUpdate) // update
                     {
-                        if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && (DiffEngineConfiguration.OnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true)) || forceOnUpdate)
+                        if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual) || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true)) || forceOnUpdate)
                             OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, diffOperations);
                         results.Add(existingEntity);
                     }
@@ -258,7 +258,8 @@ namespace DeepDiff
             foreach (var diffChild in diffChildren)
                 list.Add(diffChild);
             // set navigation many property to diff children
-            navigationManyConfiguration.NavigationProperty.SetValue(existingEntity, list);
+            if (!DiffEngineConfiguration.GenerateOperationsOnly)
+                navigationManyConfiguration.NavigationProperty.SetValue(existingEntity, list);
             //
             if (list.Count > 0)
                 return true;
@@ -284,7 +285,8 @@ namespace DeepDiff
             var diff = InternalDiffSingle(childEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
 
             // set navigation one property to diff child
-            navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, diff);
+            if (!DiffEngineConfiguration.GenerateOperationsOnly)
+                navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, diff);
 
             // not insert/delete/update
             if (diff == null)
@@ -338,7 +340,8 @@ namespace DeepDiff
                         });
                     }
                     //
-                    detail.PropertyInfo.SetValue(existingEntity, detail.NewValue);
+                    if (!DiffEngineConfiguration.GenerateOperationsOnly)
+                        detail.PropertyInfo.SetValue(existingEntity, detail.NewValue);
                 }
             }
             return updateDiffOperationPropertyInfos;
@@ -363,7 +366,8 @@ namespace DeepDiff
                         });
                     }
                     //
-                    setValueConfiguration?.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
+                    if (!DiffEngineConfiguration.GenerateOperationsOnly)
+                        setValueConfiguration?.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
                 }
             }
             return updateDiffOperationPropertyInfos;
@@ -389,7 +393,8 @@ namespace DeepDiff
                     }
                 }
                 //
-                updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
+                if (!DiffEngineConfiguration.GenerateOperationsOnly)
+                    updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
             }
             return updateDiffOperationPropertyInfos;
         }
@@ -402,7 +407,7 @@ namespace DeepDiff
                 // generate operations
                 GenerateInsertDiffOperation(entityConfiguration, newEntity, diffOperations);
                 // use SetValue from InsertConfiguration
-                if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0)
+                if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.GenerateOperationsOnly)
                 {
                     foreach(var setValueConfiguration in insertConfiguration.SetValueConfigurations)
                         setValueConfiguration.DestinationProperty.SetValue(newEntity, setValueConfiguration.Value);
@@ -420,7 +425,7 @@ namespace DeepDiff
                 // generate options
                 GenerateDeleteDiffOperation(entityConfiguration, existingEntity, diffOperations);
                 // use SetValue from DeleteConfiguration
-                if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0)
+                if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.GenerateOperationsOnly)
                 {
                     foreach (var setValueConfiguration in deleteConfiguration.SetValueConfigurations)
                         setValueConfiguration.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);

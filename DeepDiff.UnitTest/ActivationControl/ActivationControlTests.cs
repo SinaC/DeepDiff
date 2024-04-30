@@ -63,7 +63,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -142,7 +142,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.DisablePrecompiledEqualityComparer());
+            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 

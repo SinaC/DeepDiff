@@ -104,7 +104,7 @@ public class CapacityAvailabilityTests
         AssignFK(newCapacityAvailabilities, false);
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingCapacityAvailabilities, newCapacityAvailabilities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(existingCapacityAvailabilities, newCapacityAvailabilities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
         var operations = diff.Operations;
 

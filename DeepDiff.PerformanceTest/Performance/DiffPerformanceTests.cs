@@ -48,7 +48,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisableHashTable());
+        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -66,7 +66,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -84,7 +84,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.DisableHashTable().DisablePrecompiledEqualityComparer());
+        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 

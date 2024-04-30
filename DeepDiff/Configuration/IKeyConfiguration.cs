@@ -3,7 +3,6 @@ namespace DeepDiff.Configuration
     public interface IKeyConfiguration<TEntity>
         where TEntity : class
     {
-        IKeyConfiguration<TEntity> DisablePrecompiledEqualityComparer();
-        IKeyConfiguration<TEntity> EnablePrecompiledEqualityComparer();
+        IKeyConfiguration<TEntity> UsePrecompiledEqualityComparer(bool use = true);
     }
 }

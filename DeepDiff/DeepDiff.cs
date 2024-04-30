@@ -33,12 +33,14 @@ namespace DeepDiff
             var diffSingleConfiguration = new DiffSingleConfiguration();
             diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffSingleConfiguration);
+            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             var diffEntity = engine.InternalDiffSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
             return new DiffSingleResult<TEntity> 
             {
-                Entity = (TEntity)diffEntity,
+                Entity = diffSingleConfiguration.Configuration.GenerateOperationsOnly 
+                    ? default 
+                    : (TEntity)diffEntity,
                 Operations = diffOperations
             };
         }
@@ -56,12 +58,14 @@ namespace DeepDiff
             var diffManyConfiguration = new DiffManyConfiguration();
             diffManyConfigurationAction?.Invoke(diffManyConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffManyConfiguration);
+            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffManyConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             var diffEntities = engine.InternalDiffMany(entityConfiguration, existingEntities, newEntities, diffOperations);
             return new DiffManyResult<TEntity>
             {
-                Entities = diffEntities.Cast<TEntity>(),
+                Entities = diffManyConfiguration.Configuration.GenerateOperationsOnly
+                    ? default
+                    : diffEntities.Cast<TEntity>(),
                 Operations = diffOperations
             };
         }
