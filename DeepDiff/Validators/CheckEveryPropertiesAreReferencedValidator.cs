@@ -3,6 +3,7 @@ using DeepDiff.Exceptions;
 using DeepDiff.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -12,7 +13,15 @@ namespace DeepDiff.Validators
     {
         public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration)
         {
-            var propertiesToCheck = type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true && (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !x.IsSameAs(y))));
+            //var propertiesToCheck = type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true && (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !x.IsSameAs(y))));
+            var propertiesToCheck = new List<PropertyInfo>();
+            foreach (var property in type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true))
+            {
+                if (property.Name == "AuditedOn")
+                    Debugger.Break();
+                if (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !property.IsSameAs(y)))
+                    propertiesToCheck.Add(property);
+            }
             return Validate(type, entityConfiguration, propertiesToCheck);
         }
 
