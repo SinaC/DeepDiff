@@ -5,11 +5,26 @@ using DeepDiff.UnitTest.Entities.ActivationControl;
 using System;
 using System.Linq;
 using Xunit;
+using DeepDiff.UnitTest.ActivationControl;
 
 namespace DeepDiff.UnitTest.ActivationControl
 {
     public class ActivationControlTests
     {
+        [Fact]
+        public void ValidateIfEveryPropertiesAreReferenced_NoExtension()
+        {
+            var deepDiff = CreateDeepDiffWithoutExtensions();
+            Assert.NotNull(deepDiff);
+        }
+
+        [Fact]
+        public void ValidateIfEveryPropertiesAreReferenced_Extension()
+        {
+            var deepDiff = CreateDeepDiffWithExtensions();
+            Assert.NotNull(deepDiff);
+        }
+
         [Fact]
         public void Single_2Updates()
         {
@@ -21,7 +36,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
             //
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiffWithoutExtensions();
             var diff = deepDiff.DiffSingle(existing, calculated);
             var result = diff.Entity;
             var operations = diff.Operations;
@@ -62,7 +77,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
             //
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiffWithoutExtensions();
             var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
@@ -112,7 +127,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             };
 
             //
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiffWithoutExtensions();
             var diff = deepDiff.DiffSingle(existing, calculated);
             var result = diff.Entity;
             var operations = diff.Operations;
@@ -141,7 +156,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             };
 
             //
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiffWithoutExtensions();
             var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
@@ -150,7 +165,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Null(result); // no diff
         }
 
-        private static IDeepDiff CreateDeepDiff()
+        private static IDeepDiff CreateDeepDiffWithoutExtensions()
         {
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<Entities.ActivationControl.ActivationControl>()
@@ -203,6 +218,43 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied })
                 .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.DeliveryPointEan, x.ActivationControlDpDetail });
+
+            diffConfiguration.ValidateIfEveryPropertiesAreReferenced();
+
+            var deepDiff = diffConfiguration.CreateDeepDiff();
+            return deepDiff;
+        }
+
+        private static IDeepDiff CreateDeepDiffWithExtensions()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.PersistEntity<Entities.ActivationControl.ActivationControl>()
+                .HasKey(x => new { x.Day, x.ContractReference })
+                .HasMany(x => x.ActivationControlDetails)
+                .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
+                .OnUpdate(cfg => cfg.CopyValues(x => x.Status))
+                .IgnoreUpdateAudit()
+                .Ignore(x => new { x.InternalComment, x.TsoComment });
+            diffConfiguration.PersistEntity<ActivationControlDetail>()
+                .HasKey(x => x.StartsOn)
+                .HasValues(x => new { x.OfferedVolumeUp, x.OfferedVolumeDown, x.OfferedVolumeForRedispatchingUp, x.OfferedVolumeForRedispatchingDown, x.PermittedDeviationUp, x.PermittedDeviationDown, x.RampingRate, x.HasJump })
+                .HasMany(x => x.TimestampDetails)
+                .HasMany(x => x.DpDetails)
+                .Ignore(x => new { x.ActivationControlId, x.ActivationControl });
+            diffConfiguration.PersistEntity<ActivationControlTimestampDetail>()
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded })
+                .IgnoreAudit()
+                .Ignore(x => new { x.ActivationControlId, x.StartsOn, x.ActivationControlDetail, x.AuditedOn, x.AuditedBy });
+            diffConfiguration.PersistEntity<ActivationControlDpDetail>()
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.DeliveryPointName, x.Direction, x.DeliveryPointType, x.TotalEnergySupplied })
+                .HasMany(x => x.TimestampDetails)
+                .Ignore(x => new { x.ActivationControlId, x.StartsOn, x.ActivationControlDetail });
+            diffConfiguration.PersistEntity<ActivationControlDpTimestampDetail>()
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergySupplied })
+                .Ignore(x => new { x.ActivationControlId, x.StartsOn, x.DeliveryPointEan, x.ActivationControlDpDetail });
 
             diffConfiguration.ValidateIfEveryPropertiesAreReferenced();
 
