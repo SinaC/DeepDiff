@@ -18,7 +18,7 @@ namespace DeepDiff.UnitTest.Simple
             var newEntities = GenerateEntities(DateTime.Now).ToList();
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             Assert.Equal(5, results.Length);
@@ -39,7 +39,7 @@ namespace DeepDiff.UnitTest.Simple
             var newEntities = GenerateEntities(DateTime.Now).ToList();
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             Assert.Equal(5, results.Length);
@@ -73,7 +73,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -116,7 +116,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -149,7 +149,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -182,7 +182,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -215,7 +215,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -249,7 +249,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -283,7 +283,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities.RemoveAt(2);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -314,7 +314,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities.RemoveAt(2);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -345,7 +345,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntity.Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -378,7 +378,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntities[2].SubEntity.Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -421,7 +421,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -463,7 +463,7 @@ namespace DeepDiff.UnitTest.Simple
             });
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -495,7 +495,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -527,7 +527,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities.RemoveAt(1);
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -559,7 +559,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none
@@ -592,7 +592,7 @@ namespace DeepDiff.UnitTest.Simple
             newEntities[3].SubEntity.SubEntities[1].Value2 = 13579m;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var results = diff.Entities.ToArray();
 
             // Entity0: 4th -> none

@@ -32,7 +32,7 @@ namespace DeepDiff.UnitTest.Simple
                 //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -65,7 +65,7 @@ namespace DeepDiff.UnitTest.Simple
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -103,7 +103,7 @@ namespace DeepDiff.UnitTest.Simple
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -142,7 +142,7 @@ namespace DeepDiff.UnitTest.Simple
                 //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 

@@ -3,12 +3,11 @@ using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.Simple;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
 using Xunit;
 
 namespace DeepDiff.UnitTest.Simple
 {
-    public class DiffSingleTests
+    public class MergeSingleTests
     {
         [Fact]
         public void ModificationsInNested()
@@ -76,7 +75,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -152,7 +151,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -228,7 +227,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -304,7 +303,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -380,7 +379,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -457,7 +456,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -534,7 +533,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
 
             Assert.NotNull(result);
@@ -613,7 +612,7 @@ namespace DeepDiff.UnitTest.Simple
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
 
             Assert.NotNull(result);

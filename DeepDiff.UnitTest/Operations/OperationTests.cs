@@ -32,7 +32,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(false));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -63,7 +63,7 @@ namespace DeepDiff.UnitTest.Operations
                 .OnUpdate(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -96,7 +96,7 @@ namespace DeepDiff.UnitTest.Operations
                 .OnInsert(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -129,7 +129,7 @@ namespace DeepDiff.UnitTest.Operations
                 .OnDelete(cfg => cfg.GenerateOperations(false));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -160,7 +160,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
             var result = diff.Entity;
             var operations = diff.Operations;
 

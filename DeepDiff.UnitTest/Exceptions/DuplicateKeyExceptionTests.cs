@@ -32,7 +32,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => new { x.Value1, x.Value2 });
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
+            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
             Assert.Equal(typeof(EntityLevel2), ex.EntityType);
             Assert.Equal("DP_0", ex.Keys);
         }
@@ -60,7 +60,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => new { x.Value1, x.Value2 });
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
+            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
             Assert.Equal(typeof(EntityLevel2), ex.EntityType);
             Assert.Equal("DP_0", ex.Keys);
         }
@@ -90,7 +90,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => x.RequestedPower);
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
+            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
             Assert.Equal(typeof(EntityLevel0), ex.EntityType);
             Assert.Equal($"{DateTime.Today},Up", ex.Keys);
         }
@@ -120,7 +120,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 .HasValues(x => x.RequestedPower);
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
+            var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
             Assert.Equal(typeof(EntityLevel0), ex.EntityType);
             Assert.Equal($"{DateTime.Today},Up", ex.Keys);
         }

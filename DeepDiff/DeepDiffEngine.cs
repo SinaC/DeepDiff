@@ -21,7 +21,7 @@ namespace DeepDiff
             DiffEngineConfiguration = diffEngineConfiguration;
         }
 
-        public object InternalDiffSingle(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        public object InternalMergeSingle(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -61,8 +61,8 @@ namespace DeepDiff
                     : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
             }
 
-            // perform diff on nested entities
-            var diffModificationsFound = DiffUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
+            // perform merge on nested entities
+            var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
 
             // check force update if equals
             var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -78,14 +78,14 @@ namespace DeepDiff
             return null;
         }
 
-        public IList<object> InternalDiffMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
+        public IList<object> InternalMergeMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInDiffManyException(entityConfiguration.EntityType);
 
             var results = new List<object>();
 
-            // no entities to diff
+            // no entities to merge
             if ((existingEntities == null || !existingEntities.Any()) && (newEntities == null || !newEntities.Any()))
                 return results;
 
@@ -137,8 +137,8 @@ namespace DeepDiff
                             : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
                     }
 
-                    // perform diff on nested entities
-                    var diffModificationsFound = DiffUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
+                    // perform merge on nested entities
+                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, diffOperations);
 
                     // check force update if equals
                     var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -216,23 +216,23 @@ namespace DeepDiff
             return hashtable;
         }
 
-        private bool DiffUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        private bool MergeUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             var modificationsDetected = false;
             if (entityConfiguration.NavigationManyConfigurations != null)
             {
                 foreach (var navigationManyConfiguration in entityConfiguration.NavigationManyConfigurations)
-                    modificationsDetected |= DiffUsingNavigationMany(navigationManyConfiguration, existingEntity, newEntity, diffOperations);
+                    modificationsDetected |= MergeUsingNavigationMany(navigationManyConfiguration, existingEntity, newEntity, diffOperations);
             }
             if (entityConfiguration.NavigationOneConfigurations != null)
             {
                 foreach (var navigationOneConfiguration in entityConfiguration.NavigationOneConfigurations)
-                    modificationsDetected |= DiffUsingNavigationOne(navigationOneConfiguration, existingEntity, newEntity, diffOperations);
+                    modificationsDetected |= MergeUsingNavigationOne(navigationOneConfiguration, existingEntity, newEntity, diffOperations);
             }
             return modificationsDetected;
         }
 
-        private bool DiffUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        private bool MergeUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             if (navigationManyConfiguration.NavigationProperty == null)
                 return false;
@@ -247,17 +247,17 @@ namespace DeepDiff
             var existingEntityChildren = navigationManyConfiguration.NavigationProperty.GetValue(existingEntity);
             var newEntityChildren = navigationManyConfiguration.NavigationProperty.GetValue(newEntity);
 
-            // diff children
+            // merge children
             var existingChildren = (IEnumerable<object>)existingEntityChildren!;
             var newChildren = (IEnumerable<object>)newEntityChildren!;
-            var diffChildren = InternalDiffMany(childEntityConfiguration, existingChildren, newChildren, diffOperations);
+            var mergedChildren = InternalMergeMany(childEntityConfiguration, existingChildren, newChildren, diffOperations);
 
-            // convert diff children from IEnumerable<object> to List<ChildType>
+            // convert merged children from IEnumerable<object> to List<ChildType>
             var listType = typeof(List<>).MakeGenericType(childType);
             var list = (IList)Activator.CreateInstance(listType)!;
-            foreach (var diffChild in diffChildren)
-                list.Add(diffChild);
-            // set navigation many property to diff children
+            foreach (var mergedChild in mergedChildren)
+                list.Add(mergedChild);
+            // set navigation many property to merged children
             if (!DiffEngineConfiguration.GenerateOperationsOnly)
                 navigationManyConfiguration.NavigationProperty.SetValue(existingEntity, list);
             //
@@ -266,7 +266,7 @@ namespace DeepDiff
             return false;
         }
 
-        private bool DiffUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
+        private bool MergeUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object newEntity, IList<DiffOperationBase> diffOperations)
         {
             if (navigationOneConfiguration.NavigationProperty == null)
                 return false;
@@ -281,15 +281,15 @@ namespace DeepDiff
             var existingEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(existingEntity);
             var newEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(newEntity);
 
-            // diff child
-            var diff = InternalDiffSingle(childEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
+            // merge child
+            var mergedChild = InternalMergeSingle(childEntityConfiguration, existingEntityChild, newEntityChild, diffOperations);
 
-            // set navigation one property to diff child
+            // set navigation one property to merged child
             if (!DiffEngineConfiguration.GenerateOperationsOnly)
-                navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, diff);
+                navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, mergedChild);
 
             // not insert/delete/update
-            if (diff == null)
+            if (mergedChild == null)
                 return false;
 
             return true;

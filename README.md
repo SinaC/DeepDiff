@@ -22,7 +22,7 @@ var deepDiff = diffConfiguration.CreateDeepDiff();
 ```
 Then in your application code, this will detect insert/update/delete between existing and new entities. In case of update, properties will be copied from new to existing entity
 ```csharp
-var result = deepDiff.DiffMany(existingEntities, newEntities); // result.Entities will contain 'diff' entities
+var result = deepDiff.MergeMany(existingEntities, newEntities); // result.Entities will contain 'diff' entities
 ```
 Sample entities definition
 ```csharp
@@ -239,28 +239,28 @@ IEntityConfiguration<TEntity> NoKey()
 
 # Engine configuration
 
-## DiffSingle
+## MergeSingle
 
 ```csharp
-DiffSingleResult<TEntity> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
-DiffSingleResult<TEntity> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction)
+MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
 ```
 
-## DiffMany
+## MergeMany
 
 ```csharp
-DiffManyResult<TEntity> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
-DiffManyResult<TEntity> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction)
+MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
 ```
 
-## DiffSingle configuration
+## MergeSingle configuration
 
 ### UseHashtable
 
 When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
 
 ```csharp
-IDiffSingleConfiguration UseHashtable(bool use = true)
+IMergeSingleConfiguration UseHashtable(bool use = true)
 ```
 
 ### HashtableThreshold
@@ -268,7 +268,7 @@ IDiffSingleConfiguration UseHashtable(bool use = true)
 Defines minimum number of entries in collection to use hashtable (15 by default)
 
 ```csharp
-IDiffSingleConfiguration HashtableThreshold(int threshold = 15)
+IMergeSingleConfiguration HashtableThreshold(int threshold = 15)
 ```
 
 ### ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel
@@ -276,7 +276,7 @@ IDiffSingleConfiguration HashtableThreshold(int threshold = 15)
 Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified
 
 ```csharp
-IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
 ### GenerateOperations
@@ -284,15 +284,7 @@ IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLev
 When set to true, engine will generate a collection of operations detected when performing diff (true by default)
 
 ```csharp
-IDiffSingleConfiguration GenerateOperations(bool generate = true)
-```
-
-### OnlyGenerateOperations
-
-When set to true, engine will ONLY generate a collection of operations detected when performing diff and no modification will be applied to entities (false by default)
-
-```csharp
-IDiffSingleConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
+IMergeSingleConfiguration GenerateOperations(bool generate = true)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -300,17 +292,17 @@ IDiffSingleConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
 When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
 
 ```csharp
-IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true)
+IMergeSingleConfiguration UsePrecompiledEqualityComparer(bool use = true)
 ```
 
-## DiffMany configuration
+## MergeMany configuration
 
 ### UseHashtable
 
 When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
 
 ```csharp
-IDiffManyConfiguration UseHashtable(bool use = true)
+IMergeManyConfiguration UseHashtable(bool use = true)
 ```
 
 ### HashtableThreshold
@@ -318,7 +310,7 @@ IDiffManyConfiguration UseHashtable(bool use = true)
 Defines minimum number of entries in collection to use hashtable (15 by default)
 
 ```csharp
-IDiffManyConfiguration HashtableThreshold(int threshold = 15)
+IMergeManyConfiguration HashtableThreshold(int threshold = 15)
 ```
 
 ### ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel
@@ -326,7 +318,7 @@ IDiffManyConfiguration HashtableThreshold(int threshold = 15)
 Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified
 
 ```csharp
-IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
 ### GenerateOperations
@@ -334,15 +326,7 @@ IDiffManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel
 When set to true, engine will generate a collection of operations detected when performing diff (true by default)
 
 ```csharp
-IDiffManyConfiguration GenerateOperations(bool generate = true)
-```
-
-### OnlyGenerateOperations
-
-When set to true, engine will ONLY generate a collection of operations detected when performing diff and no modification will be applied to entities (false by default)
-
-```csharp
-IDiffManyConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
+IMergeManyConfiguration GenerateOperations(bool generate = true)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -350,7 +334,7 @@ IDiffManyConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
 When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
 
 ```csharp
-IDiffManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
+IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
 ```
 
 # Deep Diff Configuration

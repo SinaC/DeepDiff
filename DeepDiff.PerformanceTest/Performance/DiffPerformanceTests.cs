@@ -20,7 +20,7 @@ public class DiffPerformanceTests
     }
 
     [Fact]
-    public void Diff()
+    public void Merge()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -30,7 +30,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
+        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities);
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -38,7 +38,7 @@ public class DiffPerformanceTests
     }
 
     [Fact]
-    public void Diff_NoHashtable()
+    public void Merge_NoHashtable()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -48,7 +48,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false));
+        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -56,7 +56,7 @@ public class DiffPerformanceTests
     }
 
     [Fact]
-    public void Diff_NaiveComparer()
+    public void Merge_NaiveComparer()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -66,7 +66,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 
@@ -74,7 +74,7 @@ public class DiffPerformanceTests
     }
 
     [Fact]
-    public void Diff_NoHashtable_NaiveComparer()
+    public void Merge_NoHashtable_NaiveComparer()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -84,7 +84,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
         sw.Stop();
 
