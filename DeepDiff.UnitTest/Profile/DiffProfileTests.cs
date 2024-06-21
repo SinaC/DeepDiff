@@ -22,7 +22,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities);
+            var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities);
             var results = diff.Entities.ToArray();
             var operations = diff.Operations;
 
@@ -48,7 +48,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var diff = deepDiff.DiffMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+            var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
             var results = diff.Entities.ToArray();
             var operations = diff.Operations;
 
@@ -106,7 +106,7 @@ namespace DeepDiff.UnitTest.Profile
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfileNoCustomComparer>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.MergeSingle(existing, calculated);
 
             //
             Assert.NotNull(diff.Entity);
@@ -156,7 +156,7 @@ namespace DeepDiff.UnitTest.Profile
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.MergeSingle(existing, calculated);
 
             //
             Assert.Null(diff.Entity);

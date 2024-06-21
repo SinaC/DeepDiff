@@ -50,7 +50,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var diff = deepDiff.MergeMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -99,7 +99,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -148,7 +148,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var diff = deepDiff.MergeMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -197,7 +197,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -255,7 +255,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var diff = deepDiff.MergeMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
         Assert.Empty(results);
@@ -311,7 +311,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Empty(results);
@@ -367,7 +367,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var diff = deepDiff.MergeMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -426,7 +426,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -485,7 +485,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities);
+        var diff = deepDiff.MergeMany(existingEntities, newEntities);
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -544,7 +544,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
         var results = diff.Entities.ToArray();
 
         Assert.Single(results);
@@ -581,7 +581,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.DiffSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+        var diff = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
 
         Assert.NotNull(diff.Entity);
         Assert.Equal(PersistChange.Update, diff.Entity.PersistChange);

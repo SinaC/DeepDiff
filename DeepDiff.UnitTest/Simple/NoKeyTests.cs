@@ -24,7 +24,7 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
             Assert.Empty(diff.Entities);
@@ -42,7 +42,7 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
             Assert.Single(diff.Entities);
@@ -65,7 +65,7 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.DiffMany(existingEntities, newEntities);
+            var diff = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
             Assert.Single(diff.Entities);

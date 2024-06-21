@@ -7,6 +7,9 @@
         public DiffSingleConfiguration()
         {
             Configuration = new DiffEngineConfiguration();
+            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(false);
+            Configuration.SetGenerateOperations(true);
+            Configuration.SetGenerateOperationsOnly(true);
         }
 
         public IDiffSingleConfiguration UseHashtable(bool use = true)
@@ -18,24 +21,6 @@
         public IDiffSingleConfiguration HashtableThreshold(int threshold = 15)
         {
             Configuration.SetHashtableThreshold(threshold);
-            return this;
-        }
-
-        public IDiffSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
-        {
-            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
-            return this;
-        }
-
-        public IDiffSingleConfiguration GenerateOperations(bool generate = true)
-        {
-            Configuration.SetGenerateOperations(generate);
-            return this;
-        }
-
-        public IDiffSingleConfiguration OnlyGenerateOperations(bool onlyGenerate = false)
-        {
-            Configuration.SetGenerateOperationsOnly(onlyGenerate);
             return this;
         }
 

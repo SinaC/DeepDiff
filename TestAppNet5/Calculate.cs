@@ -26,7 +26,7 @@ namespace TestAppNet5
             calculated.TotalEnergyToBeSupplied = 5m;
             calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
-            var result =  DeepDiff.DiffSingle(existing, calculated);
+            var result =  DeepDiff.MergeSingle(existing, calculated);
 
             Logger.Information($"result?: {result.Entity != null}");
         }

@@ -37,11 +37,11 @@ namespace DeepDiff.UnitTest.Exceptions
                 Price = 2 * x + 1
             }).ToArray();
 
-            Assert.Throws<NoKeyEntityInDiffManyException>(() => deepDiff.DiffMany(existingEntities, newEntities));
+            Assert.Throws<NoKeyEntityInDiffManyException>(() => deepDiff.MergeMany(existingEntities, newEntities));
         }
 
         [Fact]
-        public void DiffSingle()
+        public void MergeSingle()
         {
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel1>()
@@ -69,7 +69,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 Price = 2 * x + 1
             }).ToArray();
 
-            var diff =  deepDiff.DiffSingle(existingEntities[0], newEntities[0]);
+            var diff =  deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
             Assert.NotNull(diff.Entity);
         }
     }

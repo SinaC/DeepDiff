@@ -37,7 +37,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
-            var diff = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.MergeSingle(existing, calculated);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -78,7 +78,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
-            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -128,7 +128,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
-            var diff = deepDiff.DiffSingle(existing, calculated);
+            var diff = deepDiff.MergeSingle(existing, calculated);
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -157,7 +157,7 @@ namespace DeepDiff.UnitTest.ActivationControl
 
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
-            var diff = deepDiff.DiffSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeSingle(existing, calculated, cfg => cfg.UsePrecompiledEqualityComparer(false));
             var result = diff.Entity;
             var operations = diff.Operations;
 
