@@ -14,8 +14,7 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
                 .WithComparer<decimal?>(new NullableDecimalComparer(6))
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).GenerateOperations(false))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete).GenerateOperations(false))
-                .Ignore(x => x.PersistChange);
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete).GenerateOperations(false));
         }
 
         // domain entities (TId, string, datetime)

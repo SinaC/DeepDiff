@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas
 {
+#pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
     public readonly struct Date : IEquatable<Date>, IComparable, IComparable<Date>
-    #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
+#pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
     {
         public int DayCountSinceBaseDate { get; }
 
