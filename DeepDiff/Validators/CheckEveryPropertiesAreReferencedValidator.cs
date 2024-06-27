@@ -13,12 +13,9 @@ namespace DeepDiff.Validators
     {
         public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration)
         {
-            //var propertiesToCheck = type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true && (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !x.IsSameAs(y))));
             var propertiesToCheck = new List<PropertyInfo>();
             foreach (var property in type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true))
             {
-                if (property.Name == "AuditedOn")
-                    Debugger.Break();
                 if (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !property.IsSameAs(y)))
                     propertiesToCheck.Add(property);
             }
@@ -29,6 +26,8 @@ namespace DeepDiff.Validators
         {
             foreach (var property in propertiesToCheck)
             {
+                if (property.Name == "PersistChange")
+                    Debugger.Break();
                 // check key properties
                 var found = CheckIfPropertyFound(property, entityConfiguration);
                 if (!found)
@@ -37,14 +36,14 @@ namespace DeepDiff.Validators
         }
 
         private bool CheckIfPropertyFound(PropertyInfo property, EntityConfiguration entityConfiguration)
-            => entityConfiguration.KeyConfiguration?.KeyProperties?.Contains(property) == true
-                    || entityConfiguration.ValuesConfiguration?.ValuesProperties?.Contains(property) == true
-                    || entityConfiguration.NavigationManyConfigurations?.Select(x => x.NavigationProperty)?.Contains(property) == true
-                    || entityConfiguration.NavigationOneConfigurations?.Select(x => x.NavigationProperty)?.Contains(property) == true
-                    || entityConfiguration.UpdateConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Contains(property) == true
-                    || entityConfiguration.UpdateConfiguration?.CopyValuesConfiguration?.CopyValuesProperties?.Contains(property) == true
-                    || entityConfiguration.InsertConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Contains(property) == true
-                    || entityConfiguration.DeleteConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Contains(property) == true;
+            => entityConfiguration.KeyConfiguration?.KeyProperties?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.ValuesConfiguration?.ValuesProperties?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.NavigationManyConfigurations?.Select(x => x.NavigationProperty)?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.NavigationOneConfigurations?.Select(x => x.NavigationProperty)?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.UpdateConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.UpdateConfiguration?.CopyValuesConfiguration?.CopyValuesProperties?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.InsertConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Any(x => x.IsSameAs(property)) == true
+                    || entityConfiguration.DeleteConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Any(x => x.IsSameAs(property)) == true;
 
         
     }
