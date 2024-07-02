@@ -190,8 +190,8 @@ namespace DeepDiff
             }
             catch(InvalidOperationException)
             {
-                var keys = GenerateKeysForOperation(entityConfiguration, keyConfiguration, existingEntity);
-                throw new DuplicateKeyException(entityConfiguration.EntityType, keys);
+                var keys = GenerateKeysForException(entityConfiguration, keyConfiguration, existingEntity);
+                throw new DuplicateKeysException(entityConfiguration.EntityType, keys);
             }
         }
 
@@ -209,8 +209,8 @@ namespace DeepDiff
                 }
                 catch (ArgumentException)
                 {
-                    var keys = GenerateKeysForOperation(entityConfiguration, keyConfiguration, entity);
-                    throw new DuplicateKeyException(entityConfiguration.EntityType, keys);
+                    var keys = GenerateKeysForException(entityConfiguration, keyConfiguration, entity);
+                    throw new DuplicateKeysException(entityConfiguration.EntityType, keys);
                 }
             }
             return hashtable;
@@ -521,7 +521,21 @@ namespace DeepDiff
             }
         }
 
-        private string GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        private IReadOnlyDictionary<string, string> GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        {
+            if (entityConfiguration.NoKey)
+                return null;
+
+            var result = new Dictionary<string, string>();
+            foreach (var propertyInfo in keyConfiguration.KeyProperties)
+            {
+                var key = propertyInfo.GetValue(entity);
+                result.Add(propertyInfo.Name, key?.ToString());
+            }
+            return result;
+        }
+
+        private string GenerateKeysForException(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
         {
             if (entityConfiguration.NoKey)
                 return string.Empty;
