@@ -13,7 +13,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void GlobalDisableOperationsGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModifications();
+            var (existingEntity, newEntity) = GenerateEntities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
@@ -43,7 +43,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void UpdateDisableOperationsGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModifications();
+            var (existingEntity, newEntity) = GenerateEntities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
@@ -68,14 +68,20 @@ namespace DeepDiff.UnitTest.Operations
             var operations = diff.Operations;
 
             Assert.Empty(operations.OfType<UpdateDiffOperation>());
-            Assert.NotEmpty(operations.OfType<InsertDiffOperation>());
-            Assert.NotEmpty(operations.OfType<DeleteDiffOperation>());
+            Assert.Single(operations.OfType<InsertDiffOperation>());
+            Assert.Single(operations.OfType<InsertDiffOperation>().Single().Keys);
+            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Key);
+            Assert.Equal(DateTime.Today.AddMinutes(5).ToString(), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Value);
+            Assert.Single(operations.OfType<DeleteDiffOperation>());
+            Assert.Single(operations.OfType<DeleteDiffOperation>().Single().Keys);
+            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Key);
+            Assert.Equal(DateTime.Today.ToString(), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Value);
         }
 
         [Fact]
         public void InsertDisableOperationsGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModifications();
+            var (existingEntity, newEntity) = GenerateEntities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
@@ -101,14 +107,21 @@ namespace DeepDiff.UnitTest.Operations
             var operations = diff.Operations;
 
             Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
+            Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Count());
+            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Count());
+            TODO: entity0: startsOn = today   direction = up
+            TODO: 4 * entity1: timestamp = today +1, +2, +3, +4 minute(s)
             Assert.Empty(operations.OfType<InsertDiffOperation>());
             Assert.NotEmpty(operations.OfType<DeleteDiffOperation>());
+            Assert.Single(operations.OfType<DeleteDiffOperation>().Single().Keys);
+            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Key);
+            Assert.Equal(DateTime.Today.ToString(), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Value);
         }
 
         [Fact]
         public void DeleteDisableOperationsGeneration()
         {
-            var (existingEntity, newEntity) = GenerateModifications();
+            var (existingEntity, newEntity) = GenerateEntities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
@@ -141,7 +154,7 @@ namespace DeepDiff.UnitTest.Operations
         [Fact]
         public void CheckOperations()
         {
-            var (existingEntity, newEntity) = GenerateModifications();
+            var (existingEntity, newEntity) = GenerateEntities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
@@ -197,7 +210,7 @@ namespace DeepDiff.UnitTest.Operations
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.SetValueProperties), x => Assert.Equal(PersistChange.Update.ToString(), x.NewValue));
         }
 
-        private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateModifications()
+        private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities()
         {
             var existingEntity = new EntityLevel0
             {

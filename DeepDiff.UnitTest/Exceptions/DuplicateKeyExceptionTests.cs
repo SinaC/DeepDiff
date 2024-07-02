@@ -34,7 +34,9 @@ namespace DeepDiff.UnitTest.Exceptions
 
             var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
             Assert.Equal(typeof(EntityLevel2), ex.EntityType);
-            Assert.Equal("DP_0", ex.Keys);
+            Assert.Single(ex.Keys);
+            Assert.Equal(nameof(EntityLevel2.DeliveryPointEan), ex.Keys.Single().Key);
+            Assert.Equal("DP_0", ex.Keys.Single().Value);
         }
 
         [Fact]
@@ -62,7 +64,9 @@ namespace DeepDiff.UnitTest.Exceptions
 
             var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
             Assert.Equal(typeof(EntityLevel2), ex.EntityType);
-            Assert.Equal("DP_0", ex.Keys);
+            Assert.Single(ex.Keys);
+            Assert.Equal(nameof(EntityLevel2.DeliveryPointEan), ex.Keys.Single().Key);
+            Assert.Equal("DP_0", ex.Keys.Single().Value);
         }
 
         [Fact]
@@ -92,7 +96,11 @@ namespace DeepDiff.UnitTest.Exceptions
 
             var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.HashtableThreshold(1)));
             Assert.Equal(typeof(EntityLevel0), ex.EntityType);
-            Assert.Equal($"{DateTime.Today},Up", ex.Keys);
+            Assert.Equal(2, ex.Keys.Count);
+            Assert.Single(ex.Keys.Where(x => x.Key == nameof(EntityLevel0.StartsOn)));
+            Assert.Single(ex.Keys.Where(x => x.Key == nameof(EntityLevel0.Direction)));
+            Assert.Equal($"{DateTime.Today}", ex.Keys.Single(x => x.Key == nameof(EntityLevel0.StartsOn)).Value);
+            Assert.Equal($"{Direction.Up}", ex.Keys.Single(x => x.Key == nameof(EntityLevel0.Direction)).Value);
         }
 
         [Fact]
@@ -122,7 +130,11 @@ namespace DeepDiff.UnitTest.Exceptions
 
             var ex = Assert.Throws<DuplicateKeyException>(() => deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false)));
             Assert.Equal(typeof(EntityLevel0), ex.EntityType);
-            Assert.Equal($"{DateTime.Today},Up", ex.Keys);
+            Assert.Single(ex.Keys.Where(x => x.Key == nameof(EntityLevel0.StartsOn)));
+            Assert.Single(ex.Keys.Where(x => x.Key == nameof(EntityLevel0.Direction)));
+            Assert.Equal($"{DateTime.Today}", ex.Keys.Single(x => x.Key == nameof(EntityLevel0.StartsOn)).Value);
+            Assert.Equal($"{Direction.Up}", ex.Keys.Single(x => x.Key == nameof(EntityLevel0.Direction)).Value);
+
         }
     }
 }

@@ -521,18 +521,18 @@ namespace DeepDiff
             }
         }
 
-        private string GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        private IReadOnlyDictionary<string, string> GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
         {
             if (entityConfiguration.NoKey)
-                return string.Empty;
+                return null;
 
-            var keys = new List<string>();
+            var result = new Dictionary<string, string>();
             foreach (var propertyInfo in keyConfiguration.KeyProperties)
             {
                 var key = propertyInfo.GetValue(entity);
-                keys.Add(key?.ToString());
+                result.Add(propertyInfo.Name, key?.ToString());
             }
-            return string.Join(",", keys);
+            return result;
         }
     }
 }
