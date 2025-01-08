@@ -10,5 +10,11 @@ namespace DeepDiff.Configuration
         {
             Configuration = navigationManyConfiguration;
         }
+
+        public INavigationManyConfiguration<TEntity, TChildEntity> UseDerivedTypes(bool useDerivedTypes = false)
+        {
+            Configuration.SetUseDerivedTypes(useDerivedTypes);
+            return this;
+        }
     }
 }

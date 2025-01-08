@@ -15,9 +15,12 @@ namespace DeepDiff.Validators
             {
                 foreach (var configuration in entityConfiguration.NavigationOneConfigurations)
                 {
+                    // check if navigation one property is not abstract
+                    if (configuration.NavigationChildType.IsAbstract)
+                        yield return new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationProperty.Name, $"NavigationOne configuration property {configuration.NavigationProperty.Name} for type {entityType} cannot be an abstract type");
                     // check if navigation one property is not a collection
-                    if (configuration.NavigationProperty.IsEnumerable())
-                        yield return new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationProperty.Name);
+                    else if (configuration.NavigationProperty.IsEnumerable())
+                        yield return new InvalidNavigationOneChildTypeConfigurationException(entityType, configuration.NavigationProperty.Name, $"NavigationOne configuration property {configuration.NavigationProperty.Name} for type {entityType} cannot be a collection");
                     else
                     {
                         // check if navigation child type is found in configuration
