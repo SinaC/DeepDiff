@@ -22,5 +22,34 @@ namespace DeepDiff.UnitTest.Exceptions
             Assert.Throws<InvalidNavigationOneChildTypeConfigurationException>(() => diffConfiguration.CreateDeepDiff());
         }
 
+        [Fact]
+        public void HasOneOnAbstract()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.Entity<ParentEntity>()
+                .HasKey(x => x.Key)
+                .HasOne(x => x.Child);
+            diffConfiguration.Entity<ChildEntity1>()
+                .NoKey()
+                .HasValues(x => x.Name);
+
+            Assert.Throws<InvalidNavigationOneChildTypeConfigurationException>(() => diffConfiguration.CreateDeepDiff());
+        }
+
+        internal class ParentEntity
+        {
+            public int Key { get; set; }
+
+            public ChildEntityBase Child { get; set; } = null!;
+        }
+
+        internal abstract class ChildEntityBase
+        {
+        }
+
+        internal class ChildEntity1 : ChildEntityBase
+        {
+            public string Name { get; set; } = null!;
+        }
     }
 }

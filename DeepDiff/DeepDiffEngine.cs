@@ -176,6 +176,26 @@ namespace DeepDiff
             return results;
         }
 
+        private IList<object> InternalMergeManyWithDerivedTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
+        {
+            // perform multiple merge, one by unique type found in existing and new entities collection
+            var existingEntitiesByTypes = existingEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
+            var newEntitiesByTypes = newEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
+
+            var results = new List<object>();
+            foreach (var entityType in existingEntitiesByTypes.Select(x => x.Key).Union(newEntitiesByTypes.Select(x => x.Key)).Distinct())
+            {
+                if (!EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
+                    throw new MissingConfigurationException(entityType);
+                var existingEntitiesByType = existingEntitiesByTypes?[entityType];
+                var newEntitiesByType = newEntitiesByTypes?[entityType];
+                var subResults = InternalMergeMany(entityConfiguration, existingEntitiesByType, newEntitiesByType, diffOperations);
+                results.AddRange(subResults);
+            }
+
+            return results;
+        }
+
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
             => DiffEngineConfiguration.UseHashtable && existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
 
@@ -240,9 +260,6 @@ namespace DeepDiff
             if (childType == null)
                 return false;
 
-            if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
-                throw new MissingConfigurationException(childType);
-
             // get children
             var existingEntityChildren = navigationManyConfiguration.NavigationProperty.GetValue(existingEntity);
             var newEntityChildren = navigationManyConfiguration.NavigationProperty.GetValue(newEntity);
@@ -250,7 +267,15 @@ namespace DeepDiff
             // merge children
             var existingChildren = (IEnumerable<object>)existingEntityChildren!;
             var newChildren = (IEnumerable<object>)newEntityChildren!;
-            var mergedChildren = InternalMergeMany(childEntityConfiguration, existingChildren, newChildren, diffOperations);
+            IList<object> mergedChildren;
+            if (navigationManyConfiguration.UseDerivedTypes)
+                mergedChildren = InternalMergeManyWithDerivedTypes(existingChildren, newChildren, diffOperations);
+            else
+            {
+                if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
+                    throw new MissingConfigurationException(childType);
+                mergedChildren = InternalMergeMany(childEntityConfiguration, existingChildren, newChildren, diffOperations);
+            }
 
             // convert merged children from IEnumerable<object> to List<ChildType>
             var listType = typeof(List<>).MakeGenericType(childType);

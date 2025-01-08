@@ -4,5 +4,6 @@ namespace DeepDiff.Configuration
         where TEntity : class
         where TChildEntity : class
     {
+        INavigationManyConfiguration<TEntity, TChildEntity> UseDerivedTypes(bool use = false);
     }
 }

@@ -15,6 +15,10 @@ namespace DeepDiff.Configuration
             where TEntity : class
         {
             var entityType = typeof(TEntity);
+
+            if (entityType.IsAbstract)
+                throw new AbstractEntityConfigurationException(entityType);
+
             if (EntityConfigurationByTypes.ContainsKey(entityType))
                 throw new DuplicateEntityConfigurationException(entityType);
 
@@ -134,9 +138,14 @@ namespace DeepDiff.Configuration
         {
             foreach (var typeAndEntityConfiguration in diffProfile.EntityConfigurations)
             {
-                if (EntityConfigurationByTypes.ContainsKey(typeAndEntityConfiguration.Key))
-                    throw new DuplicateEntityConfigurationException(typeAndEntityConfiguration.Key);
-                EntityConfigurationByTypes.Add(typeAndEntityConfiguration.Key, typeAndEntityConfiguration.Value);
+                var entityType = typeAndEntityConfiguration.Key;
+
+                if (entityType.IsAbstract)
+                    throw new AbstractEntityConfigurationException(entityType);
+
+                if (EntityConfigurationByTypes.ContainsKey(entityType))
+                    throw new DuplicateEntityConfigurationException(entityType);
+                EntityConfigurationByTypes.Add(entityType, typeAndEntityConfiguration.Value);
             }
         }
     }
