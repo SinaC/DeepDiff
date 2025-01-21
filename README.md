@@ -109,6 +109,14 @@ IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, Lis
 IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration<TEntity, TChildEntity>> navigationManyConfigurationAction)
 ```
 
+### UseDerivedTypes
+
+When set to true, engine will use force comparison by type if children are inherited and children collection is not abstract
+
+```csharp
+INavigationManyConfiguration<TEntity, TChildEntity> UseDerivedTypes(bool use = false)
+```
+
 ## OnInsert
 
 Defines operations to perform when an insert is detected
