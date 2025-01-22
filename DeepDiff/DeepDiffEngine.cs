@@ -481,12 +481,27 @@ namespace DeepDiff
             var childrenValue = navigationManyConfiguration.NavigationProperty.GetValue(entity);
             if (childrenValue == null)
                 return;
-            var childType = navigationManyConfiguration.NavigationChildType;
-            if (childType == null)
-                return;
+            var children = (IEnumerable<object>)childrenValue;
+            if (navigationManyConfiguration.UseDerivedTypes) // when derived types must be used, children must be grouped by type then type from each group must be used instead of collection child type
+            {
+                var childrenByTypes = children?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
+                foreach (var childrenByType in childrenByTypes)
+                {
+                    var childType = childrenByType.Key;
+                    PropagateUsingNavigationMany(navigationManyConfiguration, entity, childType, childrenByType, operation);
+                }
+            }
+            else
+            {
+                var childType = navigationManyConfiguration.NavigationChildType;
+                PropagateUsingNavigationMany(navigationManyConfiguration, entity, childType, children, operation);
+            }
+        }
+
+        private void PropagateUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object entity, Type childType, IEnumerable<object> children, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        {
             if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
-            var children = (IEnumerable<object>)childrenValue;
             foreach (var child in children)
                 operation(childEntityConfiguration, navigationManyConfiguration, child, entity);
         }

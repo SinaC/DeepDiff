@@ -50,6 +50,37 @@ namespace DeepDiff.UnitTest.Inheritance
         }
 
         [Fact]
+        public void InsertEntity()
+        {
+            var existingEntity = (Entity)null!;
+
+            var newEntity = new Entity
+            {
+                Key = 1,
+                Name = "1",
+                SubEntities = new List<SubEntity>
+                 {
+                     new SubEntity1
+                     {
+                         Key = 1002,
+                         Name1 = "1002"
+                     }
+                 }
+            };
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var result = diff.Entity;
+            var operations = diff.Operations;
+
+            Assert.NotNull(result);
+            Assert.Equal(2, operations.Count);
+            Assert.Equal(PersistChange.Insert, result.PersistChange);
+            Assert.Equal(PersistChange.Insert, result.SubEntities.Single().PersistChange);
+            Assert.Equal(1002, result.SubEntities.Single().Key);
+        }
+
+        [Fact]
         public void InsertSubEntity()
         {
             var existingEntity = new Entity
@@ -83,6 +114,41 @@ namespace DeepDiff.UnitTest.Inheritance
             Assert.Equal(PersistChange.None, result.PersistChange);
             Assert.Equal(PersistChange.Insert, result.SubEntities.Single().PersistChange);
             Assert.Equal(1002, result.SubEntities.Single().Key);
+        }
+
+        [Fact]
+        public void DeleteEntity()
+        {
+            var existingEntity = new Entity
+            {
+                Key = 1,
+                Name = "1",
+                SubEntities = new List<SubEntity>
+                {
+                    new SubEntity1
+                    {
+                        Key = 1001,
+                        Name1 = "1001"
+                    },
+                    new SubEntity1
+                    {
+                        Key = 1002,
+                        Name1 = "1002"
+                    }
+                }
+            };
+
+            var newEntity = (Entity)null!;
+
+            var deepDiff = CreateDeepDiff();
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var result = diff.Entity;
+            var operations = diff.Operations;
+
+            Assert.NotNull(result);
+            Assert.Equal(3, operations.Count);
+            Assert.Equal(PersistChange.Delete, result.PersistChange);
+            Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
         }
 
         [Fact]
