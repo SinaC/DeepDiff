@@ -289,10 +289,26 @@ IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLe
 
 ### GenerateOperations
 
+#### GenerateOperations(bool generate=true)
+
 When set to true, engine will generate a collection of operations detected when performing diff (true by default)
 
 ```csharp
 IMergeSingleConfiguration GenerateOperations(bool generate = true)
+```
+
+#### GenerateOperations(Operations flags)
+
+Operations values (flags)
+	None
+	Insert
+	Delete
+	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
+	All = Insert | Delete | Update
+Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+
+```csharp
+IMergeSingleConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -331,10 +347,26 @@ IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLeve
 
 ### GenerateOperations
 
+#### GenerateOperations(bool generate=true)
+
 When set to true, engine will generate a collection of operations detected when performing diff (true by default)
 
 ```csharp
 IMergeManyConfiguration GenerateOperations(bool generate = true)
+```
+
+#### GenerateOperations(Operations flags)
+
+Operations values (flags)
+	None
+	Insert
+	Delete
+	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
+	All = Insert | Delete | Update
+Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+
+```csharp
+IMergeManyConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All)
 ```
 
 ### UsePrecompiledEqualityComparer
