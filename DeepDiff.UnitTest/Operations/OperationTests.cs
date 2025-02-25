@@ -52,47 +52,6 @@ namespace DeepDiff.UnitTest.Operations
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }).GenerateOperations(false))
-                .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<EntityLevel1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.Power, x.Price })
-                .OnUpdate(cfg => cfg.GenerateOperations(false));
-
-            var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
-            var result = diff.Entity;
-            var operations = diff.Operations;
-
-            // no update
-            Assert.Empty(operations.OfType<UpdateDiffOperation>());
-            // 1 insert on EntityLevel1
-            Assert.Single(operations.OfType<InsertDiffOperation>());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Single().Keys);
-            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Key);
-            Assert.Equal(DateTime.Today.AddMinutes(5).ToString(), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Value);
-            // 1 delete on EntityLevel1
-            Assert.Single(operations.OfType<DeleteDiffOperation>());
-            Assert.Single(operations.OfType<DeleteDiffOperation>().Single().Keys);
-            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Key);
-            Assert.Equal(DateTime.Today.ToString(), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Value);
-        }
-
-        [Fact]
-        public void UpdateDisableOperationsGenerationAtExecutionTime()
-        {
-            var (existingEntity, newEntity) = GenerateEntities();
-
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasValues(x => new { x.RequestedPower, x.Penalty })
                 .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
                 .HasMany(x => x.SubEntities);
             diffConfiguration.Entity<EntityLevel1>()
@@ -123,56 +82,6 @@ namespace DeepDiff.UnitTest.Operations
 
         [Fact]
         public void InsertDisableOperationsGeneration()
-        {
-            var (existingEntity, newEntity) = GenerateEntities();
-
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
-                .OnInsert(cfg => cfg.GenerateOperations(false))
-                .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<EntityLevel1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.Power, x.Price })
-                .OnInsert(cfg => cfg.GenerateOperations(false));
-
-            var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
-            var result = diff.Entity;
-            var operations = diff.Operations;
-
-            // 5 updates: 1 on EntityLevel0 (1*2 keys) and 4 on EntityLevel1 (4*1 keys)
-            Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
-            Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Count());
-            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Count());
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.StartsOn)));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.Direction)));
-            Assert.Equal(DateTime.Today.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.StartsOn)).Value);
-            Assert.Equal(Direction.Up.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.Direction)).Value);
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Select(x => x.Key), x => Assert.Equal(nameof(EntityLevel1.Timestamp), x));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(1).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(2).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(3).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(4).ToString()));
-            // no insert
-            Assert.Empty(operations.OfType<InsertDiffOperation>());
-            // 1 delete on EntityLevel1
-            Assert.Single(operations.OfType<DeleteDiffOperation>());
-            Assert.Single(operations.OfType<DeleteDiffOperation>().Single().Keys);
-            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Key);
-            Assert.Equal(DateTime.Today.ToString(), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Value);
-        }
-
-        [Fact]
-        public void InsertDisableOperationsGenerationAtExecutionTime()
         {
             var (existingEntity, newEntity) = GenerateEntities();
 
@@ -221,56 +130,6 @@ namespace DeepDiff.UnitTest.Operations
 
         [Fact]
         public void DeleteDisableOperationsGeneration()
-        {
-            var (existingEntity, newEntity) = GenerateEntities();
-
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
-                .OnDelete(cfg => cfg.GenerateOperations(false))
-                .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<EntityLevel1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.Power, x.Price })
-                .OnDelete(cfg => cfg.GenerateOperations(false));
-
-            var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
-            var result = diff.Entity;
-            var operations = diff.Operations;
-
-            // 5 updates: 1 on EntityLevel0 (1*2 keys) and 4 on EntityLevel1 (4*1 keys)
-            Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
-            Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Count());
-            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Count());
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.StartsOn)));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.Direction)));
-            Assert.Equal(DateTime.Today.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.StartsOn)).Value);
-            Assert.Equal(Direction.Up.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.Direction)).Value);
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Select(x => x.Key), x => Assert.Equal(nameof(EntityLevel1.Timestamp), x));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(1).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(2).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(3).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(4).ToString()));
-            // 1 insert on EntityLevel1
-            Assert.Single(operations.OfType<InsertDiffOperation>());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Single().Keys);
-            Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Key);
-            Assert.Equal(DateTime.Today.AddMinutes(5).ToString(), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Value);
-            // no delete
-            Assert.Empty(operations.OfType<DeleteDiffOperation>());
-        }
-
-        [Fact]
-        public void DeleteDisableOperationsGenerationAtExecutionTime()
         {
             var (existingEntity, newEntity) = GenerateEntities();
 

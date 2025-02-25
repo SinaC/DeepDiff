@@ -7,7 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Config = global::DeepDiff.Configuration;
+using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal
 {
@@ -46,7 +46,7 @@ namespace DeepDiff.Internal
             bool areKeysEqual = true;
             if (!entityConfiguration.NoKey && entityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                areKeysEqual = DiffEngineConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.KeyConfiguration.UsePrecompiledEqualityComparer
+                areKeysEqual = DiffEngineConfiguration.UsePrecompiledEqualityComparer
                     ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer.Equals(existingEntity, newEntity)
                     : entityConfiguration.KeyConfiguration.NaiveEqualityComparer.Equals(existingEntity, newEntity);
                 if (!areKeysEqual && !DiffEngineConfiguration.GenerateOperationsOnly) // keys are different -> copy keys
@@ -57,7 +57,7 @@ namespace DeepDiff.Internal
             CompareByPropertyResult compareByPropertyResult = null;
             if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                compareByPropertyResult = DiffEngineConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                compareByPropertyResult = DiffEngineConfiguration.UsePrecompiledEqualityComparer
                     ? entityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
                     : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
             }
@@ -133,7 +133,7 @@ namespace DeepDiff.Internal
                     CompareByPropertyResult compareByPropertyResult = null;
                     if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
                     {
-                        compareByPropertyResult = DiffEngineConfiguration.UsePrecompiledEqualityComparer && entityConfiguration.ValuesConfiguration.UsePrecompiledEqualityComparer
+                        compareByPropertyResult = DiffEngineConfiguration.UsePrecompiledEqualityComparer
                             ? entityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer.Compare(existingEntity, newEntity)
                             : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer.Compare(existingEntity, newEntity);
                     }
@@ -202,7 +202,7 @@ namespace DeepDiff.Internal
 
         private object SearchMatchingEntityByKey(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, IEnumerable<object> entities, object existingEntity)
         {
-            var comparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
+            var comparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
                     ? keyConfiguration.PrecompiledEqualityComparer
                     : keyConfiguration.NaiveEqualityComparer;
             try
@@ -218,7 +218,7 @@ namespace DeepDiff.Internal
 
         private Hashtable InitializeHashtable(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, IEnumerable<object> entities)
         {
-            var equalityComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer && keyConfiguration.UsePrecompiledEqualityComparer
+            var equalityComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
                 ? keyConfiguration.PrecompiledEqualityComparer
                 : keyConfiguration.NaiveEqualityComparer;
             var hashtable = new Hashtable(equalityComparer);
@@ -326,7 +326,7 @@ namespace DeepDiff.Internal
             if (entityConfiguration.UpdateConfiguration != null)
             {
                 var updateConfiguration = entityConfiguration.UpdateConfiguration;
-                var generateOperations = (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateSetValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateCopyValue)) && (entityConfiguration.UpdateConfiguration == null || entityConfiguration.UpdateConfiguration.GenerateOperations);
+                var generateOperations = DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateSetValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateCopyValue);
                 // use CopyValues from UpdateConfiguration
                 var copyValuesProperties = OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity, DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateCopyValue));
                 // use SetValue from UpdateConfiguration
@@ -538,7 +538,7 @@ namespace DeepDiff.Internal
 
         private void GenerateInsertDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Insert) && (entityConfiguration.InsertConfiguration == null || entityConfiguration.InsertConfiguration.GenerateOperations))
+            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Insert))
             {
                 var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new InsertDiffOperation
@@ -551,7 +551,7 @@ namespace DeepDiff.Internal
 
         private void GenerateDeleteDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Delete) && (entityConfiguration.DeleteConfiguration == null || entityConfiguration.DeleteConfiguration.GenerateOperations))
+            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Delete))
             {
                 var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new DeleteDiffOperation

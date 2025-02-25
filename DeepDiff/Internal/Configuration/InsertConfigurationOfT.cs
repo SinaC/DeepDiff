@@ -22,11 +22,5 @@ namespace DeepDiff.Internal.Configuration
             Configuration.AddSetValueConfiguration(destinationProperty, value);
             return this;
         }
-
-        public IInsertConfiguration<TEntity> GenerateOperations(bool generate = true)
-        {
-            Configuration.SetGenerationOperations(generate);
-            return this;
-        }
     }
 }

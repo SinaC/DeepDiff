@@ -7,6 +7,5 @@ namespace DeepDiff.Configuration
         where TEntity: class
     {
         IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
-        IInsertConfiguration<TEntity> GenerateOperations(bool generate = true);
     }
 }

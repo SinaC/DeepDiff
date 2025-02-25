@@ -11,11 +11,5 @@ namespace DeepDiff.Internal.Configuration
         {
             Configuration = valuesConfiguration;
         }
-
-        public IValuesConfiguration<TEntity> UsePrecompiledEqualityComparer(bool use = true)
-        {
-            Configuration.SetUsePrecompiledEqualityComparer(use);
-            return this;
-        }
     }
 }

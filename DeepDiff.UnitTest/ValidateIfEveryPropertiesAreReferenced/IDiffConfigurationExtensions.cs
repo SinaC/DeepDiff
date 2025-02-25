@@ -12,9 +12,9 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
             return entityConfiguration
                 .WithComparer<decimal>(new DecimalComparer(6))
                 .WithComparer<decimal?>(new NullableDecimalComparer(6))
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).GenerateOperations(false))
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete).GenerateOperations(false));
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         }
 
         // domain entities (TId, string, datetime)

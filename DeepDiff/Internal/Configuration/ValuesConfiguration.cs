@@ -12,16 +12,10 @@ namespace DeepDiff.Internal.Configuration
 
         public IComparerByProperty PrecompiledEqualityComparer { get; private set; } = null!;
         public IComparerByProperty NaiveEqualityComparer { get; private set; } = null!;
-        public bool UsePrecompiledEqualityComparer { get; private set; } = true;
 
         public ValuesConfiguration(IEnumerable<PropertyInfo> valuesProperties)
         {
             ValuesProperties = valuesProperties.ToArray();
-        }
-
-        public void SetUsePrecompiledEqualityComparer(bool usePrecompiledEqualityComparer)
-        {
-            UsePrecompiledEqualityComparer = usePrecompiledEqualityComparer;
         }
 
         public void CreateComparers(Type typeOfT, ComparerConfiguration comparerConfiguration)
