@@ -1,5 +1,5 @@
-﻿using DeepDiff.Comparers;
-using DeepDiff.Configuration;
+﻿using DeepDiff.Internal.Comparers;
+using DeepDiff.Internal.Configuration;
 using DeepDiff.PerformanceTest.Entities.Simple;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace DeepDiff.PerformanceTest;
+namespace DeepDiff.PerformanceTest.Performance;
 
 public class ComparerPerformanceTests
 {

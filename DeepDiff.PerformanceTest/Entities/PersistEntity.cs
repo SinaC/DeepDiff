@@ -1,4 +1,4 @@
-namespace DeepDiff.PerformanceTest.Entities.Simple;
+namespace DeepDiff.PerformanceTest.Entities;
 
 public abstract class PersistEntity
 {

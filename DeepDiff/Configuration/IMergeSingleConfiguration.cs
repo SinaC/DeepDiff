@@ -6,6 +6,7 @@
         IMergeSingleConfiguration HashtableThreshold(int threshold = 15);
         IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
         IMergeSingleConfiguration GenerateOperations(bool generate = true);
+        IMergeSingleConfiguration GenerateOperations(GenerateOperations operationsToGenerate);
         IMergeSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
     }
 }
