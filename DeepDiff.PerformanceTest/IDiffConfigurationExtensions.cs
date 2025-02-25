@@ -1,7 +1,7 @@
 using DeepDiff.Configuration;
-using DeepDiff.PerformanceTest.Entities.Simple;
+using DeepDiff.PerformanceTest.Entities;
 
-namespace DeepDiff.PerformanceTest.Entities;
+namespace DeepDiff.PerformanceTest;
 
 public static class IDiffConfigurationExtensions
 {
