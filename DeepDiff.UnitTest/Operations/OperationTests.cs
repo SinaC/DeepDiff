@@ -103,7 +103,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(GenerateOperations.Insert | GenerateOperations.Delete));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Insert | Configuration.Operations.Delete));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -193,7 +193,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(GenerateOperations.Update | GenerateOperations.Delete));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Update | Configuration.Operations.Delete));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -291,7 +291,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(GenerateOperations.Update | GenerateOperations.Insert));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Update | Configuration.Operations.Insert));
             var result = diff.Entity;
             var operations = diff.Operations;
 
