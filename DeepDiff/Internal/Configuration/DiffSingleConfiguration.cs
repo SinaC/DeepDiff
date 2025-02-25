@@ -1,4 +1,5 @@
 ﻿using DeepDiff.Configuration;
+using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal.Configuration
 {
@@ -29,6 +30,13 @@ namespace DeepDiff.Internal.Configuration
         public IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true)
         {
             Configuration.SetUsePrecompiledEqualityComparer(use);
+            return this;
+        }
+
+        public IDiffSingleConfiguration GenerateOperations(Config.Operations operationsToGenerate = Config.Operations.All)
+        {
+            if (operationsToGenerate != Config.Operations.None)
+                Configuration.SetGenerateOperations(operationsToGenerate);
             return this;
         }
     }

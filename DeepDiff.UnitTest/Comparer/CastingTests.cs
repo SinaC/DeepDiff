@@ -20,7 +20,7 @@ namespace DeepDiff.UnitTest.Comparer
             if (equalityComparerType.IsAssignableFrom(equalityComparer.GetType()))
             {
                 var equalMethod = equalityComparerType.GetMethod(nameof(Equals), new[] { typeof(decimal), typeof(decimal) });
-                var result = (bool)equalMethod.Invoke(equalityComparer, new object[] { d1, d2 });
+                var result = (bool)equalMethod!.Invoke(equalityComparer, new object[] { d1, d2 })!;
             }
         }
     }

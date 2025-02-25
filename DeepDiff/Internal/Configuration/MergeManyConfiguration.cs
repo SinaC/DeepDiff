@@ -1,5 +1,5 @@
 ﻿using DeepDiff.Configuration;
-using Config = global::DeepDiff.Configuration;
+using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal.Configuration
 {

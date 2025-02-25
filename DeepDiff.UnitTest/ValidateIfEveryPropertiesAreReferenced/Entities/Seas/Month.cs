@@ -153,7 +153,7 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas
             return YearPart == other.YearPart && MonthPart == other.MonthPart;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Month month && Equals(month);
         }
@@ -163,7 +163,7 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas
             return (YearPart << 4) + MonthPart;
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             switch (obj)
             {

@@ -29,11 +29,5 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetCopyValuesConfiguration(copyValuesProperties);
             return this;
         }
-
-        public IUpdateConfiguration<TEntity> GenerateOperations(bool generate = true)
-        {
-            Configuration.SetGenerationOperations(generate);
-            return this;
-        }
     }
 }

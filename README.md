@@ -66,14 +66,6 @@ IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyEx
 IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration<TEntity>> keyConfigurationAction)
 ```
 
-### UsePrecompiledEqualityComparer
-
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
-
-```csharp
-IKeyConfiguration<TEntity> UsePrecompiledEqualityComparer(bool use = true)
-```
-
 ## HasValues
 
 Defines properties used to detect an update in case keys are identical
@@ -81,14 +73,6 @@ Defines properties used to detect an update in case keys are identical
 ```csharp
 IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
 IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration<TEntity>> valuesConfigurationAction)
-```
-
-### UsePrecompiledEqualityComparer
-
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
-
-```csharp
-IValuesConfiguration<TEntity> UsePrecompiledEqualityComparer(bool use = true)
 ```
 
 ## HasOne
@@ -133,14 +117,6 @@ When an insert is detected, overwrite a property with a specific value
 IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
 ```
 
-### GenerateOperations
-
-When set to true, insert operations will be logged (true by default) in the result
-
-```csharp
-IInsertConfiguration<TEntity> GenerateOperations(bool generate = true)
-```
-
 ## OnUpdate
 
 Defines operations to perform when an insert is detected. Properties specified in Values(...) will automatically be copied from new entity to existing one
@@ -165,14 +141,6 @@ When an update is detected, specify additional properties to copy from new entit
 IUpdateConfiguration<TEntity> CopyValues<TValue>(Expression<Func<TEntity, TValue>> copyValuesExpression)
 ```
 
-### GenerateOperations
-
-When set to true, update operations will be logged (true by default) in the result
-
-```csharp
-IUpdateConfiguration<TEntity> GenerateOperations(bool generate = true)
-```
-
 ## OnDelete
 
 Defines operations to perform when a delete is detected.
@@ -187,14 +155,6 @@ When a delete is detected, overwrite property with a specific value
 
 ```csharp
 IDeleteConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
-```
-
-### GenerateOperations
-
-When set to true, delete operations will be logged (true by default) in the result
-
-```csharp
-IDeleteConfiguration<TEntity> GenerateOperations(bool generate = true)
 ```
 
 ## WithComparer
@@ -259,6 +219,20 @@ MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity 
 ```csharp
 MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
 MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+```
+
+## DiffSingle
+
+```csharp
+IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity);
+IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction);
+```
+
+## DiffMany
+
+```csharp
+IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities);
+IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction);
 ```
 
 ## MergeSingle configuration
@@ -375,6 +349,82 @@ When set to true, engine will use optimized equality comparers to compare keys a
 
 ```csharp
 IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
+```
+
+## DiffSingle configuration
+
+### UseHashtable
+
+When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
+
+```csharp
+IDiffSingleConfiguration UseHashtable(bool use = true);
+```
+
+### HashtableThreshold
+
+Defines minimum number of entries in collection to use hashtable (15 by default)
+```csharp
+IDiffSingleConfiguration HashtableThreshold(int threshold = 15);
+```
+
+### UsePrecompiledEqualityComparer
+
+When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+```csharp
+IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
+```
+
+### GenerateOperations(Operations flags)
+
+Operations values (flags)
+	None
+	Insert
+	Delete
+	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
+	All = Insert | Delete | Update
+Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+
+```csharp
+IDiffSingleConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All);
+```
+
+## DiffMany configuration
+
+### UseHashtable
+
+When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
+
+```csharp
+IDiffManyConfiguration UseHashtable(bool use = true);
+```
+
+### HashtableThreshold
+
+Defines minimum number of entries in collection to use hashtable (15 by default)
+```csharp
+IDiffManyConfiguration HashtableThreshold(int threshold = 15);
+```
+
+### UsePrecompiledEqualityComparer
+
+When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+```csharp
+IDiffManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
+```
+
+### GenerateOperations(Operations flags)
+
+Operations values (flags)
+	None
+	Insert
+	Delete
+	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
+	All = Insert | Delete | Update
+Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+
+```csharp
+IDiffManyConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All);
 ```
 
 # Deep Diff Configuration
