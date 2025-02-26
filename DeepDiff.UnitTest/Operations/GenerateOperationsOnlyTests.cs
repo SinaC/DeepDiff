@@ -32,7 +32,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Insert | Configuration.Operations.Delete));
+            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.DiffOperations.Insert | Configuration.DiffOperations.Delete));
 
             Assert.Empty(operations.OfType<UpdateDiffOperation>());
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>());
@@ -61,7 +61,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Update | Configuration.Operations.Delete));
+            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.DiffOperations.Update | Configuration.DiffOperations.Delete));
 
             Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
             Assert.Empty(operations.OfType<InsertDiffOperation>());
@@ -90,7 +90,7 @@ namespace DeepDiff.UnitTest.Operations
                 .HasValues(x => new { x.Power, x.Price });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.Operations.Insert | Configuration.Operations.Update));
+            var operations = deepDiff.DiffSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(Configuration.DiffOperations.Insert | Configuration.DiffOperations.Update));
 
             Assert.NotEmpty(operations.OfType<UpdateDiffOperation>());
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>());

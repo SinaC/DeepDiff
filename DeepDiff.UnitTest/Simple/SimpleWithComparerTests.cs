@@ -39,7 +39,7 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.12346m // 5th decimal is different -> will be considered different
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -83,7 +83,7 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.123459m // 6th decimal is different but decimal5 is used -> will be considered same
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -121,7 +121,7 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.1234567m // 7th decimal is different -> will be considered same
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 

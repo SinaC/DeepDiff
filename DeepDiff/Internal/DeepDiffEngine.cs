@@ -1,4 +1,5 @@
-﻿using DeepDiff.Exceptions;
+﻿using DeepDiff.Configuration;
+using DeepDiff.Exceptions;
 using DeepDiff.Internal.Comparers;
 using DeepDiff.Internal.Configuration;
 using DeepDiff.Internal.Extensions;
@@ -7,7 +8,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal
 {
@@ -326,13 +326,13 @@ namespace DeepDiff.Internal
             if (entityConfiguration.UpdateConfiguration != null)
             {
                 var updateConfiguration = entityConfiguration.UpdateConfiguration;
-                var generateOperations = DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateSetValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateCopyValue);
+                var generateOperations = DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateSetValue) || DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateCopyValue);
                 // use CopyValues from UpdateConfiguration
-                var copyValuesProperties = OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity, DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateCopyValue));
+                var copyValuesProperties = OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity, DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateCopyValue));
                 // use SetValue from UpdateConfiguration
-                var setValueProperties = OnUpdateSetValue(updateConfiguration, existingEntity, DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateSetValue));
+                var setValueProperties = OnUpdateSetValue(updateConfiguration, existingEntity, DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateSetValue));
                 // copy values from ValuesConfiguration, only updated ones
-                var updatedProperties = OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult, DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.UpdateValue));
+                var updatedProperties = OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult, DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.UpdateValue));
                 //
                 if (generateOperations)
                 {
@@ -538,7 +538,7 @@ namespace DeepDiff.Internal
 
         private void GenerateInsertDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Insert))
+            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.Insert))
             {
                 var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new InsertDiffOperation
@@ -551,7 +551,7 @@ namespace DeepDiff.Internal
 
         private void GenerateDeleteDiffOperation(EntityConfiguration entityConfiguration, object entity, IList<DiffOperationBase> diffOperations)
         {
-            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(Config.Operations.Delete))
+            if (DiffEngineConfiguration.OperationsToGenerate.HasFlag(DiffOperations.Delete))
             {
                 var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, entity);
                 diffOperations.Add(new DeleteDiffOperation

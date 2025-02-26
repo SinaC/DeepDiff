@@ -2,12 +2,12 @@
 
 namespace DeepDiff.Internal.Configuration
 {
-    internal class DiffEngineConfiguration
+    internal sealed class DiffEngineConfiguration
     {
         public bool UseHashtable { get; private set; } = true;
         public int HashtableThreshold { get; private set; } = 15;
         public bool ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel { get; private set; } = false;
-        public Config.Operations OperationsToGenerate { get; private set; } = Config.Operations.All;
+        public Config.DiffOperations OperationsToGenerate { get; private set; } = Config.DiffOperations.None;
         public bool GenerateOperationsOnly { get; private set; } = false;
         public bool UsePrecompiledEqualityComparer { get; private set; } = true;
 
@@ -26,14 +26,7 @@ namespace DeepDiff.Internal.Configuration
             ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = forceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel;
         }
 
-        public void SetGenerateOperations(bool generateOperations)
-        {
-            OperationsToGenerate = generateOperations
-                ? Config.Operations.All
-                : Config.Operations.None;
-        }
-
-        public void SetGenerateOperations(Config.Operations operationsToGenerate)
+        public void SetGenerateOperations(Config.DiffOperations operationsToGenerate)
         {
             OperationsToGenerate = operationsToGenerate;
         }

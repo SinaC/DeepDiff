@@ -1,5 +1,4 @@
 ﻿using DeepDiff.Configuration;
-using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal.Configuration
 {
@@ -30,13 +29,7 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IMergeSingleConfiguration GenerateOperations(bool generate = true)
-        {
-            Configuration.SetGenerateOperations(generate);
-            return this;
-        }
-
-        public IMergeSingleConfiguration GenerateOperations(Config.Operations operationsToGenerate = Config.Operations.All)
+        public IMergeSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
         {
             Configuration.SetGenerateOperations(operationsToGenerate);
             return this;

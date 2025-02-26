@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace DeepDiff.Internal.Validators
 {
-    internal class CheckEveryPropertiesAreReferencedValidator
+    internal sealed class CheckEveryPropertiesAreReferencedValidator
     {
         public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration)
         {

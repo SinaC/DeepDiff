@@ -1,5 +1,4 @@
 ﻿using DeepDiff.Configuration;
-using Config = DeepDiff.Configuration;
 
 namespace DeepDiff.Internal.Configuration
 {
@@ -11,7 +10,7 @@ namespace DeepDiff.Internal.Configuration
         {
             Configuration = new DiffEngineConfiguration();
             Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(false);
-            Configuration.SetGenerateOperations(true);
+            Configuration.SetGenerateOperations(DiffOperations.All);
             Configuration.SetGenerateOperationsOnly(true);
         }
 
@@ -33,9 +32,9 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IDiffSingleConfiguration GenerateOperations(Config.Operations operationsToGenerate = Config.Operations.All)
+        public IDiffSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.All)
         {
-            if (operationsToGenerate != Config.Operations.None)
+            if (operationsToGenerate != DiffOperations.None)
                 Configuration.SetGenerateOperations(operationsToGenerate);
             return this;
         }
