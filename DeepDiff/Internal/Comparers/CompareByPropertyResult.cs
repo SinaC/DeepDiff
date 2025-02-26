@@ -12,7 +12,7 @@ namespace DeepDiff.Internal.Comparers
 
         public CompareByPropertyResult(IReadOnlyCollection<CompareByPropertyResultDetail> details)
         {
-            IsEqual = details?.Any() == false;
+            IsEqual = details?.Count == 0;
             Details = details;
         }
 

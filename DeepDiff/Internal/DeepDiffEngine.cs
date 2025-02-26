@@ -79,7 +79,7 @@ namespace DeepDiff.Internal
             return null;
         }
 
-        public IList<object> InternalMergeMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
+        public List<object> InternalMergeMany(EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInDiffManyException(entityConfiguration.EntityType);
@@ -177,7 +177,7 @@ namespace DeepDiff.Internal
             return results;
         }
 
-        private IList<object> InternalMergeManyWithDerivedTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
+        private List<object> InternalMergeManyWithDerivedTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IList<DiffOperationBase> diffOperations)
         {
             // perform multiple merge, one by unique type found in existing and new entities collection
             var existingEntitiesByTypes = existingEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
@@ -349,7 +349,7 @@ namespace DeepDiff.Internal
             }
         }
 
-        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult, bool generateOperations)
+        private List<UpdateDiffOperationPropertyInfo> OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult, bool generateOperations)
         {
             var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
@@ -373,7 +373,7 @@ namespace DeepDiff.Internal
             return updateDiffOperationPropertyInfos;
         }
 
-        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateSetValue(UpdateConfiguration updateConfiguration, object existingEntity, bool generateOperations)
+        private List<UpdateDiffOperationPropertyInfo> OnUpdateSetValue(UpdateConfiguration updateConfiguration, object existingEntity, bool generateOperations)
         {
             var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
             if (updateConfiguration.SetValueConfigurations != null && updateConfiguration.SetValueConfigurations.Count > 0)
@@ -399,7 +399,7 @@ namespace DeepDiff.Internal
             return updateDiffOperationPropertyInfos;
         }
 
-        private IReadOnlyCollection<UpdateDiffOperationPropertyInfo> OnUpdateCopyValues(UpdateConfiguration updateConfiguration, object existingEntity, object newEntity, bool generateOperations)
+        private List<UpdateDiffOperationPropertyInfo> OnUpdateCopyValues(UpdateConfiguration updateConfiguration, object existingEntity, object newEntity, bool generateOperations)
         {
             var updateDiffOperationPropertyInfos = new List<UpdateDiffOperationPropertyInfo>();
             if (updateConfiguration.CopyValuesConfiguration != null)
@@ -522,7 +522,7 @@ namespace DeepDiff.Internal
             operation(childEntityConfiguration, navigationOneConfiguration, child, entity);
         }
 
-        private bool CheckIfOnUpdateHasToBeForced(EntityConfiguration entityConfiguration, object entity)
+        private static bool CheckIfOnUpdateHasToBeForced(EntityConfiguration entityConfiguration, object entity)
         {
             if (entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations != null)
             {
@@ -562,7 +562,7 @@ namespace DeepDiff.Internal
             }
         }
 
-        private IReadOnlyDictionary<string, string> GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        private static Dictionary<string, string> GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
         {
             if (entityConfiguration.NoKey)
                 return null;
@@ -576,7 +576,7 @@ namespace DeepDiff.Internal
             return result;
         }
 
-        private string GenerateKeysForException(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        private static string GenerateKeysForException(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
         {
             if (entityConfiguration.NoKey)
                 return string.Empty;

@@ -5,7 +5,7 @@ namespace DeepDiff.Internal.Configuration
 {
     internal sealed class NavigationManyConfiguration : NavigationConfigurationBase
     {
-        public bool UseDerivedTypes { get; private set; } = false;
+        public bool UseDerivedTypes { get; private set; }
 
         public NavigationManyConfiguration(PropertyInfo navigationProperty, Type navigationChildType)
             : base(navigationProperty, navigationChildType)
