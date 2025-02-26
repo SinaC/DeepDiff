@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace DeepDiff.Internal.Comparers
 {
-    internal class CompareByPropertyResult
+    internal sealed class CompareByPropertyResult
     {
         public CompareByPropertyResult(bool isEqual)
         {

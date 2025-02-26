@@ -2,7 +2,7 @@
 
 namespace DeepDiff.Internal.Comparers
 {
-    internal class CompareByPropertyResultDetail
+    internal sealed class CompareByPropertyResultDetail
     {
         public PropertyInfo PropertyInfo { get; init; }
         public object OldValue { get; init; }

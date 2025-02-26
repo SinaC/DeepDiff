@@ -3,7 +3,7 @@
 namespace DeepDiff.Configuration
 {
     [Flags]
-    public enum Operations
+    public enum DiffOperations
     {
         None = 0x00,
 

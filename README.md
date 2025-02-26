@@ -263,26 +263,16 @@ IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLe
 
 ### GenerateOperations
 
-#### GenerateOperations(bool generate=true)
-
-When set to true, engine will generate a collection of operations detected when performing diff (true by default)
-
-```csharp
-IMergeSingleConfiguration GenerateOperations(bool generate = true)
-```
-
-#### GenerateOperations(Operations flags)
-
-Operations values (flags)
+DiffOperations values (flags)
 	None
 	Insert
 	Delete
 	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
 	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (None by default)
 
 ```csharp
-IMergeSingleConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All)
+IMergeSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -321,26 +311,16 @@ IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLeve
 
 ### GenerateOperations
 
-#### GenerateOperations(bool generate=true)
-
-When set to true, engine will generate a collection of operations detected when performing diff (true by default)
-
-```csharp
-IMergeManyConfiguration GenerateOperations(bool generate = true)
-```
-
-#### GenerateOperations(Operations flags)
-
-Operations values (flags)
+DiffOperations values (flags)
 	None
 	Insert
 	Delete
 	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
 	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (None by default)
 
 ```csharp
-IMergeManyConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All)
+IMergeManyConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -375,18 +355,18 @@ When set to true, engine will use optimized equality comparers to compare keys a
 IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
 ```
 
-### GenerateOperations(Operations flags)
+### GenerateOperations
 
-Operations values (flags)
+DiffOperations values (flags)
 	None
 	Insert
 	Delete
 	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
 	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (All by default)
 
 ```csharp
-IDiffSingleConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All);
+IDiffSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.All);
 ```
 
 ## DiffMany configuration
@@ -413,18 +393,18 @@ When set to true, engine will use optimized equality comparers to compare keys a
 IDiffManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
 ```
 
-### GenerateOperations(Operations flags)
+### GenerateOperations
 
-Operations values (flags)
+DiffOperations values (flags)
 	None
 	Insert
 	Delete
 	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
 	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected Operations values detected when performing diff (All by default)
+Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (All by default)
 
 ```csharp
-IDiffManyConfiguration GenerateOperations(Operations operationsToGenerate = Operations.All);
+IDiffManyConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.All);
 ```
 
 # Deep Diff Configuration

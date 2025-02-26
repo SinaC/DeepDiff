@@ -14,11 +14,11 @@ namespace DeepDiff.Internal
 {
     internal sealed class DeepDiff : IDeepDiff
     {
-        private DeepDiffConfiguration Configuration { get; }
+        private DeepDiffConfiguration DeepDiffConfiguration { get; }
 
-        internal DeepDiff(DeepDiffConfiguration configuration)
+        internal DeepDiff(DeepDiffConfiguration deepDiffConfiguration)
         {
-            Configuration = configuration;
+            DeepDiffConfiguration = deepDiffConfiguration;
         }
 
         public MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
@@ -28,13 +28,13 @@ namespace DeepDiff.Internal
         public MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var mergeSingleConfiguration = new MergeSingleConfiguration();
             mergeSingleConfigurationAction?.Invoke(mergeSingleConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, mergeSingleConfiguration.Configuration);
+            var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, mergeSingleConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             var diffEntity = engine.InternalMergeSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
             return new MergeSingleResult<TEntity> 
@@ -53,13 +53,13 @@ namespace DeepDiff.Internal
         public MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var mergeManyConfiguration = new MergeManyConfiguration();
             mergeManyConfigurationAction?.Invoke(mergeManyConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, mergeManyConfiguration.Configuration);
+            var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, mergeManyConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             var diffEntities = engine.InternalMergeMany(entityConfiguration, existingEntities, newEntities, diffOperations);
             return new MergeManyResult<TEntity>
@@ -78,13 +78,13 @@ namespace DeepDiff.Internal
         public IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var diffSingleConfiguration = new DiffSingleConfiguration();
             diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration);
+            var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             engine.InternalMergeSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
             return diffOperations;
@@ -97,13 +97,13 @@ namespace DeepDiff.Internal
         public IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction)
             where TEntity : class
         {
-            if (!Configuration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
                 throw new MissingConfigurationException(typeof(TEntity));
 
             var diffManyConfiguration = new DiffManyConfiguration();
             diffManyConfigurationAction?.Invoke(diffManyConfiguration);
 
-            var engine = new DeepDiffEngine(Configuration.EntityConfigurationByTypes, diffManyConfiguration.Configuration);
+            var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, diffManyConfiguration.Configuration);
             var diffOperations = new List<DiffOperationBase>();
             engine.InternalMergeMany(entityConfiguration, existingEntities, newEntities, diffOperations);
             return diffOperations;

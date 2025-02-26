@@ -51,7 +51,7 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -89,7 +89,7 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -146,7 +146,7 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -182,7 +182,7 @@ namespace DeepDiff.UnitTest.Inheritance
             var newEntity = (Entity)null!;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -229,7 +229,7 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
@@ -272,7 +272,7 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(true));
+            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
             var result = diff.Entity;
             var operations = diff.Operations;
 
