@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
     {
         public Type EntityType { get; }
 
-        public bool NoKey { get; private set; } = false;
+        public bool NoKey { get; private set; }
         public KeyConfiguration KeyConfiguration { get; private set; } = null!;
         public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
         public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();

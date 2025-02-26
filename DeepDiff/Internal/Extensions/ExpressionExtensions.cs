@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -16,12 +17,7 @@ namespace DeepDiff.Internal.Extensions
                     .Single()
                     .MatchSimplePropertyAccess(propertyAccessExpression.Body);
 
-            if (propertyPath == null)
-            {
-                throw new InvalidOperationException(string.Format("The expression '{0}' is not a valid property expression. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'.", propertyAccessExpression));
-            }
-
-            return propertyPath;
+            return propertyPath ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The expression '{0}' is not a valid property expression. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'.", propertyAccessExpression));
         }
 
         public static IEnumerable<PropertyPath> GetSimplePropertyAccessList(this LambdaExpression propertyAccessExpression)
@@ -29,21 +25,13 @@ namespace DeepDiff.Internal.Extensions
             var propertyPaths
                 = propertyAccessExpression.MatchPropertyAccessList((p, e) => e.MatchSimplePropertyAccess(p));
 
-            if (propertyPaths == null)
-            {
-                throw new InvalidOperationException(string.Format("The properties expression '{0}' is not valid. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'. When specifying multiple properties use an anonymous type: C#: 't => new {{ t.MyProperty1, t.MyProperty2 }}'  VB.Net: 'Function(t) New With {{ t.MyProperty1, t.MyProperty2 }}'.", propertyAccessExpression));
-            }
-
-            return propertyPaths;
+            return propertyPaths ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The properties expression '{0}' is not valid. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'. When specifying multiple properties use an anonymous type: C#: 't => new {{ t.MyProperty1, t.MyProperty2 }}'  VB.Net: 'Function(t) New With {{ t.MyProperty1, t.MyProperty2 }}'.", propertyAccessExpression));
         }
 
         private static IEnumerable<PropertyPath> MatchPropertyAccessList(
            this LambdaExpression lambdaExpression, Func<Expression, Expression, PropertyPath> propertyMatcher)
         {
-            var newExpression
-                = lambdaExpression.Body.RemoveConvert() as NewExpression;
-
-            if (newExpression != null)
+            if (lambdaExpression.Body.RemoveConvert() is NewExpression newExpression)
             {
                 var parameterExpression
                     = lambdaExpression.Parameters.Single();
@@ -54,7 +42,7 @@ namespace DeepDiff.Internal.Extensions
                                    .Where(p => p != null);
 
                 if (propertyPaths.Count()
-                    == newExpression.Arguments.Count())
+                    == newExpression.Arguments.Count)
                 {
                     return newExpression.HasDefaultMembersOnly(propertyPaths) ? propertyPaths : null;
                 }

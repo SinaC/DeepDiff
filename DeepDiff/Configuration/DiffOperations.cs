@@ -11,7 +11,7 @@ namespace DeepDiff.Configuration
         Delete = 0x02,
 
         UpdateValue = 0x10, // value defined in HasValues updated
-        UpdateSetValue = 0x10, // value defined in SetValue updated
+        UpdateSetValue = 0x20, // value defined in SetValue updated
         UpdateCopyValue = 0x40, // value defined in CopyValues updated
 
         Update = UpdateValue | UpdateSetValue | UpdateCopyValue,

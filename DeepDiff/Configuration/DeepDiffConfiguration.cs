@@ -70,8 +70,6 @@ namespace DeepDiff.Configuration
 
         public void ValidateConfiguration()
         {
-            var exceptions = new List<Exception>();
-
             var validators = new ValidatorBase[]
             {
                 new NoKeyValidator(),
@@ -85,6 +83,7 @@ namespace DeepDiff.Configuration
                 new ComparerValidator(),
             };
 
+            var exceptions = new List<Exception>();
             foreach (var (type, entityConfiguration) in EntityConfigurationByTypes)
             {
                 foreach (var validator in validators)
@@ -106,7 +105,7 @@ namespace DeepDiff.Configuration
             var exceptions = new List<Exception>();
             foreach (var (type, entityConfiguration) in EntityConfigurationByTypes)
             {
-                var validationExceptions = validator.Validate(type, entityConfiguration);
+                var validationExceptions = validator.Validate(type, entityConfiguration, EntityConfigurationByTypes);
                 exceptions.AddRange(validationExceptions);
             }
             if (exceptions.Count == 1)

@@ -9,20 +9,20 @@ using System.Reflection;
 
 namespace DeepDiff.Internal.Validators
 {
-    internal sealed class CheckEveryPropertiesAreReferencedValidator
+    internal sealed class CheckEveryPropertiesAreReferencedValidator : ValidatorBase
     {
-        public IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration)
+        public override IEnumerable<Exception> Validate(Type entityType, EntityConfiguration entityConfiguration, IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes)
         {
             var propertiesToCheck = new List<PropertyInfo>();
-            foreach (var property in type.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true))
+            foreach (var property in entityType.GetProperties().Where(x => x.GetSetMethod(false)?.IsPublic == true))
             {
                 if (entityConfiguration.IgnoreConfiguration == null || entityConfiguration.IgnoreConfiguration.IgnoredProperties.All(y => !property.IsSameAs(y)))
                     propertiesToCheck.Add(property);
             }
-            return Validate(type, entityConfiguration, propertiesToCheck);
+            return Validate(entityType, entityConfiguration, propertiesToCheck);
         }
 
-        private IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration, IEnumerable<PropertyInfo> propertiesToCheck)
+        private static IEnumerable<Exception> Validate(Type type, EntityConfiguration entityConfiguration, IEnumerable<PropertyInfo> propertiesToCheck)
         {
             foreach (var property in propertiesToCheck)
             {
@@ -35,7 +35,7 @@ namespace DeepDiff.Internal.Validators
             }
         }
 
-        private bool CheckIfPropertyFound(PropertyInfo property, EntityConfiguration entityConfiguration)
+        private static bool CheckIfPropertyFound(PropertyInfo property, EntityConfiguration entityConfiguration)
             => entityConfiguration.KeyConfiguration?.KeyProperties?.Any(x => x.IsSameAs(property)) == true
                     || entityConfiguration.ValuesConfiguration?.ValuesProperties?.Any(x => x.IsSameAs(property)) == true
                     || entityConfiguration.NavigationManyConfigurations?.Select(x => x.NavigationProperty)?.Any(x => x.IsSameAs(property)) == true
