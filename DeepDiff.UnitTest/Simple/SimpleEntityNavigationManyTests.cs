@@ -66,8 +66,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -134,8 +133,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -201,8 +199,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -268,8 +265,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);

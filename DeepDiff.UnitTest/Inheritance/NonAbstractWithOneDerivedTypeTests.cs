@@ -41,9 +41,9 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.Null(result);
             Assert.Empty(operations);
@@ -69,9 +69,9 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Equal(2, operations.Count);
@@ -105,9 +105,9 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Single(operations);
@@ -141,9 +141,9 @@ namespace DeepDiff.UnitTest.Inheritance
             var newEntity = (Entity)null!;
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Equal(3, operations.Count);
@@ -188,9 +188,9 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Single(operations);
@@ -231,9 +231,9 @@ namespace DeepDiff.UnitTest.Inheritance
             };
 
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Single(operations);

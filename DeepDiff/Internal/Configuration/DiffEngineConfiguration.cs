@@ -1,4 +1,4 @@
-﻿using Config = DeepDiff.Configuration;
+﻿using DeepDiff.Configuration;
 
 namespace DeepDiff.Internal.Configuration
 {
@@ -7,8 +7,7 @@ namespace DeepDiff.Internal.Configuration
         public bool UseHashtable { get; private set; } = true;
         public int HashtableThreshold { get; private set; } = 15;
         public bool ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel { get; private set; }
-        public Config.DiffOperations OperationsToGenerate { get; private set; } = Config.DiffOperations.None;
-        public bool GenerateOperationsOnly { get; private set; }
+        public bool CompareOnly { get; private set; }
         public bool UsePrecompiledEqualityComparer { get; private set; } = true;
 
         public void SetUseHashtable(bool useHashtable)
@@ -26,14 +25,9 @@ namespace DeepDiff.Internal.Configuration
             ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = forceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel;
         }
 
-        public void SetGenerateOperations(Config.DiffOperations operationsToGenerate)
+        public void SetCompareOnly(bool compareOnly)
         {
-            OperationsToGenerate = operationsToGenerate;
-        }
-
-        public void SetGenerateOperationsOnly(bool generateOperationsOnly)
-        {
-            GenerateOperationsOnly = generateOperationsOnly;
+            CompareOnly = compareOnly;
         }
 
         public void SetUsePrecompiledEqualityComparer(bool usePrecompiledEqualityComparer)

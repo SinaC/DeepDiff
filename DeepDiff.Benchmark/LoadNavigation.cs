@@ -166,25 +166,25 @@ public class LoadNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false)).Entities.ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false)).ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHastablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false)).Entities.ToList();
+        var results = NoHastablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false)).ToList();
     }
 
     [Benchmark]
     public void HastableNaiveComparerDiff()
     {
-        var results = HastableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).Entities.ToList();
+        var results = HastableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToList();
     }
 
     [Benchmark]
     public void HashtablePrecompileComparerDiff()
     {
-        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities).Entities.ToList();
+        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
     }
 
     private void GenerateIdentical()

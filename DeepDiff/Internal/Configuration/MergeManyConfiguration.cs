@@ -29,12 +29,6 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IMergeManyConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
-        {
-            Configuration.SetGenerateOperations(operationsToGenerate);
-            return this;
-        }
-
         public IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
         {
             Configuration.SetUsePrecompiledEqualityComparer(use);

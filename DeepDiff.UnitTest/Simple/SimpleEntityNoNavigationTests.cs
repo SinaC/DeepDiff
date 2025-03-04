@@ -47,8 +47,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Empty(results);
     }
@@ -91,8 +90,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Empty(results);
     }
@@ -136,8 +134,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Delete, results.Single().PersistChange);
@@ -183,8 +180,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Delete, results.Single().PersistChange);
@@ -230,8 +226,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
@@ -277,8 +272,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
@@ -325,8 +319,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Equal(2, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));
@@ -375,8 +368,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         Assert.Equal(2, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));

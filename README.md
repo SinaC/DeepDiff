@@ -210,29 +210,33 @@ IEntityConfiguration<TEntity> NoKey()
 ## MergeSingle
 
 ```csharp
-MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
-MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener)
+TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
 ```
 
 ## MergeMany
 
 ```csharp
-MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
-MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)
+IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
 ```
 
-## DiffSingle
+## CompareSingle
 
 ```csharp
-IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity);
-IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction);
+void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener);
+void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration> compareSingleConfigurationAction);
 ```
 
-## DiffMany
+## CompareMany
 
 ```csharp
-IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities);
-IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction);
+void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener);
+void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration> compareManyConfigurationAction);
 ```
 
 ## MergeSingle configuration
@@ -259,20 +263,6 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 
 ```csharp
 IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
-```
-
-### GenerateOperations
-
-DiffOperations values (flags)
-	None
-	Insert
-	Delete
-	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
-	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (None by default)
-
-```csharp
-IMergeSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
 ```
 
 ### UsePrecompiledEqualityComparer
@@ -309,20 +299,6 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
-### GenerateOperations
-
-DiffOperations values (flags)
-	None
-	Insert
-	Delete
-	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
-	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (None by default)
-
-```csharp
-IMergeManyConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.None)
-```
-
 ### UsePrecompiledEqualityComparer
 
 When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
@@ -331,80 +307,56 @@ When set to true, engine will use optimized equality comparers to compare keys a
 IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
 ```
 
-## DiffSingle configuration
+## CompareSingle configuration
 
 ### UseHashtable
 
 When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
 
 ```csharp
-IDiffSingleConfiguration UseHashtable(bool use = true);
+ICompareSingleConfiguration UseHashtable(bool use = true);
 ```
 
 ### HashtableThreshold
 
 Defines minimum number of entries in collection to use hashtable (15 by default)
+
 ```csharp
-IDiffSingleConfiguration HashtableThreshold(int threshold = 15);
+ICompareSingleConfiguration HashtableThreshold(int threshold = 15);
 ```
 
 ### UsePrecompiledEqualityComparer
 
 When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
-```csharp
-IDiffSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
-```
-
-### GenerateOperations
-
-DiffOperations values (flags)
-	None
-	Insert
-	Delete
-	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
-	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (All by default)
 
 ```csharp
-IDiffSingleConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.All);
+ICompareSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
 ```
 
-## DiffMany configuration
+## CompareMany configuration
 
 ### UseHashtable
 
 When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
 
 ```csharp
-IDiffManyConfiguration UseHashtable(bool use = true);
+ICompareManyConfiguration UseHashtable(bool use = true);
 ```
 
 ### HashtableThreshold
 
 Defines minimum number of entries in collection to use hashtable (15 by default)
+
 ```csharp
-IDiffManyConfiguration HashtableThreshold(int threshold = 15);
+ICompareManyConfiguration HashtableThreshold(int threshold = 15);
 ```
 
 ### UsePrecompiledEqualityComparer
 
 When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
-```csharp
-IDiffManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
-```
-
-### GenerateOperations
-
-DiffOperations values (flags)
-	None
-	Insert
-	Delete
-	Update = UpdateValue | UpdateSetValue | UpdateCopyValue
-	All = Insert | Delete | Update
-Engine will generate a collection of operations for selected DiffOperations values detected when performing diff (All by default)
 
 ```csharp
-IDiffManyConfiguration GenerateOperations(DiffOperations operationsToGenerate = DiffOperations.All);
+ICompareManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
 ```
 
 # Deep Diff Configuration
@@ -457,47 +409,3 @@ Check if every properties found in configured entities are used in configuration
 ```csharp
 void ValidateIfEveryPropertiesAreReferenced()
 ```
-
-# Diff operations
-
-## InsertDiffOperation
-
-### Keys
-
-Keys of entity on which insert has been performed
-
-### EntityName
-
-Name of entity on which insert has been performed
-
-## UpdateDiffOperation
-
-### Keys
-
-Keys of entity on which update has been performed
-
-### EntityName
-
-Name of entity on which update has been performed
-
-### UpdatedProperties
-
-Collection of properties from Values configuration on which update has been performed
-
-### SetValueProperties
-
-Collection of properties on which SetValue has been performed
-
-### CopyValuesProperties
-
-Collection of properties on which CopyValues has been performed
-
-## DeleteDiffOperation
-
-### Keys
-
-Keys of entity on which delete has been performed
-
-### EntityName
-
-Name of entity on which delete has been performed

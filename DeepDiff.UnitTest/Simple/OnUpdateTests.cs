@@ -69,8 +69,7 @@ namespace DeepDiff.UnitTest.Simple
                     .CopyValues(x => x.AdditionalValueToCopy));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
-            var result = diff.Entity;
+            var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -140,8 +139,7 @@ namespace DeepDiff.UnitTest.Simple
                     .CopyValues(x => x.AdditionalValueToCopy));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
-            var result = diff.Entity;
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -212,8 +210,7 @@ namespace DeepDiff.UnitTest.Simple
                     .CopyValues(x => x.AdditionalValueToCopy));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
-            var result = diff.Entity;
+            var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
             Assert.NotNull(result);
             Assert.Equal(PersistChange.Update, result.PersistChange);

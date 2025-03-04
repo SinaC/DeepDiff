@@ -1,5 +1,4 @@
 using DeepDiff.Configuration;
-using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.CapacityAvailability;
 using System;
@@ -51,17 +50,16 @@ public class CapacityAvailabilityTests
         AssignFK(newCapacityAvailabilities, false);
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, cfg => cfg.GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
-        var operations = diff.Operations;
+        var listener = new StoreAllOperationListener();
+        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
         Assert.Equal(newCmuId, results.Single().CapacityMarketUnitId);
-        Assert.Equal(97, operations.Count); // 1 at root level and 96 at detail level
-        Assert.Equal(97, operations.OfType<InsertDiffOperation>().Count());
-        Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
-        Assert.Equal(96, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+        Assert.Equal(97, listener.Operations.Count); // 1 at root level and 96 at detail level
+        Assert.Equal(97, listener.Operations.OfType<InsertDiffOperation>().Count());
+        Assert.Single(listener.Operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+        Assert.Equal(96, listener.Operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
     }
 
     [Fact]
@@ -104,17 +102,16 @@ public class CapacityAvailabilityTests
         AssignFK(newCapacityAvailabilities, false);
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, cfg => cfg.UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
-        var operations = diff.Operations;
+        var listener = new StoreAllOperationListener();
+        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
         Assert.Equal(newCmuId, results.Single().CapacityMarketUnitId);
-        Assert.Equal(97, operations.Count); // 1 at root level and 96 at detail level
-        Assert.Equal(97, operations.OfType<InsertDiffOperation>().Count());
-        Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
-        Assert.Equal(96, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+        Assert.Equal(97, listener.Operations.Count); // 1 at root level and 96 at detail level
+        Assert.Equal(97, listener.Operations.OfType<InsertDiffOperation>().Count());
+        Assert.Single(listener.Operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+        Assert.Equal(96, listener.Operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
     }
 
     private static IEnumerable<CapacityAvailabilityDetail> GenerateDetails(DateTime day, int dayShift)

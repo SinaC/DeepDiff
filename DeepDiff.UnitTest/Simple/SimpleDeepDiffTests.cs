@@ -75,8 +75,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // deleted: 0
         // updated: 1, 2, 4, 5, 7, 8
@@ -168,8 +167,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.None));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
 
         // deleted: 0
         // updated: 1, 2, 4, 5, 7, 8

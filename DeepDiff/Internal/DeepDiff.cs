@@ -1,7 +1,6 @@
 using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
 using DeepDiff.Internal.Configuration;
-using DeepDiff.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,92 +20,95 @@ namespace DeepDiff.Internal
             DeepDiffConfiguration = deepDiffConfiguration;
         }
 
-        public MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+        public TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
             where TEntity : class
-            => MergeSingle(existingEntity, newEntity, null);
+            => MergeSingle(existingEntity, newEntity, null, null);
 
-        public MergeSingleResult<TEntity> MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+        public TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener)
+            where TEntity : class
+            => MergeSingle(existingEntity, newEntity, operationListener, null);
+
+        public TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+            where TEntity : class
+            => MergeSingle(existingEntity, newEntity, null, mergeSingleConfigurationAction);
+
+        public TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
             where TEntity : class
         {
-            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
-                throw new MissingConfigurationException(typeof(TEntity));
+            var entityType = typeof(TEntity);
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
+                throw new MissingConfigurationException(entityType);
 
             var mergeSingleConfiguration = new MergeSingleConfiguration();
             mergeSingleConfigurationAction?.Invoke(mergeSingleConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, mergeSingleConfiguration.Configuration);
-            var diffOperations = new List<DiffOperationBase>();
-            var diffEntity = engine.InternalMergeSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
-            return new MergeSingleResult<TEntity> 
-            {
-                Entity = mergeSingleConfiguration.Configuration.GenerateOperationsOnly 
-                    ? default 
-                    : (TEntity)diffEntity,
-                Operations = diffOperations
-            };
+            var diffEntity = engine.MergeSingle(entityConfiguration, existingEntity, newEntity, operationListener);
+            return (TEntity)diffEntity;
         }
 
-        public MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+        public IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
             where TEntity : class
-            => MergeMany(existingEntities, newEntities, null);
+            => MergeMany(existingEntities, newEntities, null, null);
 
-        public MergeManyResult<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+        public IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)
+            where TEntity : class
+            => MergeMany(existingEntities, newEntities, operationListener, null);
+
+
+        public IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+            where TEntity : class
+            => MergeMany(existingEntities, newEntities, null, mergeManyConfigurationAction);
+
+        public IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
             where TEntity : class
         {
-            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
-                throw new MissingConfigurationException(typeof(TEntity));
+            var entityType = typeof(TEntity);
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
+                throw new MissingConfigurationException(entityType);
 
             var mergeManyConfiguration = new MergeManyConfiguration();
             mergeManyConfigurationAction?.Invoke(mergeManyConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, mergeManyConfiguration.Configuration);
-            var diffOperations = new List<DiffOperationBase>();
-            var diffEntities = engine.InternalMergeMany(entityConfiguration, existingEntities, newEntities, diffOperations);
-            return new MergeManyResult<TEntity>
-            {
-                Entities = mergeManyConfiguration.Configuration.GenerateOperationsOnly
-                    ? default
-                    : diffEntities.Cast<TEntity>(),
-                Operations = diffOperations
-            };
+            var diffEntities = engine.MergeManyByType(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
+            return diffEntities.Cast<TEntity>();
         }
 
-        public IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+        public void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener)
            where TEntity : class
-            => DiffSingle(existingEntity, newEntity, null);
+            => CompareSingle(existingEntity, newEntity, operationListener, null);
 
-        public IReadOnlyCollection<DiffOperationBase> DiffSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IDiffSingleConfiguration> diffSingleConfigurationAction)
+        public void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration> diffSingleConfigurationAction)
             where TEntity : class
         {
-            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
-                throw new MissingConfigurationException(typeof(TEntity));
+            var entityType = typeof(TEntity);
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
+                throw new MissingConfigurationException(entityType);
 
-            var diffSingleConfiguration = new DiffSingleConfiguration();
+            var diffSingleConfiguration = new CompareSingleConfiguration();
             diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration);
-            var diffOperations = new List<DiffOperationBase>();
-            engine.InternalMergeSingle(entityConfiguration, existingEntity, newEntity, diffOperations);
-            return diffOperations;
+            engine.MergeSingle(entityConfiguration, existingEntity, newEntity, operationListener);
         }
 
-        public IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities)
+        public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)
             where TEntity : class
-            => DiffMany(existingEntities, newEntities, null);
+            => CompareMany(existingEntities, newEntities, operationListener, null);
 
-        public IReadOnlyCollection<DiffOperationBase> DiffMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IDiffManyConfiguration> diffManyConfigurationAction)
+        public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration> diffManyConfigurationAction)
             where TEntity : class
         {
-            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(typeof(TEntity), out var entityConfiguration))
-                throw new MissingConfigurationException(typeof(TEntity));
+            var entityType = typeof(TEntity);
+            if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
+                throw new MissingConfigurationException(entityType);
 
-            var diffManyConfiguration = new DiffManyConfiguration();
+            var diffManyConfiguration = new CompareManyConfiguration();
             diffManyConfigurationAction?.Invoke(diffManyConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, diffManyConfiguration.Configuration);
-            var diffOperations = new List<DiffOperationBase>();
-            engine.InternalMergeMany(entityConfiguration, existingEntities, newEntities, diffOperations);
-            return diffOperations;
+            engine.MergeManyByType(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
         }
     }
 }

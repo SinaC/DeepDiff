@@ -1,5 +1,4 @@
 using DeepDiff.Configuration;
-using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.CapacityAvailability;
 using System;
@@ -22,10 +21,13 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var results = diff.Entities.ToArray();
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, listener);
+            var operations = listener.Operations;
 
+            // missing volume is different on every qh
+            // obligated volume is different on every qh
+            // available volume is different on 95 qh
             Assert.Single(results.Where(x => x.PersistChange == PersistChange.Insert));
             Assert.Empty(results.Where(x => x.PersistChange == PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == PersistChange.Insert).CapacityMarketUnitId);
@@ -34,24 +36,34 @@ namespace DeepDiff.UnitTest.Profile
             Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
             Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
             Assert.Empty(operations.OfType<DeleteDiffOperation>());
-            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count()); // no update on CapacityAvailability
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.MissingVolume)) == 1));
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.ObligatedVolume)) == 1));
+            Assert.Equal(QhCount-1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.AvailableVolume)) == 1));
             Assert.Empty(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
-            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+            Assert.Equal(3 * QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
         }
 
         [Fact]
         public void AddProfile_ForceOnUpdate()
         {
-            var entities = GenerateCapacityAvailabilities();
+            var (existingEntities, newEntities) = GenerateCapacityAvailabilities();
 
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).GenerateOperations(DiffOperations.All));
-            var results = diff.Entities.ToArray();
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener(); 
+            var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+            var operations = listener.Operations;
 
+            var toto1 = operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties, (e, p) => new { e.EntityName, p.PropertyName }).GroupBy(x => x.PropertyName);
+
+            // capacity availability
+            //  updated forced from nested level
+            // capacity availability detail
+            //  missing volume is different on every qh
+            //  obligated volume is different on every qh
+            //  available volume is different on 95 qh
             Assert.Single(results.Where(x => x.PersistChange == PersistChange.Insert));
             Assert.Single(results.Where(x => x.PersistChange == PersistChange.Update));
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == PersistChange.Insert).CapacityMarketUnitId);
@@ -60,9 +72,11 @@ namespace DeepDiff.UnitTest.Profile
             Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
             Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
             Assert.Empty(operations.OfType<DeleteDiffOperation>());
-            Assert.Equal(1+QhCount, operations.OfType<UpdateDiffOperation>().Count());
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
-            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
+            Assert.Empty(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability))); // no operation on CapacityAvailability, update has been triggered from nested level
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.MissingVolume)) == 1));
+            Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.ObligatedVolume)) == 1));
+            Assert.Equal(QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.AvailableVolume)) == 1));
+            Assert.Equal(3 * QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail))); // missing volume and obligated volume 96 times, available volume 95 times
         }
 
         [Fact]
@@ -105,14 +119,16 @@ namespace DeepDiff.UnitTest.Profile
             //
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfileNoCustomComparer>();
+            var listener = new StoreAllOperationListener();
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existing, calculated, cfg => cfg.GenerateOperations(DiffOperations.All));
+            var result = deepDiff.MergeSingle(existing, calculated, listener);
+            var operations = listener.Operations;
 
             //
-            Assert.NotNull(diff.Entity);
-            Assert.NotEmpty(diff.Operations);
-            Assert.Single(diff.Entity.CapacityAvailabilityDetails);
-            Assert.Equal(12.123456999m, diff.Entity.CapacityAvailabilityDetails.Single().AvailableVolume);
+            Assert.NotNull(result);
+            Assert.NotEmpty(operations);
+            Assert.Single(result.CapacityAvailabilityDetails);
+            Assert.Equal(12.123456999m, result.CapacityAvailabilityDetails.Single().AvailableVolume);
         }
 
         [Fact]
@@ -156,11 +172,13 @@ namespace DeepDiff.UnitTest.Profile
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existing, calculated);
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existing, calculated, listener);
+            var operations = listener.Operations;
 
             //
-            Assert.Null(diff.Entity);
-            Assert.Empty(diff.Operations);
+            Assert.Null(result);
+            Assert.Empty(operations);
         }
 
         // will generate 5 existing and 6 new (4 first are identical to existing, 5th top level is identical but details are different)

@@ -24,10 +24,10 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeMany(existingEntities, newEntities);
+            var entities = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
-            Assert.Empty(diff.Entities);
+            Assert.Empty(entities);
         }
 
         [Fact]
@@ -42,15 +42,15 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeMany(existingEntities, newEntities);
+            var entities = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
-            Assert.Single(diff.Entities);
-            Assert.Equal(2, diff.Entities.Single().Index);
-            Assert.Equal(PersistChange.None, diff.Entities.Single().PersistChange);
-            Assert.Empty(diff.Entities.Single().SubEntity.SubEntities);
-            Assert.Equal(PersistChange.Update, diff.Entities.Single().SubEntity.PersistChange);
-            Assert.Equal(-500m, diff.Entities.Single().SubEntity.Power);
+            Assert.Single(entities);
+            Assert.Equal(2, entities.Single().Index);
+            Assert.Equal(PersistChange.None, entities.Single().PersistChange);
+            Assert.Empty(entities.Single().SubEntity.SubEntities);
+            Assert.Equal(PersistChange.Update, entities.Single().SubEntity.PersistChange);
+            Assert.Equal(-500m, entities.Single().SubEntity.Power);
         }
 
         [Fact]
@@ -65,17 +65,17 @@ namespace DeepDiff.UnitTest.Simple
 
             //
             var deepDiff = CreateDeepDiff();
-            var diff = deepDiff.MergeMany(existingEntities, newEntities);
+            var results = deepDiff.MergeMany(existingEntities, newEntities);
 
             //
-            Assert.Single(diff.Entities);
-            Assert.Equal(2, diff.Entities.Single().Index);
-            Assert.Equal(PersistChange.None, diff.Entities.Single().PersistChange);
-            Assert.Single(diff.Entities.Single().SubEntity.SubEntities);
-            Assert.Equal(PersistChange.None, diff.Entities.Single().SubEntity.PersistChange);
-            Assert.Equal(2 * 10 + 3 + 9999, diff.Entities.Single().SubEntity.SubEntities.Single().Index);
-            Assert.Equal(-500m, diff.Entities.Single().SubEntity.SubEntities.Single().Value1);
-            Assert.Equal(PersistChange.Update, diff.Entities.Single().SubEntity.SubEntities.Single().PersistChange);
+            Assert.Single(results);
+            Assert.Equal(2, results.Single().Index);
+            Assert.Equal(PersistChange.None, results.Single().PersistChange);
+            Assert.Single(results.Single().SubEntity.SubEntities);
+            Assert.Equal(PersistChange.None, results.Single().SubEntity.PersistChange);
+            Assert.Equal(2 * 10 + 3 + 9999, results.Single().SubEntity.SubEntities.Single().Index);
+            Assert.Equal(-500m, results.Single().SubEntity.SubEntities.Single().Value1);
+            Assert.Equal(PersistChange.Update, results.Single().SubEntity.SubEntities.Single().PersistChange);
         }
 
         private IDeepDiff CreateDeepDiff()

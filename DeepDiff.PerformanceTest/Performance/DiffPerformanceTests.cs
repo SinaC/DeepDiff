@@ -19,7 +19,7 @@ public class DiffPerformanceTests
     }
 
     [Fact]
-    public void Merge_WithOperation()
+    public void Merge()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -29,15 +29,14 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
     }
 
     [Fact]
-    public void Merge_NoOperation()
+    public void Merge_NoHashtable()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -47,15 +46,14 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
     }
 
     [Fact]
-    public void Merge_NoHashtable_WithOperation()
+    public void Merge_NaiveComparer()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -65,15 +63,14 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
     }
 
     [Fact]
-    public void Merge_NoHashtable_NoOperation()
+    public void Merge_NoHashtable_NaiveComparer()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -83,80 +80,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false));
-        var results = diff.Entities.ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NaiveComparer_WithOperation()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NaiveComparer_NoOperation()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NoHashtable_NaiveComparer_WithOperation()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.All));
-        var results = diff.Entities.ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NoHashtable_NaiveComparer_NoOperation()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var diff = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
@@ -193,16 +117,22 @@ public class DiffPerformanceTests
             var entity0 = existingEntities[entity0Index];
             if (entity0Index % 3 == 0)
                 entity0.StartsOn = entity0.StartsOn.AddMonths(1);
+            if (entity0Index % 3 == 0)
+                entity0.Penalty = -5;
             for (var entity1Index = 0; entity1Index < entity0.SubEntities.Count; entity1Index++)
             {
                 var entity1 = entity0.SubEntities[entity1Index];
                 if (entity1Index % 4 == 0)
                     entity1.Timestamp = entity1.Timestamp.AddMonths(1);
+                if (entity1Index % 3 == 0)
+                    entity1.Price = -5;
                 for (var entity2Index = 0; entity2Index < entity1.SubEntities.Count; entity2Index++)
                 {
                     var entity2 = entity1.SubEntities[entity2Index];
                     if (entity2Index % 5 == 0)
                         entity2.DeliveryPointEan = entity2.DeliveryPointEan + "_MOD";
+                    if (entity2Index % 3 == 0)
+                        entity2.Value1 = -5;
                 }
             }
         }
