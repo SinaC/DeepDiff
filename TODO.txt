@@ -1,3 +1,10 @@
+enqueue operation action and generate operation in a separate thread
+replace recursion with loop and stack/queue
+try to use List instead of IEnumerable and IList
+multithreaded ?
+optimize operations generation
+	don't use to string -> keep object ?
+it seems naive comparer GetHashCode is faster on a single property
 HasKey is optional if related entity only appear in HasOne and MergeSingle
 
 more tests

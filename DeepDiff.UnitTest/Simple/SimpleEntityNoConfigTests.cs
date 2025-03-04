@@ -1,5 +1,4 @@
 ﻿using DeepDiff.Configuration;
-using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.Simple;
 using System;
@@ -32,9 +31,9 @@ namespace DeepDiff.UnitTest.Simple
                 //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             // 1 insert, 1 delete, 4 updates -> not detected because no OnInsert/OnDelete/OnUpdate specified
             Assert.NotNull(result);
@@ -65,9 +64,9 @@ namespace DeepDiff.UnitTest.Simple
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             // 1 insert, 1 delete, 4 updates -> insert and deleted will be detected
             Assert.NotNull(result);
@@ -103,9 +102,9 @@ namespace DeepDiff.UnitTest.Simple
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             // 1 insert, 1 delete, 4 updates -> insert and delete will be detected
             Assert.NotNull(result);
@@ -142,9 +141,9 @@ namespace DeepDiff.UnitTest.Simple
                 //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             // 1 insert, 1 delete, 4 updates -> insert and updates will be detected
             Assert.NotNull(result);

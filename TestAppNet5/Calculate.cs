@@ -1,8 +1,13 @@
 using DeepDiff;
+using DeepDiff.Configuration;
 using Serilog;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using TestAppNet5.Entities;
 using TestAppNet5.Entities.ActivationControl;
+using TestAppNet5.Entities.Simple;
+using TestAppNet5.Profile;
 
 namespace TestAppNet5
 {
@@ -19,6 +24,13 @@ namespace TestAppNet5
 
         public void Perform(Date deliveryDate)
         {
+            var entities = GenerateEntities(500);
+            var deepDiff = CreateDeepDiff();
+            var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities).ToArray();
+        }
+
+        public void Perform2(Date deliveryDate)
+        {
             Logger.Information($"Start calculation for {deliveryDate}");
 
             var existing = Generate(deliveryDate, ActivationControlStatus.Validated, "INTERNAL", "TSO");
@@ -28,7 +40,7 @@ namespace TestAppNet5
 
             var result =  DeepDiff.MergeSingle(existing, calculated);
 
-            Logger.Information($"result?: {result.Entity != null}");
+            Logger.Information($"result?: {result != null}");
         }
 
         private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
@@ -85,7 +97,7 @@ namespace TestAppNet5
                                 DeliveryPointEan = $"DPEAN_{x * y}",
 
                                 DeliveryPointName = $"DPNAME_{x * y}",
-                                Direction = (x * y) % 2 == 0 ? Direction.Up : Direction.Down,
+                                Direction = (x * y) % 2 == 0 ? Entities.ActivationControl.Direction.Up : Entities.ActivationControl.Direction.Down,
                                 DeliveryPointType = (2 * x * y) % 2 == 0 ? DeliveryPointType.SingleUnit : DeliveryPointType.ProvidingGroup,
                                 TotalEnergySupplied = 3 * x * y,
 
@@ -103,5 +115,127 @@ namespace TestAppNet5
 
                     }).ToList()
             };
+
+        private static IDeepDiff CreateDeepDiff()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.PersistEntity<EntityLevel0>()
+                .HasKey(x => new { x.StartsOn, x.Direction })
+                .HasValues(x => new { x.RequestedPower, x.Penalty })
+                .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
+                .HasOne(x => x.SubEntity)
+                .HasMany(x => x.SubEntities);
+            diffConfiguration.PersistEntity<EntityLevel1>()
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.Power, x.Price })
+                .HasOne(x => x.SubEntity)
+                .HasMany(x => x.SubEntities);
+            diffConfiguration.PersistEntity<EntityLevel2>()
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.Value1, x.Value2 });
+            var diff = diffConfiguration.CreateDeepDiff();
+            return diff;
+        }
+
+        private static (EntityLevel0[] existingEntities, EntityLevel0[] newEntities) GenerateEntities(int n)
+        {
+            var now = DateTime.Now;
+            var existingEntities = GenerateEntities(now, n).ToArray();
+            var newEntities = GenerateEntities(now, n).ToArray();
+            for (var entity0Index = 0; entity0Index < existingEntities.Length; entity0Index++)
+            {
+                var entity0 = existingEntities[entity0Index];
+                if (entity0Index % 3 == 0)
+                    entity0.StartsOn = entity0.StartsOn.AddMonths(1);
+                if (entity0Index % 3 == 0)
+                    entity0.Penalty = -5;
+                for (var entity1Index = 0; entity1Index < entity0.SubEntities.Count; entity1Index++)
+                {
+                    var entity1 = entity0.SubEntities[entity1Index];
+                    if (entity1Index % 4 == 0)
+                        entity1.Timestamp = entity1.Timestamp.AddMonths(1);
+                    if (entity1Index % 3 == 0)
+                        entity1.Price = -5;
+                    for (var entity2Index = 0; entity2Index < entity1.SubEntities.Count; entity2Index++)
+                    {
+                        var entity2 = entity1.SubEntities[entity2Index];
+                        if (entity2Index % 5 == 0)
+                            entity2.DeliveryPointEan = entity2.DeliveryPointEan + "_MOD";
+                        if (entity2Index % 3 == 0)
+                            entity2.Value1 = -5;
+                    }
+                }
+            }
+
+            return (existingEntities, newEntities);
+        }
+
+        private static IEnumerable<EntityLevel0> GenerateEntities(DateTime? now, int n)
+        {
+            return Enumerable.Range(0, n)
+                .Select(x => new EntityLevel0
+                {
+                    Id = Guid.NewGuid(),
+
+                    StartsOn = (now ?? DateTime.Now).AddMinutes(x),
+                    Direction = Entities.Simple.Direction.Up,
+
+                    RequestedPower = x,
+                    Penalty = x,
+
+                    SubEntity = new EntityLevel1
+                    {
+                        Id = Guid.NewGuid(),
+
+                        Timestamp = now ?? DateTime.Now,
+
+                        Power = x + 500,
+                        Price = x * 500,
+
+                        SubEntities = Enumerable.Range(0, 255)
+                                .Select(z => new EntityLevel2
+                                {
+                                    Id = Guid.NewGuid(),
+
+                                    DeliveryPointEan = $"DP_{x}_{500}_{z}",
+
+                                    Value1 = x + 500 + z,
+                                    Value2 = x * 500 * z,
+                                }).ToList()
+                    },
+
+                    SubEntities = Enumerable.Range(0, 96)
+                        .Select(y => new EntityLevel1
+                        {
+                            Id = Guid.NewGuid(),
+
+                            Timestamp = (now ?? DateTime.Now).AddMinutes(x).AddSeconds(y),
+
+                            Power = x + y,
+                            Price = x * y,
+
+                            SubEntity = new EntityLevel2
+                            {
+                                Id = Guid.NewGuid(),
+
+                                DeliveryPointEan = $"DP_{x}_{y}_{500}",
+
+                                Value1 = x + y + 500,
+                                Value2 = x * y * 500,
+                            },
+
+                            SubEntities = Enumerable.Range(0, 255)
+                                .Select(z => new EntityLevel2
+                                {
+                                    Id = Guid.NewGuid(),
+
+                                    DeliveryPointEan = $"DP_{x}_{y}_{z}",
+
+                                    Value1 = x + y + z,
+                                    Value2 = x * y * z,
+                                }).ToList()
+                        }).ToList()
+                }).ToList();
+        }
     }
 }

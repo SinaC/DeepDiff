@@ -50,8 +50,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -99,9 +98,8 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
-
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntity.PersistChange);
@@ -148,8 +146,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -197,8 +194,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -255,8 +251,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Empty(results);
     }
@@ -311,8 +306,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
         Assert.Empty(results);
     }
@@ -367,8 +361,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -426,8 +419,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -485,8 +477,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities);
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -544,8 +535,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        var results = diff.Entities.ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -581,13 +571,13 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var diff = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+        var result = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
 
-        Assert.NotNull(diff.Entity);
-        Assert.Equal(PersistChange.Update, diff.Entity.PersistChange);
-        Assert.Equal("SHOULD BE COPIED", diff.Entity.AdditionalValueToCopy);
-        Assert.NotNull(diff.Entity.SubEntity);
-        Assert.Equal(PersistChange.Insert, diff.Entity.SubEntity.PersistChange);
+        Assert.NotNull(result);
+        Assert.Equal(PersistChange.Update, result.PersistChange);
+        Assert.Equal("SHOULD BE COPIED", result.AdditionalValueToCopy);
+        Assert.NotNull(result.SubEntity);
+        Assert.Equal(PersistChange.Insert, result.SubEntity.PersistChange);
     }
 
     private static IDeepDiff CreateDeepDiff()

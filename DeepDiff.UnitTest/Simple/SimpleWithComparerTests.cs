@@ -1,5 +1,4 @@
 ﻿using DeepDiff.Configuration;
-using DeepDiff.Operations;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.Simple;
 using System.Linq;
@@ -39,18 +38,17 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.12346m // 5th decimal is different -> will be considered different
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Same(result, existingEntity);
             Assert.Equal(PersistChange.Update, result.PersistChange);
             Assert.Equal(1.124m, result.Value1); // copied
             Assert.Equal(1.12346m, result.Value2); // copied
-            Assert.Single(diff.Operations);
-            Assert.Single(diff.Operations.OfType<UpdateDiffOperation>());
-            Assert.Equal(2, diff.Operations.OfType<UpdateDiffOperation>().Single().UpdatedProperties.Count);
+            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Count());
+            Assert.All(operations.OfType<UpdateDiffOperation>(), x => Assert.Single(x.UpdatedProperties));
         }
 
         [Fact]
@@ -79,15 +77,16 @@ namespace DeepDiff.UnitTest.Simple
             {
                 DeliveryPointEan = "DPEAN",
 
-                Value1 = 1.1239m, // 4th decimal is different but decimal3 is used -> will be considered same
-                Value2 = 1.123459m // 6th decimal is different but decimal5 is used -> will be considered same
+                Value1 = 1.1239m, // 4th decimal is different but decimal comparer 3 is used -> will be considered same
+                Value2 = 1.123459m // 6th decimal is different but nullable decimal comparer 5 is used -> will be considered same
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.Null(result);
+            Assert.Empty(operations);
         }
 
         [Fact]
@@ -121,18 +120,18 @@ namespace DeepDiff.UnitTest.Simple
                 Value2 = 1.1234567m // 7th decimal is different -> will be considered same
             };
 
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.UsePrecompiledEqualityComparer(false).GenerateOperations(DiffOperations.All));
-            var result = diff.Entity;
-            var operations = diff.Operations;
+            var listener = new StoreAllOperationListener();
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var operations = listener.Operations;
 
             Assert.NotNull(result);
             Assert.Same(result, existingEntity);
             Assert.Equal(PersistChange.Update, result.PersistChange);
             Assert.Equal(1.124m, result.Value1); // copied
             Assert.Equal(1.123456m, result.Value2); // not copied
-            Assert.Single(diff.Operations);
-            Assert.Single(diff.Operations.OfType<UpdateDiffOperation>());
-            Assert.Single(diff.Operations.OfType<UpdateDiffOperation>().Single().UpdatedProperties);
+            Assert.Single(operations);
+            Assert.Single(operations.OfType<UpdateDiffOperation>());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Single().UpdatedProperties);
         }
     }
 }

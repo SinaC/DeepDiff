@@ -12,10 +12,10 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
             var deepDiff = CreateDeepDiffWithoutForceUpdate();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
-            Assert.NotNull(diff.Entity);
-            Assert.Equal(FcrActivationControlStatus.ToBeCalculated, diff.Entity.Status); // status has NOT been updated because no modification has been detected at FcrActivationControl level
+            Assert.NotNull(result);
+            Assert.Equal(FcrActivationControlStatus.ToBeCalculated, result.Status); // status has NOT been updated because no modification has been detected at FcrActivationControl level
         }
 
         [Fact]
@@ -24,10 +24,10 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
-            Assert.NotNull(diff.Entity);
-            Assert.Equal(FcrActivationControlStatus.Calculated, diff.Entity.Status); // status modified because it was ToBeCalculated
+            Assert.NotNull(result);
+            Assert.Equal(FcrActivationControlStatus.Calculated, result.Status); // status modified because it was ToBeCalculated
         }
 
         [Fact]
@@ -36,10 +36,10 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.Validated, FcrActivationControlStatus.Calculated);
-            var diff = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
-            Assert.NotNull(diff.Entity);
-            Assert.Equal(FcrActivationControlStatus.Validated,  diff.Entity.Status); // status has NOT been updated because it was not ToBeCalculated
+            Assert.NotNull(result);
+            Assert.Equal(FcrActivationControlStatus.Validated,  result.Status); // status has NOT been updated because it was not ToBeCalculated
         }
 
         private static IDeepDiff CreateDeepDiffWithoutForceUpdate()

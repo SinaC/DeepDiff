@@ -7,10 +7,10 @@ using Xunit;
 
 namespace DeepDiff.UnitTest.Exceptions
 {
-    public class NoKeyEntityInDiffManyExceptionTests
+    public class NoKeyEntityInMergeExceptionTests
     {
         [Fact]
-        public void DiffMany()
+        public void MergeMany()
         {
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel1>()
@@ -69,8 +69,9 @@ namespace DeepDiff.UnitTest.Exceptions
                 Price = 2 * x + 1
             }).ToArray();
 
-            var diff =  deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
-            Assert.NotNull(diff.Entity);
+            var result =  deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
+
+            Assert.NotNull(result);
         }
     }
 }
