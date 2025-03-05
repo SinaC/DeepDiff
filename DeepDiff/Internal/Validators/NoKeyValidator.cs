@@ -15,7 +15,7 @@ namespace DeepDiff.Internal.Validators
             {
                 // NoKey cannot be true if KeyConfiguration is set
                 if (entityConfiguration.KeyConfiguration != null)
-                    yield return new NoKeyAndKeyConfigurationException(entityType);
+                    yield return new NoKeyAndHasKeyConfigurationException(entityType);
                 // if NoKey is true, entity cannot be found in NavigationMany
                 var referencingEntityNavigationManyConfigurations = entityConfigurationByTypes.Values.Where(x => x.EntityType != entityType && x.NavigationManyConfigurations.Any() && x.NavigationManyConfigurations.Select(x => x.NavigationChildType).Contains(entityType)).ToArray();
                 if (referencingEntityNavigationManyConfigurations.Length > 0)

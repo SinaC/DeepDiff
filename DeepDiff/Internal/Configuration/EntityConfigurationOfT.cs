@@ -21,7 +21,7 @@ namespace DeepDiff.Internal.Configuration
         public IEntityConfiguration<TEntity> NoKey()
         {
             if (Configuration.KeyConfiguration != null)
-                throw new NoKeyAndKeyConfigurationException(typeof(TEntity));
+                throw new NoKeyAndHasKeyConfigurationException(typeof(TEntity));
             Configuration.SetNoKey();
             return this;
         }
@@ -34,7 +34,7 @@ namespace DeepDiff.Internal.Configuration
             if (Configuration.KeyConfiguration != null)
                 throw new DuplicateKeyConfigurationException(typeof(TEntity));
             if (Configuration.NoKey)
-                throw new NoKeyAndKeyConfigurationException(typeof(TEntity));
+                throw new NoKeyAndHasKeyConfigurationException(typeof(TEntity));
             var keyProperties = keyExpression.GetSimplePropertyAccessList().Select(p => p.Single());
             var config = Configuration.SetKey(keyProperties);
             var configOfT = new KeyConfiguration<TEntity>(config);

@@ -18,8 +18,10 @@ public class DiffPerformanceTests
         Output = output;
     }
 
-    [Fact]
-    public void Merge()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void Merge(EqualityComparers equalityComparer)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -29,14 +31,16 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities).ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
     }
 
-    [Fact]
-    public void Merge_NoHashtable()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void Merge_NoHashtable(EqualityComparers equalityComparer)
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -46,41 +50,7 @@ public class DiffPerformanceTests
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false)).ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NaiveComparer()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToArray();
-        sw.Stop();
-
-        Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
-    }
-
-    [Fact]
-    public void Merge_NoHashtable_NaiveComparer()
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        var entities = GenerateEntities(500);
-        sw.Stop();
-        Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
-
-        var deepDiff = CreateDeepDiff();
-        sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false)).ToArray();
+        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(equalityComparer)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);

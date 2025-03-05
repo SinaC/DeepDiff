@@ -6,7 +6,7 @@ namespace DeepDiff.Internal.Configuration
         where TEntity : class
         where TChildEntity : class
     {
-        public NavigationManyConfiguration Configuration { get; private set; }
+        private NavigationManyConfiguration Configuration { get; }
 
         public NavigationManyConfiguration(NavigationManyConfiguration navigationManyConfiguration)
         {

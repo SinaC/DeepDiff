@@ -8,7 +8,7 @@ namespace DeepDiff.Internal.Configuration
         public int HashtableThreshold { get; private set; } = 15;
         public bool ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel { get; private set; }
         public bool CompareOnly { get; private set; }
-        public bool UsePrecompiledEqualityComparer { get; private set; } = true;
+        public EqualityComparers EqualityComparer { get; private set; } = EqualityComparers.Precompiled;
 
         public void SetUseHashtable(bool useHashtable)
         {
@@ -30,9 +30,9 @@ namespace DeepDiff.Internal.Configuration
             CompareOnly = compareOnly;
         }
 
-        public void SetUsePrecompiledEqualityComparer(bool usePrecompiledEqualityComparer)
+        public void SetEqualityComparer(EqualityComparers equalityComparer)
         {
-            UsePrecompiledEqualityComparer = usePrecompiledEqualityComparer;
+            EqualityComparer = equalityComparer;
         }
     }
 }

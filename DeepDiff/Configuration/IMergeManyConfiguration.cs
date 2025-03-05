@@ -5,6 +5,6 @@
         IMergeManyConfiguration UseHashtable(bool use = true);
         IMergeManyConfiguration HashtableThreshold(int threshold = 15);
         IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
-        IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
+        IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
     }
 }

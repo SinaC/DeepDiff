@@ -6,37 +6,43 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
 {
     public class ForceUpdateIfEqualsTests
     {
-        [Fact]
-        public void FromToBeCalculatedToCalculated_WithoutForceUpdate() 
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void FromToBeCalculatedToCalculated_WithoutForceUpdate(EqualityComparers equalityComparer) 
         {
             var deepDiff = CreateDeepDiffWithoutForceUpdate();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.ToBeCalculated, result.Status); // status has NOT been updated because no modification has been detected at FcrActivationControl level
         }
 
-        [Fact]
-        public void FromToBeCalculatedToCalculated_WithForceUpdate()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void FromToBeCalculatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer)
         {
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.Calculated, result.Status); // status modified because it was ToBeCalculated
         }
 
-        [Fact]
-        public void FromValidatedToCalculated_WithForceUpdate()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void FromValidatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer)
         {
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.Validated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.Validated,  result.Status); // status has NOT been updated because it was not ToBeCalculated

@@ -10,8 +10,10 @@ namespace DeepDiff.UnitTest.OperationListener
 {
     public class CompareTests
     {
-        [Fact]
-        public void CompareSingle()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void CompareSingle(EqualityComparers equalityComparer)
         {
             var (existingEntity, newEntity) = GenerateModifications(1);
 
@@ -35,7 +37,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareSingle(existingEntity, newEntity, listener);
+            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -62,8 +64,10 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue) * 2, Convert.ToInt32(x.NewValue)));
         }
 
-        [Fact]
-        public void CompareMany()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void CompareMany(EqualityComparers equalityComparer)
         {
             var existingEntities = new List<EntityLevel0>();
             var newEntities = new List<EntityLevel0>();
@@ -94,7 +98,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareMany(existingEntities, newEntities, listener);
+            deepDiff.CompareMany(existingEntities, newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);

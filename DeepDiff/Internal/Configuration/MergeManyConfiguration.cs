@@ -29,9 +29,9 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
+        public IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
         {
-            Configuration.SetUsePrecompiledEqualityComparer(use);
+            Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
     }

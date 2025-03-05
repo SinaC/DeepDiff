@@ -22,8 +22,10 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.NotNull(deepDiff);
         }
 
-        [Fact]
-        public void Single_2Updates()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void Single_2Updates(EqualityComparers equalityComparer)
         {
             var deliveryDate = Date.Today;
 
@@ -35,7 +37,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener);
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             //
             Assert.NotNull(result);
@@ -70,56 +72,10 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Equal($"{deliveryDate.UtcDateTime.AddMinutes(5*15).AddSeconds(7*4)}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Value);
         }
 
-        [Fact]
-        public void Single_2Updates_Naive()
-        {
-            var deliveryDate = Date.Today;
-
-            var existing = Generate(deliveryDate, ActivationControlStatus.Validated, "INTERNAL", "TSO");
-            var calculated = Generate(deliveryDate, ActivationControlStatus.Calculated, null!, null!);
-            calculated.TotalEnergyToBeSupplied = 5m;
-            calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
-
-            //
-            var deepDiff = CreateDeepDiffWithoutExtensions();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.UsePrecompiledEqualityComparer(false));
-
-            //
-            Assert.NotNull(result);
-            Assert.Equal(PersistChange.Update, result.PersistChange);
-            Assert.Equal(ActivationControlStatus.Calculated, result.Status);
-            Assert.Equal("INTERNAL", result.InternalComment);
-            Assert.Equal("TSO", result.TsoComment);
-            Assert.Single(result.ActivationControlDetails);
-            Assert.Single(result.ActivationControlDetails.Single().DpDetails);
-            Assert.Empty(result.ActivationControlDetails.Single().TimestampDetails);
-            Assert.Single(result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails);
-            Assert.Equal(-7, result.ActivationControlDetails.Single().DpDetails.Single().TimestampDetails.Single().EnergySupplied);
-            Assert.Empty(listener.Operations.OfType<InsertDiffOperation>());
-            Assert.Empty(listener.Operations.OfType<DeleteDiffOperation>());
-            Assert.Equal(2, listener.Operations.OfType<UpdateDiffOperation>().Count());
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)));
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).SelectMany(x => x.UpdatedProperties));
-            Assert.Equal((5m).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().NewValue);
-            Assert.Equal((3).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().ExistingValue);
-            Assert.Equal(nameof(Entities.ActivationControl.ActivationControl.TotalEnergyToBeSupplied), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).UpdatedProperties.Single().PropertyName);
-            Assert.Equal(2, listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Count);
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Where(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.Day)));
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Where(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.ContractReference)));
-            Assert.Equal($"{deliveryDate}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Single(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.Day)).Value);
-            Assert.Equal("CREF", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Single(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.ContractReference)).Value);
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)));
-            Assert.Equal((-7m).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().NewValue);
-            Assert.Equal((420).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().ExistingValue);
-            Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().PropertyName);
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys);
-            Assert.Equal(nameof(ActivationControlDpTimestampDetail.Timestamp), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Key);
-            Assert.Equal($"{deliveryDate.UtcDateTime.AddMinutes(5 * 15).AddSeconds(7 * 4)}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Value);
-        }
-
-        [Fact]
-        public void Decimal6()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void Decimal6(EqualityComparers equalityComparer)
         {
             var deliveryDate = Date.Today;
             var existing = new Entities.ActivationControl.ActivationControl
@@ -140,36 +96,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener);
-
-            //
-            Assert.Null(result); // no diff
-            Assert.Empty(listener.Operations);
-        }
-
-        [Fact]
-        public void Decimal6_Naive()
-        {
-            var deliveryDate = Date.Today;
-            var existing = new Entities.ActivationControl.ActivationControl
-            {
-                Day = deliveryDate,
-                ContractReference = "CREF",
-
-                TotalEnergyToBeSupplied = 1.123456789m,
-            };
-            var calculated = new Entities.ActivationControl.ActivationControl
-            {
-                Day = deliveryDate,
-                ContractReference = "CREF",
-
-                TotalEnergyToBeSupplied = 1.1234561212121m,
-            };
-
-            //
-            var deepDiff = CreateDeepDiffWithoutExtensions();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.UsePrecompiledEqualityComparer(false));
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             //
             Assert.Null(result); // no diff

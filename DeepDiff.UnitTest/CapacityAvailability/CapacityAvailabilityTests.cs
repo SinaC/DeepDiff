@@ -10,8 +10,10 @@ namespace DeepDiff.UnitTest.CapacityAvailability;
 
 public class CapacityAvailabilityTests
 {
-    [Fact]
-    public void DetectInsertAtCapacityAvailabilityLevel()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void DetectInsertAtCapacityAvailabilityLevel_Precompiled(EqualityComparers equalityComparer)
     {
         var startDate = DateTime.Today;
         var dayCount = 5;
@@ -51,59 +53,7 @@ public class CapacityAvailabilityTests
 
         var deepDiff = CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener).ToArray();
-
-        Assert.Single(results);
-        Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
-        Assert.Equal(newCmuId, results.Single().CapacityMarketUnitId);
-        Assert.Equal(97, listener.Operations.Count); // 1 at root level and 96 at detail level
-        Assert.Equal(97, listener.Operations.OfType<InsertDiffOperation>().Count());
-        Assert.Single(listener.Operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
-        Assert.Equal(96, listener.Operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
-    }
-
-    [Fact]
-    public void DetectInsertAtCapacityAvailabilityLevel_Naive()
-    {
-        var startDate = DateTime.Today;
-        var dayCount = 5;
-        var existingCmuId = "CMUIDExisting";
-        var newCmuId = "CMUIDNew";
-        var isEnergyContrained = true;
-
-        var existingCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
-        {
-            Day = startDate.AddDays(x),
-            CapacityMarketUnitId = existingCmuId,
-            IsEnergyContrained = isEnergyContrained,
-            CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
-        }).ToArray();
-        AssignFK(existingCapacityAvailabilities, true);
-
-        var newCapacityAvailabilities = Enumerable.Range(0, dayCount).Select(x => new Entities.CapacityAvailability.CapacityAvailability
-        {
-            Day = startDate.AddDays(x),
-            CapacityMarketUnitId = existingCmuId,
-            IsEnergyContrained = isEnergyContrained,
-            CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
-        }).Concat
-        (
-            new[]
-            {
-                new Entities.CapacityAvailability.CapacityAvailability
-                {
-                    Day = startDate.AddDays(1),
-                    CapacityMarketUnitId = newCmuId,
-                    IsEnergyContrained = isEnergyContrained,
-                    CapacityAvailabilityDetails = GenerateDetails(startDate, 1).ToList()
-                }
-            }
-        ).ToArray();
-        AssignFK(newCapacityAvailabilities, false);
-
-        var deepDiff = CreateDeepDiff();
-        var listener = new StoreAllOperationListener();
-        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener, cfg => cfg.UsePrecompiledEqualityComparer(false));
+        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);

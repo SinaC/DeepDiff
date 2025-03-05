@@ -9,8 +9,10 @@ namespace DeepDiff.UnitTest.OperationListener
 {
     public class MergeTests
     {
-        [Fact]
-        public void MergeSingle()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void MergeSingle(EqualityComparers equalityComparer)
         {
             var (existingEntity, newEntity) = GenerateEntities(0);
 
@@ -34,7 +36,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);

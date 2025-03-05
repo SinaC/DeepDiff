@@ -25,9 +25,9 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public ICompareSingleConfiguration UsePrecompiledEqualityComparer(bool use = true)
+        public ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
         {
-            Configuration.SetUsePrecompiledEqualityComparer(use);
+            Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
     }

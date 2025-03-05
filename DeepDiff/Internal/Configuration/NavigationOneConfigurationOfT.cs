@@ -6,7 +6,7 @@ namespace DeepDiff.Internal.Configuration
         where TEntity : class
         where TChildEntity : class
     {
-        public NavigationOneConfiguration Configuration { get; private set; }
+        private NavigationOneConfiguration Configuration { get; } // cannot be removed because it will be used in the future when methods will be added in INavigationOneConfiguration
 
         public NavigationOneConfiguration(NavigationOneConfiguration navigationOneConfiguration)
         {

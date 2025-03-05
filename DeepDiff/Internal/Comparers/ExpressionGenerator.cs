@@ -107,23 +107,22 @@ namespace DeepDiff.Internal.Comparers
 
             var block = Expression.Block
             (
-                type: typeof(CompareByPropertyResult),
-                variables: new[] { detailsParam, resultVariable },
-                expressions: statements
+                typeof(CompareByPropertyResult),
+                new[] { detailsParam, resultVariable },
+                statements
             );
 
             CompareFunc<T> convertFunc = Expression.Lambda<CompareFunc<T>>(block, left, right).Compile();
             return convertFunc;
         }
 
-        // Hash
+        // Hash  (when properties count is 1, this code is slower than the naive implementation)
         internal static Func<T, int> GenerateHasherFunc<T>(IEnumerable<PropertyInfo> properties)
         {
             // Generates the equivalent of
             // var hash = new HashCode();
             // hash.Add(this.Price);
             // hash.Add(this.When);
-            // AddHasCodeMembersForCollection(hash, this.Hobbies) where this.Hobbies has DeepCompare attribute.
             // return hash.ToHashCode();
             ParameterExpression obj = Expression.Parameter(typeof(T), "obj");
             ParameterExpression hashCode = Expression.Variable(typeof(HashCode), "hashCode");
@@ -134,9 +133,9 @@ namespace DeepDiff.Internal.Comparers
             Expression[] body = parts.ToArray();
 
             BlockExpression block = Expression.Block(
-              type: typeof(int),
-              variables: new ParameterExpression[] { hashCode },
-              expressions: body);
+                typeof(int),
+                new ParameterExpression[] { hashCode },
+                body);
 
             Func<T, int> hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
             return hasher;
@@ -148,7 +147,7 @@ namespace DeepDiff.Internal.Comparers
             foreach (PropertyInfo propertyInfo in properties)
             {
                 MethodInfo boundAddMethod = AddHashCodeMethod.MakeGenericMethod(propertyInfo.PropertyType);
-                adders.Add(Expression.Call(instance: hashCode, boundAddMethod, Expression.Property(obj, propertyInfo)));
+                adders.Add(Expression.Call(hashCode, boundAddMethod, Expression.Property(obj, propertyInfo)));
             }
             return adders;
         }

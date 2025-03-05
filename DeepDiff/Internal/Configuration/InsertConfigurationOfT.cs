@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
     internal sealed class InsertConfiguration<TEntity> : IInsertConfiguration<TEntity>
         where TEntity : class
     {
-        public InsertConfiguration Configuration { get; }
+        private InsertConfiguration Configuration { get; }
 
         public InsertConfiguration(InsertConfiguration InsertConfiguration)
         {
