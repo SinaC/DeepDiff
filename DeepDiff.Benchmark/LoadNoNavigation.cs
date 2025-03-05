@@ -11,8 +11,8 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> NewEntities { get; set; } = null!;
 
     private IDeepDiff NoHashtableNaiveComparerDeepDiff { get; }
-    private IDeepDiff NoHastablePrecompiledComparerDeepDiff { get; }
-    private IDeepDiff HastableNaiveComparerDeepDiff { get; }
+    private IDeepDiff NoHashtablePrecompiledComparerDeepDiff { get; }
+    private IDeepDiff HashtableNaiveComparerDeepDiff { get; }
     private IDeepDiff HashtablePrecompiledComparerDeepDiff { get; }
 
     public LoadNoNavigation()
@@ -37,7 +37,7 @@ public class LoadNoNavigation
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        NoHastablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
+        NoHashtablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
 
         var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
@@ -47,7 +47,7 @@ public class LoadNoNavigation
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        HastableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
+        HashtableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
         var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
@@ -89,25 +89,25 @@ public class LoadNoNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).UsePrecompiledEqualityComparer(false)).ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Naive)).ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHastablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false)).ToList();
+        var results = NoHashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
     }
 
     [Benchmark]
     public void HastableNaiveComparerDiff()
     {
-        var results = HastableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UsePrecompiledEqualityComparer(false)).ToList();
+        var results = HashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Naive)).ToList();
     }
 
     [Benchmark]
     public void HashtablePrecompileComparerDiff()
     {
-        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
+        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
     }
 
     private void GenerateIdentical()

@@ -5,7 +5,7 @@ namespace DeepDiff.Internal.Configuration
 {
     internal sealed class DeleteConfiguration
     {
-        public IList<SetValueConfiguration> SetValueConfigurations { get; private set; } = new List<SetValueConfiguration>();
+        public IList<SetValueConfiguration> SetValueConfigurations { get; } = new List<SetValueConfiguration>();
 
         public SetValueConfiguration AddSetValueConfiguration(PropertyInfo destinationProperty, object value)
         {

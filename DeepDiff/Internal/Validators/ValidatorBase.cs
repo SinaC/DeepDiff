@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using DeepDiff.Internal.Configuration;
 using System;
-using DeepDiff.Internal.Configuration;
+using System.Collections.Generic;
 
 namespace DeepDiff.Internal.Validators
 {

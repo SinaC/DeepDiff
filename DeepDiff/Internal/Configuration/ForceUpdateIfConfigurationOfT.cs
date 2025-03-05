@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
     internal sealed class ForceUpdateIfConfiguration<TEntity> : IForceUpdateIfConfiguration<TEntity>
         where TEntity : class
     {
-        public ForceUpdateIfConfiguration Configuration { get; }
+        private ForceUpdateIfConfiguration Configuration { get; }
 
         public ForceUpdateIfConfiguration(ForceUpdateIfConfiguration configuration)
         {

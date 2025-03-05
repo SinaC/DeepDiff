@@ -45,9 +45,7 @@ namespace DeepDiff.Internal
             bool areKeysEqual = true;
             if (!entityConfiguration.NoKey && entityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                var keysComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
-                    ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer
-                    : entityConfiguration.KeyConfiguration.NaiveEqualityComparer;
+                var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
 
                 areKeysEqual = keysComparer.Equals(existingEntity, newEntity);
                 if (!areKeysEqual && !DiffEngineConfiguration.CompareOnly) // keys are different -> copy keys
@@ -58,9 +56,7 @@ namespace DeepDiff.Internal
             CompareByPropertyResult compareByPropertyResult = null;
             if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                var valuesComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
-                    ? entityConfiguration.ValuesConfiguration.PrecompiledEqualityComparer
-                    : entityConfiguration.ValuesConfiguration.NaiveEqualityComparer;
+                var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
 
                 compareByPropertyResult = valuesComparer.Compare(existingEntity, newEntity);
             }
@@ -121,12 +117,8 @@ namespace DeepDiff.Internal
                 return results;
             }
 
-            var keysComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
-                ? entityConfiguration.KeyConfiguration.PrecompiledEqualityComparer
-                : entityConfiguration.KeyConfiguration.NaiveEqualityComparer;
-            var valuesComparer = DiffEngineConfiguration.UsePrecompiledEqualityComparer
-                ? entityConfiguration.ValuesConfiguration?.PrecompiledEqualityComparer
-                : entityConfiguration.ValuesConfiguration?.NaiveEqualityComparer;
+            var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+            var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
 
             // we are sure there is at least one existing and one new entity
             var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)

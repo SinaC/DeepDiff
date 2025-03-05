@@ -2,9 +2,9 @@
 
 namespace DeepDiff.Exceptions
 {
-    public class NoKeyAndKeyConfigurationException : EntityConfigurationException
+    public class NoKeyAndHasKeyConfigurationException : EntityConfigurationException
     {
-        public NoKeyAndKeyConfigurationException(Type entityType)
+        public NoKeyAndHasKeyConfigurationException(Type entityType)
             : base($"HasKey and NoKey both configured for {entityType}", entityType)
         {
         }

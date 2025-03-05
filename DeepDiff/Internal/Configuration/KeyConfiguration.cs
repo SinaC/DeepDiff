@@ -1,3 +1,4 @@
+using DeepDiff.Configuration;
 using DeepDiff.Internal.Comparers;
 using System;
 using System.Collections.Generic;
@@ -8,10 +9,10 @@ namespace DeepDiff.Internal.Configuration
 {
     internal sealed class KeyConfiguration
     {
-        public IReadOnlyCollection<PropertyInfo> KeyProperties { get; } = null!;
+        private IComparerByProperty PrecompiledEqualityComparer { get; set; } = null!;
+        private IComparerByProperty NaiveEqualityComparer { get; set; } = null!;
 
-        public IComparerByProperty PrecompiledEqualityComparer { get; private set; } = null!;
-        public IComparerByProperty NaiveEqualityComparer { get; private set; } = null!;
+        public IReadOnlyCollection<PropertyInfo> KeyProperties { get; } = null!;
 
         public KeyConfiguration(IEnumerable<PropertyInfo> keyProperties)
         {
@@ -26,5 +27,13 @@ namespace DeepDiff.Internal.Configuration
             var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(typeOfT);
             PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers);
         }
+
+        public IComparerByProperty GetComparer(EqualityComparers equalityComparers)
+            => equalityComparers switch
+            {
+                EqualityComparers.Naive => NaiveEqualityComparer,
+                EqualityComparers.Precompiled => PrecompiledEqualityComparer,
+                _ => throw new ArgumentOutOfRangeException(nameof(equalityComparers))
+            };
     }
 }

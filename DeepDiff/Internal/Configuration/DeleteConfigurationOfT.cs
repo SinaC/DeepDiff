@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
     internal sealed class DeleteConfiguration<TEntity> : IDeleteConfiguration<TEntity>
         where TEntity : class
     {
-        public DeleteConfiguration Configuration { get; }
+        private DeleteConfiguration Configuration { get; }
 
         public DeleteConfiguration(DeleteConfiguration DeleteConfiguration)
         {

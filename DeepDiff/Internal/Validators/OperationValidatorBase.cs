@@ -1,9 +1,9 @@
 ﻿using DeepDiff.Exceptions;
+using DeepDiff.Internal.Configuration;
+using DeepDiff.Internal.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeepDiff.Internal.Extensions;
-using DeepDiff.Internal.Configuration;
 
 namespace DeepDiff.Internal.Validators
 {

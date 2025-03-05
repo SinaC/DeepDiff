@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
     internal sealed class UpdateConfiguration<TEntity> : IUpdateConfiguration<TEntity>
         where TEntity : class
     {
-        public UpdateConfiguration Configuration { get; }
+        private UpdateConfiguration Configuration { get; }
 
         public UpdateConfiguration(UpdateConfiguration updateConfiguration)
         {

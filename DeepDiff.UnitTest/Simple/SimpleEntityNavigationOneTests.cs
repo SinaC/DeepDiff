@@ -9,8 +9,10 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleEntityNavigationOneTests
 {
-    [Fact]
-    public void NotInExisting()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void NotInExisting(EqualityComparers equalityComparer)
     {
         var existingEntities = new[]
         {
@@ -50,63 +52,17 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntity.PersistChange);
     }
 
-    [Fact]
-    public void NotInExisting_Naive()
-    {
-        var existingEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-            }
-        };
-
-        var newEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-        
-        Assert.Single(results);
-        Assert.Equal(PersistChange.None, results.Single().PersistChange);
-        Assert.Equal(PersistChange.Insert, results.Single().SubEntity.PersistChange);
-    }
-
-    [Fact]
-    public void NotInNew()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void NotInNew(EqualityComparers equalityComparer)
     {
         var existingEntities = new[]
         {
@@ -146,63 +102,17 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Delete, results.Single().SubEntity.PersistChange);
     }
 
-    [Fact]
-    public void NotInNew_Naive()
-    {
-        var existingEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var newEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1
-            }
-        };
-
-        var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-
-        Assert.Single(results);
-        Assert.Equal(PersistChange.None, results.Single().PersistChange);
-        Assert.Equal(PersistChange.Delete, results.Single().SubEntity.PersistChange);
-    }
-
-    [Fact]
-    public void Identical()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void Identical(EqualityComparers equalityComparer)
     {
         var existingEntities = new[]
         {
@@ -251,68 +161,15 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.Empty(results);
     }
 
-    [Fact]
-    public void Identical_Naive()
-    {
-        var existingEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var newEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-
-        Assert.Empty(results);
-    }
-
-    [Fact]
-    public void KeyDifferent()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void KeyDifferent(EqualityComparers equalityComparer)
     {
         var existingEntities = new[]
         {
@@ -361,7 +218,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -369,66 +226,11 @@ public class SimpleEntityNavigationOneTests
         Assert.Equal(newEntities.Single().SubEntity.Timestamp, results.Single().SubEntity.Timestamp);
     }
 
-    [Fact]
-    public void KeyDifferent_Naive()
-    {
-        var existingEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
 
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var newEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(30),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-
-        Assert.Single(results);
-        Assert.Equal(PersistChange.None, results.Single().PersistChange);
-        Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
-        Assert.Equal(newEntities.Single().SubEntity.Timestamp, results.Single().SubEntity.Timestamp);
-    }
-
-    [Fact]
-    public void ValueDifferent()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void ValueDifferent(EqualityComparers equalityComparer)
     {
         var existingEntities = new[]
         {
@@ -477,7 +279,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -485,66 +287,10 @@ public class SimpleEntityNavigationOneTests
         Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
     }
 
-    [Fact]
-    public void ValueDifferent_Naive()
-    {
-        var existingEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 1,
-                }
-            }
-        };
-
-        var newEntities = new[]
-        {
-            new EntityLevel0
-            {
-                Index = 1,
-
-                StartsOn = DateTime.Today,
-                Direction = Direction.Up,
-
-                RequestedPower = 1,
-                Penalty = 1,
-
-                SubEntity = new EntityLevel1
-                {
-                    Index = 1,
-
-                    Timestamp = DateTime.Today.AddMinutes(15),
-
-                    Power = 30,
-                }
-            }
-        };
-
-        var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UsePrecompiledEqualityComparer(false));
-
-        Assert.Single(results);
-        Assert.Equal(PersistChange.None, results.Single().PersistChange);
-        Assert.Equal(PersistChange.Update, results.Single().SubEntity.PersistChange);
-        Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
-    }
-
-    [Fact]
-    public void InsertHasOneNoModifOnRoot()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void InsertHasOneNoModifOnRoot(EqualityComparers equalityComparer)
     {
         var existingEntity = new EntityLevel0
         {
@@ -571,7 +317,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+        var result = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);

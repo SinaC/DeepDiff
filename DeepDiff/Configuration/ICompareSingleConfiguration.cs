@@ -4,6 +4,6 @@
     {
         ICompareSingleConfiguration UseHashtable(bool use = true);
         ICompareSingleConfiguration HashtableThreshold(int threshold = 15);
-        ICompareSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
+        ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
     }
 }

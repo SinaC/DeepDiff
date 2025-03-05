@@ -12,8 +12,10 @@ namespace DeepDiff.UnitTest.Profile
     {
         private const int QhCount = 96;
 
-        [Fact]
-        public void AddProfile()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void AddProfile(EqualityComparers equalityComparer)
         {
             var entities = GenerateCapacityAvailabilities();
 
@@ -22,7 +24,7 @@ namespace DeepDiff.UnitTest.Profile
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
             var listener = new StoreAllOperationListener();
-            var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, listener);
+            var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             // missing volume is different on every qh
@@ -43,8 +45,10 @@ namespace DeepDiff.UnitTest.Profile
             Assert.Equal(3 * QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
         }
 
-        [Fact]
-        public void AddProfile_ForceOnUpdate()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void AddProfile_ForceOnUpdate(EqualityComparers equalityComparer)
         {
             var (existingEntities, newEntities) = GenerateCapacityAvailabilities();
 
@@ -53,7 +57,7 @@ namespace DeepDiff.UnitTest.Profile
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
             var listener = new StoreAllOperationListener(); 
-            var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true));
+            var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             var toto1 = operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties, (e, p) => new { e.EntityName, p.PropertyName }).GroupBy(x => x.PropertyName);
@@ -79,8 +83,10 @@ namespace DeepDiff.UnitTest.Profile
             Assert.Equal(3 * QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail))); // missing volume and obligated volume 96 times, available volume 95 times
         }
 
-        [Fact]
-        public void NoTypeSpecificComparerUsedWithProfile()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void NoTypeSpecificComparerUsedWithProfile(EqualityComparers equalityComparer)
         {
             var today = DateTime.Today;
 
@@ -121,7 +127,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfileNoCustomComparer>();
             var listener = new StoreAllOperationListener();
             var deepDiff = diffConfiguration.CreateDeepDiff();
-            var result = deepDiff.MergeSingle(existing, calculated, listener);
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             //
@@ -131,8 +137,10 @@ namespace DeepDiff.UnitTest.Profile
             Assert.Equal(12.123456999m, result.CapacityAvailabilityDetails.Single().AvailableVolume);
         }
 
-        [Fact]
-        public void TypeSpecificComparerUsedWithProfile()
+        [Theory]
+        [InlineData(EqualityComparers.Precompiled)]
+        [InlineData(EqualityComparers.Naive)]
+        public void TypeSpecificComparerUsedWithProfile(EqualityComparers equalityComparer)
         {
             var today = DateTime.Today;
 
@@ -173,7 +181,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener);
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             //

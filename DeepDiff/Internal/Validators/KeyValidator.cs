@@ -24,7 +24,7 @@ namespace DeepDiff.Internal.Validators
             {
                 // NoKey cannot be true if KeyConfiguration is set
                 if (entityConfiguration.NoKey)
-                    yield return new NoKeyAndKeyConfigurationException(entityType);
+                    yield return new NoKeyAndHasKeyConfigurationException(entityType);
                 // cannot be empty
                 if (keyConfiguration.KeyProperties == null || keyConfiguration.KeyProperties.Count == 0)
                     yield return new EmptyConfigurationException(entityType, NameOf<KeyConfiguration>());
