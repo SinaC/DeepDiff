@@ -1,5 +1,6 @@
 ﻿using DeepDiff.Configuration;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace DeepDiff.UnitTest
 {
     internal class StoreAllOperationListener : IOperationListener
     {
-        public List<DiffOperationBase> Operations { get; } = new();
+        public ConcurrentBag<DiffOperationBase> Operations { get; } = new();
 
         public void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc)
         {

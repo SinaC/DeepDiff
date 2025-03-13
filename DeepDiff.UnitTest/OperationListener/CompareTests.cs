@@ -11,9 +11,11 @@ namespace DeepDiff.UnitTest.OperationListener
     public class CompareTests
     {
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareSingle(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareSingle(EqualityComparers equalityComparer, bool useParallelism)
         {
             var (existingEntity, newEntity) = GenerateModifications(1);
 
@@ -37,7 +39,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -65,9 +67,11 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareMany(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareMany(EqualityComparers equalityComparer, bool useParallelism)
         {
             var existingEntities = new List<EntityLevel0>();
             var newEntities = new List<EntityLevel0>();
@@ -98,7 +102,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareMany(existingEntities, newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareMany(existingEntities, newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);

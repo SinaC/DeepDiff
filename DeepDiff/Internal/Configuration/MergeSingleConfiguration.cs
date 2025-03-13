@@ -23,15 +23,21 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
-        {
-            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
-            return this;
-        }
-
         public IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
         {
             Configuration.SetEqualityComparer(equalityComparer);
+            return this;
+        }
+
+        public IMergeSingleConfiguration UseParallelism(bool use = false)
+        {
+            Configuration.SetUseParallelism(use);
+            return this;
+        }
+
+        public IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+        {
+            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
             return this;
         }
     }

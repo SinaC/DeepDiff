@@ -5,8 +5,10 @@ using DeepDiff.Internal.Configuration;
 using DeepDiff.Internal.Extensions;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeepDiff.Internal
 {
@@ -15,13 +17,13 @@ namespace DeepDiff.Internal
         private IReadOnlyDictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; }
         private DiffEngineConfiguration DiffEngineConfiguration { get; }
 
-        internal DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration)
+        public DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration)
         {
             EntityConfigurationByTypes = entityConfigurationByTypes;
             DiffEngineConfiguration = diffEngineConfiguration;
         }
 
-        internal object MergeSingle(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
+        public object MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -84,7 +86,14 @@ namespace DeepDiff.Internal
             return null;
         }
 
-        internal List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        public List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        {
+            if (DiffEngineConfiguration.UseParallelism)
+                return MergeManyByType_Parallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
+            return MergeManyByType_NonParallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
+        }
+
+        private List<object> MergeManyByType_NonParallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInDiffManyException(entityType);
@@ -187,6 +196,109 @@ namespace DeepDiff.Internal
             return results;
         }
 
+        private List<object> MergeManyByType_Parallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        {
+            if (entityConfiguration.NoKey)
+                throw new NoKeyEntityInDiffManyException(entityType);
+
+            var results = new ConcurrentBag<object>();
+
+            // no entities to merge
+            if ((existingEntities == null || !existingEntities.Any()) && (newEntities == null || !newEntities.Any()))
+                return results.ToList();
+
+            // no existing entities -> return new as inserted
+            if (existingEntities == null || !existingEntities.Any())
+            {
+                Parallel.ForEach(newEntities, newEntity =>
+                {
+                    OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity, operationListener); // once an entity is inserted, it's children will also be inserted
+                    results.Add(newEntity);
+                });
+                return results.ToList();
+            }
+
+            // no new entities -> return existing as deleted
+            if (newEntities == null || !newEntities.Any())
+            {
+                Parallel.ForEach(existingEntities, existingEntity =>
+                {
+                    OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity, operationListener); // once an entity is deleted, it's children will also be deleted
+                    results.Add(existingEntity);
+                });
+                return results.ToList();
+            }
+
+            var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+            var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+
+            // we are sure there is at least one existing and one new entity
+            var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)
+                ? InitializeHashtable(keysComparer, existingEntities, entityConfiguration, entityConfiguration.KeyConfiguration)
+                : null;
+            var newEntitiesHashtable = CheckIfHashtablesShouldBeUsed(newEntities)
+                ? InitializeHashtable(keysComparer, newEntities, entityConfiguration, entityConfiguration.KeyConfiguration)
+                : null;
+
+            // search if every existing entity is found in new entities -> this will detect update and delete
+            Parallel.ForEach(existingEntities, existingEntity =>
+            {
+                var newEntity = newEntitiesHashtable != null
+                    ? newEntitiesHashtable[existingEntity]
+                    : SearchMatchingEntityByKey(keysComparer, newEntities, existingEntity, entityConfiguration, entityConfiguration.KeyConfiguration);
+                // existing entity found in new entities -> maybe an update
+                if (newEntity != null)
+                {
+                    // compare values
+                    CompareByPropertyResult compareByPropertyResult = null;
+                    if (valuesComparer != null)
+                    {
+                        compareByPropertyResult = valuesComparer.Compare(existingEntity, newEntity);
+                    }
+
+                    // perform merge on nested entities
+                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener);
+
+                    // check force update if equals
+                    var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
+
+                    //
+                    if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
+                        || diffModificationsFound
+                        || forceOnUpdate) // update
+                    {
+                        if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
+                            || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
+                            || forceOnUpdate)
+                            OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener);
+                        results.Add(existingEntity);
+                    }
+                }
+                // existing entity not found in new entities -> it's a delete
+                else
+                {
+                    OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity, operationListener); // once an entity is deleted, it's children will also be deleted
+                    results.Add(existingEntity);
+                }
+            });
+
+            // search if every new entity is found in existing entities -> this will detect insert
+            Parallel.ForEach(newEntities, newEntity =>
+            {
+                var newEntityFoundInExistingEntities = existingEntitiesHashtable != null
+                    ? existingEntitiesHashtable.ContainsKey(newEntity)
+                    : SearchMatchingEntityByKey(keysComparer, existingEntities, newEntity, entityConfiguration, entityConfiguration.KeyConfiguration) != null;
+                // new entity not found in existing entity -> it's an insert
+                if (!newEntityFoundInExistingEntities)
+                {
+                    OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity, operationListener); // once an entity is inserted, it's children will also be inserted
+                    results.Add(newEntity);
+                }
+            });
+
+            return results.ToList();
+        }
+
         private List<object> MergeManyMultipleTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
         {
             // perform multiple merge, one by unique type found in existing and new entities collection
@@ -216,7 +328,7 @@ namespace DeepDiff.Internal
             {
                 return entities.SingleOrDefault(x => keysComparer.Equals(x, existingEntity));
             }
-            catch(InvalidOperationException)
+            catch (InvalidOperationException)
             {
                 var keys = GenerateKeysForException(entityConfiguration, keyConfiguration, existingEntity);
                 throw new DuplicateKeysException(entityConfiguration.EntityType, keys);
@@ -312,7 +424,7 @@ namespace DeepDiff.Internal
             var newEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(newEntity);
 
             // merge child
-            var mergedChild = MergeSingle(childEntityConfiguration, existingEntityChild, newEntityChild, operationListener);
+            var mergedChild = MergeSingleByType(childType, childEntityConfiguration, existingEntityChild, newEntityChild, operationListener);
 
             // set navigation one property to merged child
             if (!DiffEngineConfiguration.CompareOnly)

@@ -4,7 +4,8 @@
     {
         IMergeManyConfiguration UseHashtable(bool use = true);
         IMergeManyConfiguration HashtableThreshold(int threshold = 15);
-        IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
         IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
+        IMergeManyConfiguration UseParallelism(bool use = false);
+        IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
     }
 }

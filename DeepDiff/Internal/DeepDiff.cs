@@ -43,7 +43,7 @@ namespace DeepDiff.Internal
             mergeSingleConfigurationAction?.Invoke(mergeSingleConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, mergeSingleConfiguration.Configuration);
-            var diffEntity = engine.MergeSingle(entityConfiguration, existingEntity, newEntity, operationListener);
+            var diffEntity = engine.MergeSingleByType(entityType, entityConfiguration, existingEntity, newEntity, operationListener);
             return (TEntity)diffEntity;
         }
 
@@ -90,7 +90,7 @@ namespace DeepDiff.Internal
             diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
 
             var engine = new DeepDiffEngine(DeepDiffConfiguration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration);
-            engine.MergeSingle(entityConfiguration, existingEntity, newEntity, operationListener);
+            engine.MergeSingleByType(entityType, entityConfiguration, existingEntity, newEntity, operationListener);
         }
 
         public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)

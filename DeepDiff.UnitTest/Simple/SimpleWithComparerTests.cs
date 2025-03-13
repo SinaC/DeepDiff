@@ -9,9 +9,11 @@ namespace DeepDiff.UnitTest.Simple;
 public class SimpleWithComparerTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_Modifications(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void ComparersOnType_Modifications(EqualityComparers equalityComparer, bool useParallelism)
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel2>()
@@ -41,7 +43,7 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
         var operations = listener.Operations;
 
         Assert.NotNull(result);
@@ -54,9 +56,11 @@ public class SimpleWithComparerTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_NoModifications(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void ComparersOnType_NoModifications(EqualityComparers equalityComparer, bool useParallelism)
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel2>()
@@ -86,7 +90,7 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
         var operations = listener.Operations;
 
         Assert.Null(result);
@@ -94,9 +98,11 @@ public class SimpleWithComparerTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_ComparerOnProperty_Modifications(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void ComparersOnType_ComparerOnProperty_Modifications(EqualityComparers equalityComparer, bool useParallelism)
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel2>()
@@ -127,7 +133,7 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
         var operations = listener.Operations;
 
         Assert.NotNull(result);

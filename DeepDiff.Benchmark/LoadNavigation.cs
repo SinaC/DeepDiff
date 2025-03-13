@@ -137,11 +137,14 @@ public class LoadNavigation
         HashtablePrecompiledComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
     }
 
-    [Params(10, 100)]
+    [Params(1, 10, 100)]
     public int N { get; set; }
 
     [Params(DataGenerationOptions.Identical, DataGenerationOptions.NoExisting, DataGenerationOptions.NoNew, DataGenerationOptions.Random)]
     public DataGenerationOptions Option { get; set; }
+
+    [Params(false, true)]
+    public bool UseParallelism { get; set; }
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -166,25 +169,25 @@ public class LoadNavigation
     [Benchmark]
     public void NoHashtableNaiveComparerDiff()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Naive)).ToList();
+        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Naive).UseParallelism(UseParallelism)).ToList();
     }
 
     [Benchmark]
     public void NoHastablePrecompileComparerDiff()
     {
-        var results = NoHashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
+        var results = NoHashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Precompiled).UseParallelism(UseParallelism)).ToList();
     }
 
     [Benchmark]
     public void HastableNaiveComparerDiff()
     {
-        var results = HashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Naive)).ToList();
+        var results = HashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Naive).UseParallelism(UseParallelism)).ToList();
     }
 
     [Benchmark]
     public void HashtablePrecompileComparerDiff()
     {
-        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
+        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Precompiled).UseParallelism(UseParallelism)).ToList();
     }
 
     private void GenerateIdentical()

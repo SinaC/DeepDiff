@@ -13,8 +13,12 @@ namespace DeepDiff.UnitTest.Simple;
 //          0/Many EntityLevel2
 public class NoKeyTests
 {
-    [Fact]
-    public void Identical()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void Identical(EqualityComparers equalityComparer, bool useParallelism)
     {
 
         var now = DateTime.Now;
@@ -24,14 +28,18 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities);
+        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
         //
         Assert.Empty(entities);
     }
 
-    [Fact]
-    public void Level1_Update()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void Level1_Update(EqualityComparers equalityComparer, bool useParallelism)
     {
 
         var now = DateTime.Now;
@@ -42,7 +50,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities);
+        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
         //
         Assert.Single(entities);
@@ -53,8 +61,12 @@ public class NoKeyTests
         Assert.Equal(-500m, entities.Single().SubEntity.Power);
     }
 
-    [Fact]
-    public void Level2_Update()
+    [Theory]
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void Level2_Update(EqualityComparers equalityComparer, bool useParallelism)
     {
 
         var now = DateTime.Now;
@@ -65,7 +77,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities);
+        var results = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
         //
         Assert.Single(results);
@@ -78,7 +90,7 @@ public class NoKeyTests
         Assert.Equal(PersistChange.Update, results.Single().SubEntity.SubEntities.Single().PersistChange);
     }
 
-    private IDeepDiff CreateDeepDiff()
+    private static IDeepDiff CreateDeepDiff()
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()

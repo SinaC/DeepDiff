@@ -10,9 +10,11 @@ namespace DeepDiff.UnitTest.Simple;
 public class SimpleEntityNoNavigationTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Identical(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void Identical(EqualityComparers equalityComparer, bool useParallelism)
     {
         var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
@@ -49,15 +51,17 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
 
         Assert.Empty(results);
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OneDelete(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void OneDelete(EqualityComparers equalityComparer, bool useParallelism)
     {
         var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
@@ -95,7 +99,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Delete, results.Single().PersistChange);
@@ -103,9 +107,11 @@ public class SimpleEntityNoNavigationTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OneInsert(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void OneInsert(EqualityComparers equalityComparer, bool useParallelism)
     {
         var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
@@ -143,7 +149,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);
@@ -151,9 +157,11 @@ public class SimpleEntityNoNavigationTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OneDelete_OneInsert(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void OneDelete_OneInsert(EqualityComparers equalityComparer, bool useParallelism)
     {
         var existingEntities = Enumerable.Range(0, 5).Select(x => new EntityLevel0
         {
@@ -192,7 +200,7 @@ public class SimpleEntityNoNavigationTests
             .HasValues(x => new { x.RequestedPower, x.Penalty });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
 
         Assert.Equal(2, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));
