@@ -22,7 +22,7 @@ var deepDiff = diffConfiguration.CreateDeepDiff();
 ```
 Then in your application code, this will detect insert/update/delete between existing and new entities. In case of update, properties will be copied from new to existing entity
 ```csharp
-var result = deepDiff.MergeMany(existingEntities, newEntities); // result.Entities will contain 'diff' entities
+var resultEntities = deepDiff.MergeMany(existingEntities, newEntities); // resultEntities will contain 'merged' entities
 ```
 Sample entities definition
 ```csharp
@@ -265,12 +265,20 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
-### UsePrecompiledEqualityComparer
+### SetEqualityComparer
 
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
 
 ```csharp
-IMergeSingleConfiguration UsePrecompiledEqualityComparer(bool use = true)
+IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### UseParallelism (experimental)
+
+When set to true, engine will use parallelism to compare entities (false by default)
+
+```csharp
+IMergeSingleConfiguration UseParallelism(bool use = false);
 ```
 
 ## MergeMany configuration
@@ -299,12 +307,20 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
-### UsePrecompiledEqualityComparer
+### SetEqualityComparer
 
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
 
 ```csharp
-IMergeManyConfiguration UsePrecompiledEqualityComparer(bool use = true)
+IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### UseParallelism (experimental)
+
+When set to true, engine will use parallelism to compare entities (false by default)
+
+```csharp
+IMergeManyConfiguration UseParallelism(bool use = false);
 ```
 
 ## CompareSingle configuration
@@ -325,12 +341,20 @@ Defines minimum number of entries in collection to use hashtable (15 by default)
 ICompareSingleConfiguration HashtableThreshold(int threshold = 15);
 ```
 
-### UsePrecompiledEqualityComparer
+### SetEqualityComparer
 
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
 
 ```csharp
-ICompareSingleConfiguration UsePrecompiledEqualityComparer(bool use = true);
+ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### UseParallelism (experimental)
+
+When set to true, engine will use parallelism to compare entities (false by default)
+
+```csharp
+ICompareSingleConfiguration UseParallelism(bool use = false);
 ```
 
 ## CompareMany configuration
@@ -351,12 +375,20 @@ Defines minimum number of entries in collection to use hashtable (15 by default)
 ICompareManyConfiguration HashtableThreshold(int threshold = 15);
 ```
 
-### UsePrecompiledEqualityComparer
+### SetEqualityComparer
 
-When set to true, engine will use optimized equality comparers to compare keys and values (true by default)
+Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
 
 ```csharp
-ICompareManyConfiguration UsePrecompiledEqualityComparer(bool use = true);
+ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### UseParallelism (experimental)
+
+When set to true, engine will use parallelism to compare entities (false by default)
+
+```csharp
+ICompareManyConfiguration UseParallelism(bool use = false);
 ```
 
 # Deep Diff Configuration

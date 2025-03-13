@@ -23,9 +23,11 @@ namespace DeepDiff.UnitTest.ActivationControl
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Single_2Updates(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void Single_2Updates(EqualityComparers equalityComparer, bool useParallelism)
         {
             var deliveryDate = Date.Today;
 
@@ -37,7 +39,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
             //
             Assert.NotNull(result);
@@ -73,9 +75,11 @@ namespace DeepDiff.UnitTest.ActivationControl
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Decimal6(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void Decimal6(EqualityComparers equalityComparer, bool useParallelism)
         {
             var deliveryDate = Date.Today;
             var existing = new Entities.ActivationControl.ActivationControl
@@ -96,7 +100,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
             //
             Assert.Null(result); // no diff

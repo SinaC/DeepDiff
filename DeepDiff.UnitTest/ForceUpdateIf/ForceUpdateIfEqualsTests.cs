@@ -7,42 +7,48 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
     public class ForceUpdateIfEqualsTests
     {
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void FromToBeCalculatedToCalculated_WithoutForceUpdate(EqualityComparers equalityComparer) 
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void FromToBeCalculatedToCalculated_WithoutForceUpdate(EqualityComparers equalityComparer, bool useParallelism) 
         {
             var deepDiff = CreateDeepDiffWithoutForceUpdate();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.ToBeCalculated, result.Status); // status has NOT been updated because no modification has been detected at FcrActivationControl level
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void FromToBeCalculatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void FromToBeCalculatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer, bool useParallelism)
         {
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.ToBeCalculated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.Calculated, result.Status); // status modified because it was ToBeCalculated
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void FromValidatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void FromValidatedToCalculated_WithForceUpdate(EqualityComparers equalityComparer, bool useParallelism)
         {
             var deepDiff = CreateDeepDiffWithForceUpdateIf();
 
             var (existingEntity, newEntity) = GenerateEntities(FcrActivationControlStatus.Validated, FcrActivationControlStatus.Calculated);
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
 
             Assert.NotNull(result);
             Assert.Equal(FcrActivationControlStatus.Validated,  result.Status); // status has NOT been updated because it was not ToBeCalculated

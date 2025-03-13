@@ -19,38 +19,42 @@ public class DiffPerformanceTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Merge(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    public void Merge(EqualityComparers equalityComparer, bool useParallelism)
     {
-        Stopwatch sw = new Stopwatch();
+        var sw = new Stopwatch();
         sw.Start();
-        var entities = GenerateEntities(500);
+        var (existingEntities, newEntities) = GenerateEntities(500);
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Merge_NoHashtable(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    public void Merge_NoHashtable(EqualityComparers equalityComparer, bool useParallelism)
     {
-        Stopwatch sw = new Stopwatch();
+        var sw = new Stopwatch();
         sw.Start();
-        var entities = GenerateEntities(500);
+        var (existingEntities, newEntities) = GenerateEntities(500);
         sw.Stop();
         Output.WriteLine("Generation: {0} ms", sw.ElapsedMilliseconds);
 
         var deepDiff = CreateDeepDiff();
         sw.Restart();
-        var results = deepDiff.MergeMany(entities.existingEntities, entities.newEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
         sw.Stop();
 
         Output.WriteLine("Diff: {0} ms", sw.ElapsedMilliseconds);

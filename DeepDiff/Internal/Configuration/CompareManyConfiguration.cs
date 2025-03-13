@@ -30,5 +30,11 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
+
+        public ICompareManyConfiguration UseParallelism(bool use = false)
+        {
+            Configuration.SetUseParallelism(use);
+            return this;
+        }
     }
 }

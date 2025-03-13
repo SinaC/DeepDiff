@@ -10,9 +10,11 @@ namespace DeepDiff.UnitTest.Simple;
 public partial class SimpleDeepDiffTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void TestMultipleChanges_MultipleEntities(EqualityComparers equalityComparer)
+    [InlineData(EqualityComparers.Precompiled, true)]
+    [InlineData(EqualityComparers.Precompiled, false)]
+    [InlineData(EqualityComparers.Naive, true)]
+    [InlineData(EqualityComparers.Naive, false)]
+    public void TestMultipleChanges_MultipleEntities(EqualityComparers equalityComparer, bool useParallelism)
     {
         var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel0
         {
@@ -60,7 +62,7 @@ public partial class SimpleDeepDiffTests
             }).ToList(),
         }).ToArray();
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.Entity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -77,7 +79,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
 
         // deleted: 0
         // updated: 1, 2, 4, 5, 7, 8
@@ -88,14 +90,14 @@ public partial class SimpleDeepDiffTests
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Delete));
         Assert.Equal(6, results.Count(x => x.PersistChange == PersistChange.Update)); 
         Assert.Equal(3, results.Count(x => x.PersistChange == PersistChange.None));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.Insert), x => Assert.Equal(5, x.SubEntities.Count()));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.Insert), x => Assert.Equal(5, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Insert), x => Assert.All(x.SubEntities, y => Assert.Equal(PersistChange.Insert, y.PersistChange)));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.Delete), x => Assert.Equal(5, x.SubEntities.Count()));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.Delete), x => Assert.Equal(5, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Delete), x => Assert.All(x.SubEntities, y => Assert.Equal(PersistChange.Delete, y.PersistChange)));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Equal(2, x.SubEntities.Count()));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Equal(2, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Insert)));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Delete)));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Equal(2, x.SubEntities.Count()));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Equal(2, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Insert)));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Delete)));
 
