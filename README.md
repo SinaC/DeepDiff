@@ -86,7 +86,7 @@ IEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChi
 
 ## HasMany
 
-Defines property to navigation to multiple children
+Defines property to navigate to multiple children
 
 ```csharp
 IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression)
@@ -183,7 +183,7 @@ IForceUpdateIfConfiguration<TEntity> NestedEntitiesModified()
 
 ### Equals
 
-Trigger an update when an equality condition is set
+Trigger an update when an equality condition is met
 
 ```csharp
 IForceUpdateIfConfiguration<TEntity> Equals<TMember>(Expression<Func<TEntity, TMember>> compareToMember, TMember compareToValue)
@@ -389,6 +389,28 @@ When set to true, engine will use parallelism to compare entities (false by defa
 
 ```csharp
 ICompareManyConfiguration UseParallelism(bool use = false);
+```
+
+## OperationListener
+
+Defines a listener which will be called on every insert/update/delete detection
+
+### OnInsert
+
+```csharp
+void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+```
+
+### OnDelete
+
+```csharp
+void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+```
+
+### OnUpdate
+
+```csharp
+void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc);
 ```
 
 # Deep Diff Configuration
