@@ -34,7 +34,14 @@ namespace DeepDiff.UnitTest.OperationListener
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.Power, x.Price })
+                .HasOne(x => x.SubEntity)
                 .Ignore(x => x.Index);
+            diffConfiguration.Entity<EntityLevel2>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => x.DeliveryPointEan)
+                .HasValues(x => new { x.Value1, x.Value2 });
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
@@ -104,6 +111,17 @@ namespace DeepDiff.UnitTest.OperationListener
                     Power = y,
                     Price = y % 2 == 0 ? null : y * 3,
                     Comment = $"Existing_{y}",
+                    SubEntity = new EntityLevel2
+                    {
+                        Index = level0Index * 1000 + y,
+
+                        Id = Guid.NewGuid(),
+                        DeliveryPointEan = $"DeliveryPointEan_{y}",
+                        Value1 = y,
+                        Value2 = y,
+                        Value3 = y,
+                        Value4 = y,
+                    },
                 }).ToList(),
             };
 
@@ -127,6 +145,17 @@ namespace DeepDiff.UnitTest.OperationListener
                     Power = 2 * y,
                     Price = y % 2 == 0 ? null : y * 3,
                     Comment = $"New_{y}",
+                    SubEntity = new EntityLevel2
+                    {
+                        Index = level0Index * 1000 + y,
+
+                        Id = Guid.NewGuid(),
+                        DeliveryPointEan = $"DeliveryPointEan_{y}",
+                        Value1 =  2 * y,
+                        Value2 =  2 * y,
+                        Value3 =  2 * y,
+                        Value4 =  2 * y
+                    },
                 }).ToList(),
             };
 

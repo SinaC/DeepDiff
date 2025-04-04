@@ -23,7 +23,7 @@ namespace DeepDiff.Internal
             DiffEngineConfiguration = diffEngineConfiguration;
         }
 
-        public object MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
+        public object MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -64,7 +64,7 @@ namespace DeepDiff.Internal
             }
 
             // perform merge on nested entities
-            var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener);
+            var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener, parentEntities);
 
             // check force update if equals
             var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -79,21 +79,21 @@ namespace DeepDiff.Internal
                     || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
                     || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
                     || forceOnUpdate)
-                    OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener);
+                    OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener, parentEntities);
                 return existingEntity;
             }
 
             return null;
         }
 
-        public List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        public List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (DiffEngineConfiguration.UseParallelism)
-                return MergeManyByType_Parallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
-            return MergeManyByType_NonParallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener);
+                return MergeManyByType_Parallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener, parentEntities);
+            return MergeManyByType_NonParallel(entityType, entityConfiguration, existingEntities, newEntities, operationListener, parentEntities);
         }
 
-        private List<object> MergeManyByType_NonParallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        private List<object> MergeManyByType_NonParallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInDiffManyException(entityType);
@@ -154,7 +154,7 @@ namespace DeepDiff.Internal
                     }
 
                     // perform merge on nested entities
-                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener);
+                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener, parentEntities);
 
                     // check force update if equals
                     var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -167,7 +167,7 @@ namespace DeepDiff.Internal
                         if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
                             || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
                             || forceOnUpdate)
-                            OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener);
+                            OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener, parentEntities);
                         results.Add(existingEntity);
                     }
                 }
@@ -196,7 +196,7 @@ namespace DeepDiff.Internal
             return results;
         }
 
-        private List<object> MergeManyByType_Parallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        private List<object> MergeManyByType_Parallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInDiffManyException(entityType);
@@ -257,7 +257,7 @@ namespace DeepDiff.Internal
                     }
 
                     // perform merge on nested entities
-                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener);
+                    var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity, operationListener, parentEntities);
 
                     // check force update if equals
                     var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -270,7 +270,7 @@ namespace DeepDiff.Internal
                         if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
                             || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
                             || forceOnUpdate)
-                            OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener);
+                            OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult, operationListener, parentEntities);
                         results.Add(existingEntity);
                     }
                 }
@@ -299,7 +299,7 @@ namespace DeepDiff.Internal
             return results.ToList();
         }
 
-        private List<object> MergeManyMultipleTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
+        private List<object> MergeManyMultipleTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             // perform multiple merge, one by unique type found in existing and new entities collection
             var existingEntitiesByTypes = existingEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
@@ -312,7 +312,7 @@ namespace DeepDiff.Internal
                     throw new MissingConfigurationException(entityType);
                 var existingEntitiesByType = existingEntitiesByTypes?[entityType];
                 var newEntitiesByType = newEntitiesByTypes?[entityType];
-                var subResults = MergeManyByType(entityType, entityConfiguration, existingEntitiesByType, newEntitiesByType, operationListener);
+                var subResults = MergeManyByType(entityType, entityConfiguration, existingEntitiesByType, newEntitiesByType, operationListener, parentEntities);
                 results.AddRange(subResults);
             }
 
@@ -353,23 +353,31 @@ namespace DeepDiff.Internal
             return hashtable;
         }
 
-        private bool MergeUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
+        private bool MergeUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             var modificationsDetected = false;
             if (entityConfiguration.NavigationManyConfigurations != null)
             {
                 foreach (var navigationManyConfiguration in entityConfiguration.NavigationManyConfigurations)
-                    modificationsDetected |= MergeUsingNavigationMany(navigationManyConfiguration, existingEntity, newEntity, operationListener);
+                {
+                    parentEntities = parentEntities.ToList(); // create a new list to avoid modifying the original one
+                    parentEntities.Add(new ValueTuple<EntityConfiguration, KeyConfiguration, object>(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity));
+                    modificationsDetected |= MergeUsingNavigationMany(entityConfiguration, navigationManyConfiguration, existingEntity, newEntity, operationListener, parentEntities);
+                }
             }
             if (entityConfiguration.NavigationOneConfigurations != null)
             {
                 foreach (var navigationOneConfiguration in entityConfiguration.NavigationOneConfigurations)
-                    modificationsDetected |= MergeUsingNavigationOne(navigationOneConfiguration, existingEntity, newEntity, operationListener);
+                {
+                    parentEntities = parentEntities.ToList(); // create a new list to avoid modifying the original one
+                    parentEntities.Add(new ValueTuple<EntityConfiguration, KeyConfiguration, object>(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity));
+                    modificationsDetected |= MergeUsingNavigationOne(navigationOneConfiguration, existingEntity, newEntity, operationListener, parentEntities);
+                }
             }
             return modificationsDetected;
         }
 
-        private bool MergeUsingNavigationMany(NavigationManyConfiguration navigationManyConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
+        private bool MergeUsingNavigationMany(EntityConfiguration entityConfiguration, NavigationManyConfiguration navigationManyConfiguration, object existingEntity, object newEntity, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (navigationManyConfiguration.NavigationProperty == null)
                 return false;
@@ -386,12 +394,12 @@ namespace DeepDiff.Internal
             var newChildren = (IEnumerable<object>)newEntityChildren!;
             IList<object> mergedChildren;
             if (navigationManyConfiguration.UseDerivedTypes)
-                mergedChildren = MergeManyMultipleTypes(existingChildren, newChildren, operationListener);
+                mergedChildren = MergeManyMultipleTypes(existingChildren, newChildren, operationListener, parentEntities);
             else
             {
                 if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                     throw new MissingConfigurationException(childType);
-                mergedChildren = MergeManyByType(childType, childEntityConfiguration, existingChildren, newChildren, operationListener);
+                mergedChildren = MergeManyByType(childType, childEntityConfiguration, existingChildren, newChildren, operationListener, parentEntities);
             }
 
             // convert merged children from IEnumerable<object> to List<ChildType>
@@ -408,7 +416,7 @@ namespace DeepDiff.Internal
             return false;
         }
 
-        private bool MergeUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object newEntity, IOperationListener operationListener)
+        private bool MergeUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object existingEntity, object newEntity, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (navigationOneConfiguration.NavigationProperty == null)
                 return false;
@@ -424,7 +432,7 @@ namespace DeepDiff.Internal
             var newEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(newEntity);
 
             // merge child
-            var mergedChild = MergeSingleByType(childType, childEntityConfiguration, existingEntityChild, newEntityChild, operationListener);
+            var mergedChild = MergeSingleByType(childType, childEntityConfiguration, existingEntityChild, newEntityChild, operationListener, parentEntities);
 
             // set navigation one property to merged child
             if (!DiffEngineConfiguration.CompareOnly)
@@ -437,7 +445,7 @@ namespace DeepDiff.Internal
             return true;
         }
 
-        private void OnUpdate(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, IOperationListener operationListener)
+        private void OnUpdate(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (entityConfiguration.UpdateConfiguration != null)
             {
@@ -447,18 +455,33 @@ namespace DeepDiff.Internal
                 // use SetValue from UpdateConfiguration
                 OnUpdateSetValue(updateConfiguration, existingEntity);
                 // copy values from ValuesConfiguration, only updated ones
-                OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult, operationListener);
+                OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult, operationListener, parentEntities);
             }
         }
 
-        private void OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult, IOperationListener operationListener)
+        private void OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult, IOperationListener operationListener, List<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> parentEntities)
         {
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
             {
                 foreach (var detail in compareByPropertyResult.Details.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
                 {
                     // notify update
-                    operationListener?.OnUpdate(entityConfiguration.EntityType.Name, detail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => detail.OldValue, () => detail.NewValue);
+                    var keys = GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity);
+                    if (parentEntities is not null)
+                    {
+                        foreach (var parentEntity in parentEntities)
+                        {
+                            var parentKeys = GenerateKeysForOperation(parentEntity.EntityConfiguration, parentEntity.KeyConfiguration, parentEntity.Entity);
+                            foreach (var parentKey in parentKeys)
+                            {
+                                if (!keys.ContainsKey(parentKey.Key))
+                                    keys.Add(parentKey.Key, parentKey.Value);
+                            }
+                        }
+                    }
+                    
+                    //operationListener?.OnUpdate(entityConfiguration.EntityType.Name, detail.PropertyInfo.Name, () =>  GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => detail.OldValue, () => detail.NewValue);
+                    operationListener?.OnUpdate(entityConfiguration.EntityType.Name, detail.PropertyInfo.Name, () => keys, () => detail.OldValue, () => detail.NewValue);
                     //
                     if (!DiffEngineConfiguration.CompareOnly)
                         detail.PropertyInfo.SetValue(existingEntity, detail.NewValue);
@@ -596,7 +619,7 @@ namespace DeepDiff.Internal
         {
             if (entityConfiguration.NoKey)
                 return null;
-
+            
             var result = new Dictionary<string, object>();
             foreach (var propertyInfo in keyConfiguration.KeyProperties)
             {
