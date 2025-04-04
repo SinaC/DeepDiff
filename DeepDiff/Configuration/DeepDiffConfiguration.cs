@@ -12,6 +12,13 @@ namespace DeepDiff.Configuration
     {
         internal Dictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; } = new Dictionary<Type, EntityConfiguration>();
 
+        /// <summary>
+        /// Creates a new instance of <see cref="IEntityConfiguration{TEntity}"/> for the specified entity type.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="AbstractEntityConfigurationException"/>
+        /// <exception cref="DuplicateEntityConfigurationException"/>
         public IEntityConfiguration<TEntity> Entity<TEntity>()
             where TEntity : class
         {
@@ -29,6 +36,13 @@ namespace DeepDiff.Configuration
             return new EntityConfiguration<TEntity>(entityConfiguration);
         }
 
+        /// <summary>
+        /// Adds a profile to the configuration.
+        /// </summary>
+        /// <typeparam name="TProfile"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="AbstractEntityConfigurationException"/>
+        /// <exception cref="DuplicateEntityConfigurationException"/>
         public IDeepDiffConfiguration AddProfile<TProfile>()
             where TProfile : DiffProfile
         {
@@ -37,12 +51,26 @@ namespace DeepDiff.Configuration
             return this;
         }
 
+        /// <summary>
+        /// Adds a profile to the configuration.
+        /// </summary>
+        /// <param name="diffProfile"></param>
+        /// <returns></returns>
+        /// <exception cref="AbstractEntityConfigurationException"/>
+        /// <exception cref="DuplicateEntityConfigurationException"/>
         public IDeepDiffConfiguration AddProfile(DiffProfile diffProfile)
         {
             AddProfileFromInstance(diffProfile);
             return this;
         }
 
+        /// <summary>
+        /// Adds profiles from the specified assemblies to the configuration.
+        /// </summary>
+        /// <param name="assembliesToScan"></param>
+        /// <returns></returns>
+        /// <exception cref="AbstractEntityConfigurationException"/>
+        /// <exception cref="DuplicateEntityConfigurationException"/>
         public IDeepDiffConfiguration AddProfiles(params Assembly[] assembliesToScan)
         {
             if (assembliesToScan != null && assembliesToScan.Length > 0)
@@ -60,6 +88,21 @@ namespace DeepDiff.Configuration
             return this;
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="IDeepDiff"/> with the current configuration.
+        /// </summary>
+        /// <returns></returns>
+        /// /// <exception cref="AggregateException"/>
+        /// <exception cref="AlreadyDefinedPropertyException"/>
+        /// <exception cref="DuplicatePropertyConfigurationException"/>
+        /// <exception cref="EmptyConfigurationException"/>
+        /// <exception cref="MissingKeyConfigurationException"/>
+        /// <exception cref="MissingNavigationOneChildConfigurationException"/>
+        /// <exception cref="MissingNavigationManyAbstractChildConfigurationException"/>
+        /// <exception cref="MissingNavigationManyChildConfigurationException"/>
+        /// <exception cref="NoKeyAndHasKeyConfigurationException"/>
+        /// <exception cref="NoKeyButFoundInNavigationManyConfigurationException"/>
+        /// <exception cref="InvalidNavigationOneChildTypeConfigurationException"/>
         public IDeepDiff CreateDeepDiff()
         {
             ValidateConfiguration();
@@ -68,6 +111,20 @@ namespace DeepDiff.Configuration
             return new Internal.DeepDiff(this);
         }
 
+        /// <summary>
+        /// Validates the configuration. Throw an exception if the configuration is invalid.
+        /// </summary>
+        /// <exception cref="AggregateException"/>
+        /// <exception cref="AlreadyDefinedPropertyException"/>
+        /// <exception cref="DuplicatePropertyConfigurationException"/>
+        /// <exception cref="EmptyConfigurationException"/>
+        /// <exception cref="MissingKeyConfigurationException"/>
+        /// <exception cref="MissingNavigationOneChildConfigurationException"/>
+        /// <exception cref="MissingNavigationManyAbstractChildConfigurationException"/>
+        /// <exception cref="MissingNavigationManyChildConfigurationException"/>
+        /// <exception cref="NoKeyAndHasKeyConfigurationException"/>
+        /// <exception cref="NoKeyButFoundInNavigationManyConfigurationException"/>
+        /// <exception cref="InvalidNavigationOneChildTypeConfigurationException"/>
         public void ValidateConfiguration()
         {
             var validators = new ValidatorBase[]
@@ -98,6 +155,11 @@ namespace DeepDiff.Configuration
                 throw new AggregateException(exceptions);
         }
 
+        /// <summary>
+        /// Validates if every properties are referenced in the configuration. Throw an exception if a property is not referenced.
+        /// </summary>
+        /// <exception cref="AggregateException"/>
+        /// <exception cref="PropertyNotReferenceInConfigurationException"/>
         public void ValidateIfEveryPropertiesAreReferenced()
         {
             var validator = new CheckEveryPropertiesAreReferencedValidator();

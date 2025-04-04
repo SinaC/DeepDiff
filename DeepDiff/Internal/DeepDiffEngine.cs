@@ -96,7 +96,7 @@ namespace DeepDiff.Internal
         private List<object> MergeManyByType_NonParallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
         {
             if (entityConfiguration.NoKey)
-                throw new NoKeyEntityInDiffManyException(entityType);
+                throw new NoKeyEntityInNavigationManyException(entityType);
 
             var results = new List<object>();
 
@@ -199,7 +199,7 @@ namespace DeepDiff.Internal
         private List<object> MergeManyByType_Parallel(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities, IOperationListener operationListener)
         {
             if (entityConfiguration.NoKey)
-                throw new NoKeyEntityInDiffManyException(entityType);
+                throw new NoKeyEntityInNavigationManyException(entityType);
 
             var results = new ConcurrentBag<object>();
 
@@ -455,13 +455,13 @@ namespace DeepDiff.Internal
         {
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
             {
-                foreach (var detail in compareByPropertyResult.Details.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
+                foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
                 {
                     // notify update
-                    operationListener?.OnUpdate(entityConfiguration.EntityType.Name, detail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => detail.OldValue, () => detail.NewValue);
+                    operationListener?.OnUpdate(entityConfiguration.EntityType.Name, compareByPropertyResultDetail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => compareByPropertyResultDetail.OldValue, () => compareByPropertyResultDetail.NewValue);
                     //
                     if (!DiffEngineConfiguration.CompareOnly)
-                        detail.PropertyInfo.SetValue(existingEntity, detail.NewValue);
+                        compareByPropertyResultDetail.PropertyInfo.SetValue(existingEntity, compareByPropertyResultDetail.NewValue);
                 }
             }
         }

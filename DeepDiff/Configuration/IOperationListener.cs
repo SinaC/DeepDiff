@@ -3,10 +3,33 @@ using System.Collections.Generic;
 
 namespace DeepDiff.Configuration
 {
+    /// <summary>
+    /// Defines a listener which will be called on every insert/update/delete detection.
+    /// </summary>
     public interface IOperationListener
     {
+        /// <summary>
+        /// Called when an insert is detected.
+        /// </summary>
+        /// <param name="entityName">entity name</param>
+        /// <param name="getKeysFunc">function to retrieve entity key(s). Will be returned as a dictionary(property name, property value)</param>
         void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+
+        /// <summary>
+        /// Called when delete is detected.
+        /// </summary>
+        /// <param name="entityName">entity name</param>
+        /// <param name="getKeysFunc">function to retrieve entity key(s). Will be returned as a dictionary(property name, property value)</param>
         void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+
+        /// <summary>
+        /// Called when an update is detected.
+        /// </summary>
+        /// <param name="entityName">entity name</param>
+        /// <param name="propertyName">property name</param>
+        /// <param name="getKeysFunc">function to retrieve entity key(s). Will be returned as a dictionary(property name, property value)</param>
+        /// <param name="getOriginalValueFunc">function to retrieve original property value</param>
+        /// <param name="getNewValueFunc">function to retrieve new property value</param>
         void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc);
     }
 }
