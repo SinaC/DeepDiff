@@ -28,15 +28,10 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
-        public IMergeManyConfiguration UseParallelism(bool use = false)
-        {
-            Configuration.SetUseParallelism(use);
-            return this;
-        }
 
-        public IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+        public IMergeManyConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
         {
-            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
+            Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(force);
             return this;
         }
     }

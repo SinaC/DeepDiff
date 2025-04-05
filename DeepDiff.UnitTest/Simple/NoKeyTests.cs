@@ -14,11 +14,11 @@ namespace DeepDiff.UnitTest.Simple;
 public class NoKeyTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void Identical(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    
+    [InlineData(EqualityComparers.Naive)]
+    
+    public void Identical(EqualityComparers equalityComparer)
     {
 
         var now = DateTime.Now;
@@ -28,18 +28,16 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
 
         //
         Assert.Empty(entities);
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void Level1_Update(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void Level1_Update(EqualityComparers equalityComparer)
     {
 
         var now = DateTime.Now;
@@ -50,7 +48,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
 
         //
         Assert.Single(entities);
@@ -62,11 +60,9 @@ public class NoKeyTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void Level2_Update(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void Level2_Update(EqualityComparers equalityComparer)
     {
 
         var now = DateTime.Now;
@@ -77,7 +73,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var results = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
 
         //
         Assert.Single(results);

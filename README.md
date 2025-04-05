@@ -257,12 +257,12 @@ Defines minimum number of entries in collection to use hashtable (15 by default)
 IMergeSingleConfiguration HashtableThreshold(int threshold = 15)
 ```
 
-### ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel
+### ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel
 
 Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified
 
 ```csharp
-IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
 ### SetEqualityComparer
@@ -271,14 +271,6 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 
 ```csharp
 IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-```
-
-### UseParallelism (experimental)
-
-When set to true, engine will use parallelism to compare entities (false by default)
-
-```csharp
-IMergeSingleConfiguration UseParallelism(bool use = false);
 ```
 
 ## MergeMany configuration
@@ -299,12 +291,12 @@ Defines minimum number of entries in collection to use hashtable (15 by default)
 IMergeManyConfiguration HashtableThreshold(int threshold = 15)
 ```
 
-### ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel
+### ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel
 
 Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified
 
 ```csharp
-IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
+IMergeManyConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
 ### SetEqualityComparer
@@ -313,14 +305,6 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 
 ```csharp
 IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-```
-
-### UseParallelism (experimental)
-
-When set to true, engine will use parallelism to compare entities (false by default)
-
-```csharp
-IMergeManyConfiguration UseParallelism(bool use = false);
 ```
 
 ## CompareSingle configuration
@@ -349,14 +333,6 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
-### UseParallelism (experimental)
-
-When set to true, engine will use parallelism to compare entities (false by default)
-
-```csharp
-ICompareSingleConfiguration UseParallelism(bool use = false);
-```
-
 ## CompareMany configuration
 
 ### UseHashtable
@@ -383,14 +359,6 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
-### UseParallelism (experimental)
-
-When set to true, engine will use parallelism to compare entities (false by default)
-
-```csharp
-ICompareManyConfiguration UseParallelism(bool use = false);
-```
-
 ## OperationListener
 
 Defines a listener which will be called on every insert/update/delete detection
@@ -410,7 +378,7 @@ void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc);
 ### OnUpdate
 
 ```csharp
-void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc);
+void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getAscendingNavigationPathKeysFunc);
 ```
 
 # Deep Diff Configuration

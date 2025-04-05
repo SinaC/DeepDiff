@@ -10,11 +10,9 @@ namespace DeepDiff.UnitTest.Simple;
 public partial class SimpleDeepDiffTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void TestMultipleChanges_MultipleEntities(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void TestMultipleChanges_MultipleEntities(EqualityComparers equalityComparer)
     {
         var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel0
         {
@@ -79,7 +77,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
 
         // deleted: 0
         // updated: 1, 2, 4, 5, 7, 8

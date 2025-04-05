@@ -29,15 +29,9 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IMergeSingleConfiguration UseParallelism(bool use = false)
+        public IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
         {
-            Configuration.SetUseParallelism(use);
-            return this;
-        }
-
-        public IMergeSingleConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false)
-        {
-            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(force);
+            Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(force);
             return this;
         }
     }

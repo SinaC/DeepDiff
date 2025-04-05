@@ -11,11 +11,9 @@ namespace DeepDiff.UnitTest.CapacityAvailability;
 public class CapacityAvailabilityTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void DetectInsertAtCapacityAvailabilityLevel_Precompiled(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void DetectInsertAtCapacityAvailabilityLevel_Precompiled(EqualityComparers equalityComparer)
     {
         var startDate = DateTime.Today;
         var dayCount = 5;
@@ -55,7 +53,7 @@ public class CapacityAvailabilityTests
 
         var deepDiff = CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism)).ToArray();
+        var results = deepDiff.MergeMany(existingCapacityAvailabilities, newCapacityAvailabilities, listener, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.Insert, results.Single().PersistChange);

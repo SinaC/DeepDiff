@@ -16,7 +16,7 @@ namespace DeepDiff.Internal.Configuration
 
         public void SetUseDerivedTypes(bool useDerivedTypes)
         {
-            if (!NavigationChildType.IsAbstract) // when IsAbstract, UseDerivedTypes is been forced to true and cannot be modified
+            if (!NavigationChildType.IsAbstract) // if IsAbstract, UseDerivedTypes cannot be modified
                 UseDerivedTypes = useDerivedTypes;
         }
     }

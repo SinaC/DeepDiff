@@ -57,7 +57,7 @@ namespace DeepDiff.UnitTest.Profile
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
             var listener = new StoreAllOperationListener(); 
-            var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
+            var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
             var toto1 = operations.OfType<UpdateDiffOperation>().SelectMany(x => x.UpdatedProperties, (e, p) => new { e.EntityName, p.PropertyName }).GroupBy(x => x.PropertyName);
