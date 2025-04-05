@@ -9,7 +9,7 @@ namespace DeepDiff.Internal.Configuration
         public CompareManyConfiguration()
         {
             Configuration = new DiffEngineConfiguration();
-            Configuration.SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(false);
+            Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(false);
             Configuration.SetCompareOnly(true);
         }
 
@@ -28,12 +28,6 @@ namespace DeepDiff.Internal.Configuration
         public ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
         {
             Configuration.SetEqualityComparer(equalityComparer);
-            return this;
-        }
-
-        public ICompareManyConfiguration UseParallelism(bool use = false)
-        {
-            Configuration.SetUseParallelism(use);
             return this;
         }
     }

@@ -24,12 +24,10 @@
         /// <returns></returns>
         IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
         /// <summary>
-        /// Indicates whether to use parallelism
+        /// Indicates whether to force an update when modifications are detected only in the nested level.
         /// </summary>
-        /// <param name="use"></param>
-        /// <remarks>default value for <paramref name="use"/> is <c>false</c></remarks>
+        /// <param name="force"></param>
         /// <returns></returns>
-        IMergeManyConfiguration UseParallelism(bool use = false);
-        IMergeManyConfiguration ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool force = false);
+        IMergeManyConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false);
     }
 }

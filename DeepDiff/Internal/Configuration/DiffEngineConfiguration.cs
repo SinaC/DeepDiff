@@ -6,10 +6,9 @@ namespace DeepDiff.Internal.Configuration
     {
         public bool UseHashtable { get; private set; } = true;
         public int HashtableThreshold { get; private set; } = 15;
-        public bool ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel { get; private set; }
+        public bool ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel { get; private set; }
         public bool CompareOnly { get; private set; }
         public EqualityComparers EqualityComparer { get; private set; } = EqualityComparers.Precompiled;
-        public bool UseParallelism { get; private set; }
 
         public void SetUseHashtable(bool useHashtable)
         {
@@ -21,9 +20,9 @@ namespace DeepDiff.Internal.Configuration
             HashtableThreshold = hashtableThreshold;
         }
 
-        public void SetForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(bool forceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel)
+        public void SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool forceOnUpdateWhenModificationsDetectedOnlyInNestedLevel)
         {
-            ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel = forceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel;
+            ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel = forceOnUpdateWhenModificationsDetectedOnlyInNestedLevel;
         }
 
         public void SetCompareOnly(bool compareOnly)
@@ -34,11 +33,6 @@ namespace DeepDiff.Internal.Configuration
         public void SetEqualityComparer(EqualityComparers equalityComparer)
         {
             EqualityComparer = equalityComparer;
-        }
-
-        public void SetUseParallelism(bool useParallelism)
-        {
-            UseParallelism = useParallelism;
         }
     }
 }

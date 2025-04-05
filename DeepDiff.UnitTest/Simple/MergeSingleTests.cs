@@ -10,11 +10,9 @@ namespace DeepDiff.UnitTest.Simple;
 public class MergeSingleTests
 {
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void ModificationsInNested(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void ModificationsInNested(EqualityComparers equalityComparer)
     {
         var existingEntity = new EntityLevel0
         {
@@ -79,7 +77,7 @@ public class MergeSingleTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.None, result.PersistChange);
@@ -89,11 +87,9 @@ public class MergeSingleTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void ModificationsInNested_ForceOnUpdate_Precompiled(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void ModificationsInNested_ForceOnUpdate_Precompiled(EqualityComparers equalityComparer)
     {
         var existingEntity = new EntityLevel0
         {
@@ -158,7 +154,7 @@ public class MergeSingleTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateEvenIfModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -168,11 +164,9 @@ public class MergeSingleTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void ModificationsOnRoot_Precompiled(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void ModificationsOnRoot_Precompiled(EqualityComparers equalityComparer)
     {
         var existingEntity = new EntityLevel0
         {
@@ -237,7 +231,7 @@ public class MergeSingleTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -248,11 +242,9 @@ public class MergeSingleTests
     }
 
     [Theory]
-    [InlineData(EqualityComparers.Precompiled, true)]
-    [InlineData(EqualityComparers.Precompiled, false)]
-    [InlineData(EqualityComparers.Naive, true)]
-    [InlineData(EqualityComparers.Naive, false)]
-    public void DifferentKey_Precompiled(EqualityComparers equalityComparer, bool useParallelism)
+    [InlineData(EqualityComparers.Precompiled)]
+    [InlineData(EqualityComparers.Naive)]
+    public void DifferentKey_Precompiled(EqualityComparers equalityComparer)
     {
         var existingEntity = new EntityLevel0
         {
@@ -317,7 +309,7 @@ public class MergeSingleTests
             .HasValues(x => new { x.Power, x.Price });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer).UseParallelism(useParallelism));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);

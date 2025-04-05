@@ -28,12 +28,5 @@ namespace DeepDiff.Configuration
         /// <remarks>default value for <paramref name="equalityComparer"/> is <c>EqualityComparers.Precompiled</c></remarks>
         /// <returns></returns>
         ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
-        /// <summary>
-        /// Indicates whether to use parallelism
-        /// </summary>
-        /// <param name="use"></param>
-        /// <remarks>default value for <paramref name="use"/> is <c>false</c></remarks>
-        /// <returns></returns>
-        ICompareManyConfiguration UseParallelism(bool use = false);
     }
 }
