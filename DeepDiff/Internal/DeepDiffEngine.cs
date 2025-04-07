@@ -433,12 +433,20 @@ namespace DeepDiff.Internal
             if (entityConfiguration.NavigationManyConfigurations != null)
             {
                 foreach (var navigationManyConfiguration in entityConfiguration.NavigationManyConfigurations)
+                {
+                    EntityNavigationPath.Push((entityConfiguration, entityConfiguration.KeyConfiguration, entity));
                     PropagateUsingNavigationManyMultipleTypes(navigationManyConfiguration, entity, operation);
+                    EntityNavigationPath.Pop();
+                }
             }
             if (entityConfiguration.NavigationOneConfigurations != null)
             {
                 foreach (var navigationOneConfiguration in entityConfiguration.NavigationOneConfigurations)
+                {
+                    EntityNavigationPath.Push((entityConfiguration, entityConfiguration.KeyConfiguration, entity));
                     PropagateUsingNavigationOne(navigationOneConfiguration, entity, operation);
+                    EntityNavigationPath.Pop();
+                }
             }
         }
 
