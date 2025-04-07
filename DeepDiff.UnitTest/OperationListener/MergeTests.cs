@@ -73,15 +73,15 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.UpdatedProperties));
             Assert.Equal(nameof(EntityLevel0.Penalty), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).UpdatedProperties.Single().PropertyName);
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationPathKeys)); // no parent
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
             //
             Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(EntityLevel1)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.UpdatedProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(nameof(EntityLevel1.Power), x.PropertyName));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.NotEqual(x.ExistingValue, x.NewValue));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue)*2, Convert.ToInt32(x.NewValue)));
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.NavigationPathKeys)); // one parent
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationPathKeys, y => Assert.Equal(nameof(EntityLevel0), y.Key))); // one parent of EnityLevel0
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.NavigationParentKeys)); // one parent
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(nameof(EntityLevel0), y.Key))); // one parent of EnityLevel0
         }
 
         [Theory]
@@ -187,9 +187,9 @@ namespace DeepDiff.UnitTest.OperationListener
 
             // only check entity2 update operations
             Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel2)));
-            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationPathKeys.Count); // parent and grand-parent
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationPathKeys.Where(x => x.Key == nameof(EntityLevel1))); // one parent
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationPathKeys.Where(x => x.Key == nameof(EntityLevel0))); // one grand-parent
+            Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Count); // parent and grand-parent
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Where(x => x.Key == nameof(EntityLevel1))); // one parent
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Where(x => x.Key == nameof(EntityLevel0))); // one grand-parent
         }
 
         private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities(int level0Index)
