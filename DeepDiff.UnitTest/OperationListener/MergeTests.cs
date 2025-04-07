@@ -17,25 +17,7 @@ namespace DeepDiff.UnitTest.OperationListener
         {
             var (existingEntity, newEntity) = GenerateEntities(0);
 
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
-                .HasMany(x => x.SubEntities)
-                .Ignore(x => x.Index);
-            diffConfiguration.Entity<EntityLevel1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.Power, x.Price })
-                .Ignore(x => x.Index);
-
-            var deepDiff = diffConfiguration.CreateDeepDiff();
+            var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
             var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
@@ -154,7 +136,6 @@ namespace DeepDiff.UnitTest.OperationListener
                 }
             };
 
-
             var diffConfiguration = new DeepDiffConfiguration();
             diffConfiguration.Entity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -192,9 +173,15 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Where(x => x.Key == nameof(EntityLevel0))); // one grand-parent
         }
 
-        private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities(int level0Index)
+        private static (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities(int level0Index)
         {
-            var existingEntity = new EntityLevel0
+            var existingEntity = GenerateExisting(level0Index);
+            var newEntity = GenerateNew(level0Index);
+            return (existingEntity, newEntity);
+        }
+
+        private static EntityLevel0 GenerateExisting(int level0Index)
+            => new()
             {
                 Index = level0Index,
 
@@ -217,7 +204,8 @@ namespace DeepDiff.UnitTest.OperationListener
                 }).ToList(),
             };
 
-            var newEntity = new EntityLevel0
+        private static EntityLevel0 GenerateNew(int level0Index)
+            => new()
             {
                 Index = level0Index,
 
@@ -240,7 +228,27 @@ namespace DeepDiff.UnitTest.OperationListener
                 }).ToList(),
             };
 
-            return (existingEntity,  newEntity);
+        private static IDeepDiff CreateDeepDiff()
+        {
+            var diffConfiguration = new DeepDiffConfiguration();
+            diffConfiguration.Entity<EntityLevel0>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => new { x.StartsOn, x.Direction })
+                .HasValues(x => new { x.RequestedPower, x.Penalty })
+                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
+                .HasMany(x => x.SubEntities)
+                .Ignore(x => x.Index);
+            diffConfiguration.Entity<EntityLevel1>()
+                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                .HasKey(x => x.Timestamp)
+                .HasValues(x => new { x.Power, x.Price })
+                .Ignore(x => x.Index);
+
+            return diffConfiguration.CreateDeepDiff();
         }
     }
 }
