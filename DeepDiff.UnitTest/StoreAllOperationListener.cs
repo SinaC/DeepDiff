@@ -10,31 +10,33 @@ namespace DeepDiff.UnitTest
     {
         public ConcurrentBag<DiffOperationBase> Operations { get; } = new();
 
-        public void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc)
+        public void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc)
         {
             Operations.Add(new InsertDiffOperation
             {
                 EntityName = entityName,
-                Keys = getKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToString())
+                Keys = getKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToString()),
+                NavigationParentKeys = getNavigationParentKeysFunc().ToDictionary(x => x.Key, x => x.Value.ToDictionary(y => y.Key, y => y.Value?.ToString())),
             });
         }
 
-        public void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc)
+        public void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc)
         {
             Operations.Add(new DeleteDiffOperation
             {
                 EntityName = entityName,
-                Keys = getKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToString())
+                Keys = getKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToString()),
+                NavigationParentKeys = getNavigationParentKeysFunc().ToDictionary(x => x.Key, x => x.Value.ToDictionary(y => y.Key, y => y.Value?.ToString())),
             });
         }
 
-        public void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getAscendingNavigationPathKeysFunc)
+        public void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc)
         {
             Operations.Add(new UpdateDiffOperation
             {
                 EntityName = entityName,
                 Keys = getKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToString()),
-                NavigationPathKeys = getAscendingNavigationPathKeysFunc().ToDictionary(x => x.Key, x => x.Value.ToDictionary(y => y.Key, y => y.Value?.ToString())),
+                NavigationParentKeys = getNavigationParentKeysFunc().ToDictionary(x => x.Key, x => x.Value.ToDictionary(y => y.Key, y => y.Value?.ToString())),
                 UpdatedProperties = new List<UpdateDiffOperationPropertyInfo>
                 {
                     new UpdateDiffOperationPropertyInfo
@@ -51,7 +53,7 @@ namespace DeepDiff.UnitTest
     internal abstract class DiffOperationBase
     {
         public Dictionary<string, string?> Keys { get; init; } = null!;
-        public Dictionary<string, Dictionary<string, string?>> NavigationPathKeys { get; init; } = null!;
+        public Dictionary<string, Dictionary<string, string?>> NavigationParentKeys { get; init; } = null!;
 
         public string EntityName { get; init; } = null!;
     }

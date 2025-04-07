@@ -399,7 +399,7 @@ namespace DeepDiff.Internal
             {
                 var insertConfiguration = entityConfiguration.InsertConfiguration;
                 // notify insert
-                OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity));
+                OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), () => GenerateNavigationPathKeysForOperation());
                 // use SetValue from InsertConfiguration
                 if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
                 {
@@ -417,7 +417,7 @@ namespace DeepDiff.Internal
             {
                 var deleteConfiguration = entityConfiguration.DeleteConfiguration;
                 // generate options
-                OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity));
+                OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => GenerateNavigationPathKeysForOperation());
                 // use SetValue from DeleteConfiguration
                 if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
                 {

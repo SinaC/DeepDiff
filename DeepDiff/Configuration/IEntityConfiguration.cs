@@ -158,7 +158,7 @@ namespace DeepDiff.Configuration
         IEntityConfiguration<TEntity> Ignore<TIgnore>(Expression<Func<TEntity, TIgnore>> ignoreExpression);
 
         /// <summary>
-        /// Defines additional criteria to detect an update even if no update is detected.
+        /// Defines additional criteria to force an update even if no update is detected using entity value(s).
         /// </summary>
         /// <param name="forceUpdateIfConfigurationAction"></param>
         /// <returns></returns>

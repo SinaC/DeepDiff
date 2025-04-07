@@ -167,7 +167,7 @@ IEntityConfiguration<TEntity> WithComparer<T>(IEqualityComparer<T> equalityCompa
 
 ## ForceUpdateIf
 
-Defines additional criteria to detect an update even if Values are identical
+Defines additional criteria to force an update even if no update is detected using entity value(s).
 
 ```csharp
 IEntityConfiguration<TEntity> ForceUpdateIf(Action<IForceUpdateIfConfiguration<TEntity>> forceUpdateIfConfigurationAction)
@@ -366,19 +366,19 @@ Defines a listener which will be called on every insert/update/delete detection
 ### OnInsert
 
 ```csharp
-void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 ### OnDelete
 
 ```csharp
-void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc);
+void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 ### OnUpdate
 
 ```csharp
-void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<object> getNewValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getAscendingNavigationPathKeysFunc);
+void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 # Deep Diff Configuration
