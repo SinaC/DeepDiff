@@ -13,7 +13,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void MergeMany()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel1>()
+            diffConfiguration.ConfigureEntity<EntityLevel1>()
                 .NoKey();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
@@ -44,7 +44,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void MergeSingle()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel1>()
+            diffConfiguration.ConfigureEntity<EntityLevel1>()
                 .HasValues(x => new { x.Power, x.Price })
                 .NoKey();
             var deepDiff = diffConfiguration.CreateDeepDiff();

@@ -92,14 +92,14 @@ public class CapacityAvailabilityTests
     private static IDeepDiff CreateDeepDiff()
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<Entities.CapacityAvailability.CapacityAvailability>()
+        diffConfiguration.ConfigureEntity<Entities.CapacityAvailability.CapacityAvailability>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.Day, x.CapacityMarketUnitId })
             .HasValues(x => x.IsEnergyContrained)
             .HasMany(x => x.CapacityAvailabilityDetails);
-        diffConfiguration.Entity<CapacityAvailabilityDetail>()
+        diffConfiguration.ConfigureEntity<CapacityAvailabilityDetail>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

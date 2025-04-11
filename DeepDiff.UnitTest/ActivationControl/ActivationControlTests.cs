@@ -106,7 +106,7 @@ namespace DeepDiff.UnitTest.ActivationControl
         private static IDeepDiff CreateDeepDiffWithoutExtensions()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.ActivationControl.ActivationControl>()
+            diffConfiguration.ConfigureEntity<Entities.ActivationControl.ActivationControl>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -117,7 +117,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
                 .OnUpdate(cfg => cfg.CopyValues(x => x.Status))
                 .Ignore(x => new { x.PersistChange, x.CreatedOn, x.CreatedBy, x.UpdatedOn, x.UpdatedBy, x.Id, x.InternalComment, x.TsoComment });
-            diffConfiguration.Entity<ActivationControlDetail>()
+            diffConfiguration.ConfigureEntity<ActivationControlDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -128,7 +128,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasMany(x => x.TimestampDetails)
                 .HasMany(x => x.DpDetails)
                 .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.ActivationControl });
-            diffConfiguration.Entity<ActivationControlTimestampDetail>()
+            diffConfiguration.ConfigureEntity<ActivationControlTimestampDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -137,7 +137,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasKey(x => x.Timestamp)
                 .HasValues(x => new { x.PowerMeasured, x.PowerBaseline, x.FcrCorrection, x.EnergyRequested, x.EnergyRequestedForRedispatching, x.EnergySupplied, x.EnergyToBeSupplied, x.Deviation, x.PermittedDeviation, x.MaxDeviation, x.Discrepancy, x.IsJumpExcluded, x.IsMeasurementExcluded })
                 .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.ActivationControlDetail, x.AuditedOn, x.AuditedBy });
-            diffConfiguration.Entity<ActivationControlDpDetail>()
+            diffConfiguration.ConfigureEntity<ActivationControlDpDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -147,7 +147,7 @@ namespace DeepDiff.UnitTest.ActivationControl
                 .HasValues(x => new { x.DeliveryPointName, x.Direction, x.DeliveryPointType, x.TotalEnergySupplied })
                 .HasMany(x => x.TimestampDetails)
                 .Ignore(x => new { x.PersistChange, x.ActivationControlId, x.StartsOn, x.ActivationControlDetail });
-            diffConfiguration.Entity<ActivationControlDpTimestampDetail>()
+            diffConfiguration.ConfigureEntity<ActivationControlDpTimestampDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

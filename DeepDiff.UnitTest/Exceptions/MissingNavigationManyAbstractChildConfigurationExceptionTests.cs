@@ -11,7 +11,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Inheritance_Abstract()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Inheritance.Entities.Abstract.Entity>()
+            diffConfiguration.ConfigureEntity<Inheritance.Entities.Abstract.Entity>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

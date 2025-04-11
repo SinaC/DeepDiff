@@ -13,7 +13,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void SelfDefinedKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -25,7 +25,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void KeyOnNonProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -37,7 +37,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void SelfDefinedValues()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -49,7 +49,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void ValuesOnNonProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -61,7 +61,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void SelfDefinedAdditionalValuesToCopy()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -73,7 +73,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void AdditionalValuesToCopyOnNonProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -85,7 +85,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void SelfDefinedNavigationMany()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -97,7 +97,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void NavigationManyOnNonPropertyCollection()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
@@ -109,7 +109,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void SelfDefinedNavigationOne()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));

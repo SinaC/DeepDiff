@@ -14,7 +14,7 @@ public class SimpleWithComparerTests
     public void ComparersOnType_Modifications(EqualityComparers equalityComparer)
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel2>()
+        diffConfiguration.ConfigureEntity<EntityLevel2>()
             .WithComparer(new DecimalComparer(3))
             .WithComparer(new NullableDecimalComparer(5))
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -59,7 +59,7 @@ public class SimpleWithComparerTests
     public void ComparersOnType_NoModifications(EqualityComparers equalityComparer)
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel2>()
+        diffConfiguration.ConfigureEntity<EntityLevel2>()
             .WithComparer(new DecimalComparer(3))
             .WithComparer(new NullableDecimalComparer(5))
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -99,7 +99,7 @@ public class SimpleWithComparerTests
     public void ComparersOnType_ComparerOnProperty_Modifications(EqualityComparers equalityComparer)
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel2>()
+        diffConfiguration.ConfigureEntity<EntityLevel2>()
             .WithComparer(new DecimalComparer(3))
             .WithComparer(new NullableDecimalComparer(5))
             .WithComparer(x => x.Value2, new NullableDecimalComparer(6))

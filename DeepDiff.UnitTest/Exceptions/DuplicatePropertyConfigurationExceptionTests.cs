@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void OnInsert_SetValue_DuplicateProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);
@@ -26,7 +26,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void OnUpdate_SetValue_DuplicateProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);
@@ -40,7 +40,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void OnDelete_SetValue_DuplicateProperty()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert).SetValue(x => x.PersistChange, PersistChange.Update))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);

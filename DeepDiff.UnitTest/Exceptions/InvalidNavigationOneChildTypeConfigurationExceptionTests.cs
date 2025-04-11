@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void HasOneOnCollection()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -26,10 +26,10 @@ namespace DeepDiff.UnitTest.Exceptions
         public void HasOneOnAbstract()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<ParentEntity>()
+            diffConfiguration.ConfigureEntity<ParentEntity>()
                 .HasKey(x => x.Key)
                 .HasOne(x => x.Child);
-            diffConfiguration.Entity<ChildEntity1>()
+            diffConfiguration.ConfigureEntity<ChildEntity1>()
                 .NoKey()
                 .HasValues(x => x.Name);
 

@@ -61,7 +61,7 @@ namespace DeepDiff.Internal.Extensions
             return propertyPath != null && propertyPath.Count == 1 ? propertyPath : null;
         }
 
-        public static Expression RemoveConvert(this Expression expression)
+        private static Expression RemoveConvert(this Expression expression)
         {
             while (expression.NodeType == ExpressionType.Convert
                    || expression.NodeType == ExpressionType.ConvertChecked)

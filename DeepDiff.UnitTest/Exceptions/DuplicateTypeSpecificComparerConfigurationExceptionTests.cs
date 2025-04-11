@@ -11,7 +11,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void DuplicateTypeSpecificComparer()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entityConfiguration = diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            var entityConfiguration = diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

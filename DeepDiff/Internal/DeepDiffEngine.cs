@@ -357,9 +357,9 @@ namespace DeepDiff.Internal
                 OnUpdateCopyValues(updateConfiguration, existingEntity, newEntity);
                 // use SetValue from UpdateConfiguration
                 OnUpdateSetValue(updateConfiguration, existingEntity);
-                // copy values from ValuesConfiguration, only updated ones
-                OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult);
             }
+            // copy values from ValuesConfiguration, only updated ones
+            OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult);
         }
 
         private void OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult)
@@ -395,11 +395,12 @@ namespace DeepDiff.Internal
 
         private void OnInsertAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object newEntity)
         {
+            // notify insert
+            OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), () => GenerateNavigationPathKeysForOperation());
+            //
             if (entityConfiguration.InsertConfiguration != null)
             {
                 var insertConfiguration = entityConfiguration.InsertConfiguration;
-                // notify insert
-                OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), () => GenerateNavigationPathKeysForOperation());
                 // use SetValue from InsertConfiguration
                 if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
                 {
@@ -413,11 +414,12 @@ namespace DeepDiff.Internal
 
         private void OnDeleteAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity)
         {
+            // notify delete
+            OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => GenerateNavigationPathKeysForOperation());
+            //
             if (entityConfiguration.DeleteConfiguration != null)
             {
                 var deleteConfiguration = entityConfiguration.DeleteConfiguration;
-                // generate options
-                OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => GenerateNavigationPathKeysForOperation());
                 // use SetValue from DeleteConfiguration
                 if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
                 {

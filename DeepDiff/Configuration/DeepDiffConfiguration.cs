@@ -19,7 +19,7 @@ namespace DeepDiff.Configuration
         /// <returns></returns>
         /// <exception cref="AbstractEntityConfigurationException"/>
         /// <exception cref="DuplicateEntityConfigurationException"/>
-        public IEntityConfiguration<TEntity> Entity<TEntity>()
+        public IEntityConfiguration<TEntity> ConfigureEntity<TEntity>()
             where TEntity : class
         {
             var entityType = typeof(TEntity);

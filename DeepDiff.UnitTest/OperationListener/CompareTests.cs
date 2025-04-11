@@ -12,13 +12,15 @@ namespace DeepDiff.UnitTest.OperationListener
     public class CompareTests
     {
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareSingle(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareSingle(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
         {
             var (existingEntity, newEntity) = GenerateModifications(1);
 
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
             deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
@@ -54,14 +56,16 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareSingle_NoExisting(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareSingle_NoExisting(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
         {
             var existingEntity = (EntityLevel0)null!;
             var newEntity = GenerateNew(1);
 
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
             deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
@@ -86,14 +90,16 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareSingle_NoNew(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareSingle_NoNew(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
         {
             var existingEntity = GenerateExisting(1);
             var newEntity = (EntityLevel0)null!;
 
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
             deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
@@ -118,9 +124,11 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void CompareMany(EqualityComparers equalityComparer)
+        [InlineData(EqualityComparers.Precompiled, true)]
+        [InlineData(EqualityComparers.Precompiled, false)]
+        [InlineData(EqualityComparers.Naive, true)]
+        [InlineData(EqualityComparers.Naive, false)]
+        public void CompareMany(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
         {
             var existingEntities = new List<EntityLevel0>();
             var newEntities = new List<EntityLevel0>();
@@ -131,7 +139,7 @@ namespace DeepDiff.UnitTest.OperationListener
                 newEntities.Add(newEntity);
             }
 
-            var deepDiff = CreateDeepDiff();
+            var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
             deepDiff.CompareMany(existingEntities, newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
@@ -163,25 +171,43 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(nameof(EntityLevel0), y.Key))); // one parent of EnityLevel0
         }
 
-        private static IDeepDiff CreateDeepDiff()
+        private static IDeepDiff CreateDeepDiff(bool defineOperationsOnEntity)
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => new { x.StartsOn, x.Direction })
-                .HasValues(x => new { x.RequestedPower, x.Penalty })
-                .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
-                .HasMany(x => x.SubEntities)
-                .Ignore(x => x.Index);
-            diffConfiguration.Entity<EntityLevel1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Timestamp)
-                .HasValues(x => new { x.Power, x.Price })
-                .Ignore(x => x.Index);
+            if (defineOperationsOnEntity)
+            {
+                diffConfiguration.ConfigureEntity<EntityLevel0>()
+                    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                    .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                    .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                    .HasKey(x => new { x.StartsOn, x.Direction })
+                    .HasValues(x => new { x.RequestedPower, x.Penalty })
+                    .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
+                    .HasMany(x => x.SubEntities)
+                    .Ignore(x => x.Index);
+                diffConfiguration.ConfigureEntity<EntityLevel1>()
+                    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+                    .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+                    .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+                    .HasKey(x => x.Timestamp)
+                    .HasValues(x => new { x.Power, x.Price })
+                    .Ignore(x => x.Index);
+            }
+            else
+            {
+                diffConfiguration.ConfigureEntity<EntityLevel0>()
+                    .HasKey(x => new { x.StartsOn, x.Direction })
+                    .HasValues(x => new { x.RequestedPower, x.Penalty })
+                    .OnUpdate(cfg => cfg.CopyValues(x => new { x.AdditionalValueToCopy }))
+                    .HasMany(x => x.SubEntities)
+                    .Ignore(x => x.Index)
+                    .Ignore(x => x.PersistChange);
+                diffConfiguration.ConfigureEntity<EntityLevel1>()
+                    .HasKey(x => x.Timestamp)
+                    .HasValues(x => new { x.Power, x.Price })
+                    .Ignore(x => x.Index)
+                    .Ignore(x => x.PersistChange);
+            }
 
             return diffConfiguration.CreateDeepDiff();
         }
