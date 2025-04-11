@@ -22,7 +22,7 @@ public class LoadNavigation
 
         var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         noHashtableNaiveComparerDiffConfiguration
-           .Entity<NavigationEntityLevel0>()
+           .ConfigureEntity<NavigationEntityLevel0>()
            .HasKey(x => new { x.StartsOn, x.Direction })
            .HasValues(x => new { x.RequestedPower, x.Penalty })
            .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
@@ -32,7 +32,7 @@ public class LoadNavigation
            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHashtableNaiveComparerDiffConfiguration
-            .Entity<NavigationEntityLevel1>()
+            .ConfigureEntity<NavigationEntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .HasOne(x => x.SubEntity)
@@ -41,7 +41,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHashtableNaiveComparerDiffConfiguration
-           .Entity<NavigationEntityLevel2>()
+           .ConfigureEntity<NavigationEntityLevel2>()
            .HasKey(x => x.DeliveryPointEan)
            .HasValues(x => new { x.Value1, x.Value2 })
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -51,7 +51,7 @@ public class LoadNavigation
 
         var noHastablePrecompiledComparerDiffConfiguration = new DeepDiffConfiguration();
         noHastablePrecompiledComparerDiffConfiguration
-            .Entity<NavigationEntityLevel0>()
+            .ConfigureEntity<NavigationEntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
@@ -61,7 +61,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHastablePrecompiledComparerDiffConfiguration
-            .Entity<NavigationEntityLevel1>()
+            .ConfigureEntity<NavigationEntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .HasOne(x => x.SubEntity)
@@ -70,7 +70,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         noHastablePrecompiledComparerDiffConfiguration
-           .Entity<NavigationEntityLevel2>()
+           .ConfigureEntity<NavigationEntityLevel2>()
            .HasKey(x => x.DeliveryPointEan)
            .HasValues(x => new { x.Value1, x.Value2 })
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -80,7 +80,7 @@ public class LoadNavigation
 
         var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
-           .Entity<NavigationEntityLevel0>()
+           .ConfigureEntity<NavigationEntityLevel0>()
            .HasKey(x => new { x.StartsOn, x.Direction })
            .HasValues(x => new { x.RequestedPower, x.Penalty })
            .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
@@ -90,7 +90,7 @@ public class LoadNavigation
            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hastableNaiveComparerDiffConfiguration
-            .Entity<NavigationEntityLevel1>()
+            .ConfigureEntity<NavigationEntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .HasOne(x => x.SubEntity)
@@ -99,7 +99,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hastableNaiveComparerDiffConfiguration
-           .Entity<NavigationEntityLevel2>()
+           .ConfigureEntity<NavigationEntityLevel2>()
            .HasKey(x => x.DeliveryPointEan)
            .HasValues(x => new { x.Value1, x.Value2 })
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -109,7 +109,7 @@ public class LoadNavigation
 
         var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
-            .Entity<NavigationEntityLevel0>()
+            .ConfigureEntity<NavigationEntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
@@ -119,7 +119,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hashtableDiffConfiguration
-            .Entity<NavigationEntityLevel1>()
+            .ConfigureEntity<NavigationEntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .HasOne(x => x.SubEntity)
@@ -128,7 +128,7 @@ public class LoadNavigation
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
         hashtableDiffConfiguration
-           .Entity<NavigationEntityLevel2>()
+           .ConfigureEntity<NavigationEntityLevel2>()
            .HasKey(x => x.DeliveryPointEan)
            .HasValues(x => new { x.Value1, x.Value2 })
            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))

@@ -1,3 +1,9 @@
+# Breaking changes
+
+### 1.10.0
+
+- to configure an entity, you must now use the `ConfigureEntity<TEntity>()` method instead of `Entity<TEntity>()`
+
 # Sample
 
 ## How do I get started
@@ -5,14 +11,14 @@ First configure DeepDiff to know what types you want to compare, in the startup 
 
 ```csharp
 var diffConfiguration = new DiffConfiguration();
-diffConfiguration.Entity<Entity>()
+diffConfiguration.ConfigureEntity<Entity>()
    .HasKey(x => new { x.StartsOn, x.Name })
    .HasValues(x => new { x.Price, x.Volume })
    .HasMany(x => x.SubEntities)
    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
    .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
    .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-diffConfiguration.Entity<SubEntity>()
+diffConfiguration.ConfigureEntity<SubEntity>()
    .HasKey(x => x.SubName)
    .HasValues(x => x.Energy)
    .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -383,12 +389,12 @@ void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, ob
 
 # Deep Diff Configuration
 
-## Entity
+## ConfigureEntity
 
 Create an entity configuration
 
 ```csharp
-IEntityConfiguration<TEntity> Entity<TEntity>()
+IEntityConfiguration<TEntity> ConfigureEntity<TEntity>()
 ```
 
 ## AddProfile

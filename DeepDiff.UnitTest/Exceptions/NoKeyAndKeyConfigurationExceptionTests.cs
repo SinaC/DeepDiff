@@ -11,7 +11,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void NoKeyThenHasKeyConfiguration()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entity0Config = diffConfiguration.Entity<EntityLevel0>()
+            var entity0Config = diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .NoKey();
 
             Assert.Throws<NoKeyAndHasKeyConfigurationException>(() => entity0Config.HasKey(x => x.StartsOn));
@@ -21,7 +21,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void HasKeyThenNoKeyConfiguration()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            var entity0Config = diffConfiguration.Entity<EntityLevel0>()
+            var entity0Config = diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .HasKey(x => x.StartsOn);
 
             Assert.Throws<NoKeyAndHasKeyConfigurationException>(() => entity0Config.NoKey());

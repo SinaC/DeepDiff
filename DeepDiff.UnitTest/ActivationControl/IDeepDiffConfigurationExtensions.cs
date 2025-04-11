@@ -9,7 +9,7 @@ namespace DeepDiff.UnitTest.ActivationControl
         public static IEntityConfiguration<TEntity> PersistEntity<TEntity>(this IDeepDiffConfiguration deepDiffConfiguration)
             where TEntity : PersistEntity
         {
-            return deepDiffConfiguration.Entity<TEntity>()
+            return deepDiffConfiguration.ConfigureEntity<TEntity>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

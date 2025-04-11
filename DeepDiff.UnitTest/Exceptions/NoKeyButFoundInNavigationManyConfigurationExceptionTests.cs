@@ -12,10 +12,10 @@ namespace DeepDiff.UnitTest.Exceptions
         public void NoKeyAndInHasManyOfAnotherConfiguration()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<EntityLevel1>()
+            diffConfiguration.ConfigureEntity<EntityLevel1>()
                 .NoKey();
 
             var exception = Assert.Throws<NoKeyButFoundInNavigationManyConfigurationException>(() => diffConfiguration.CreateDeepDiff());

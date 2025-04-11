@@ -11,7 +11,7 @@ namespace DeepDiff.Configuration
         /// <returns></returns>
         /// <exception cref="Exceptions.AbstractEntityConfigurationException"/>
         /// <exception cref="Exceptions.DuplicateEntityConfigurationException"/>
-        IEntityConfiguration<TEntity> Entity<TEntity>()
+        IEntityConfiguration<TEntity> ConfigureEntity<TEntity>()
             where TEntity : class;
 
         /// <summary>

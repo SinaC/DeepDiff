@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void MissingKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

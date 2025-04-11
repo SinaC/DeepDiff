@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void MissingNavigationManyChildConfigurationException()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -26,20 +26,20 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Inheritance_NonAbstract()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Inheritance.Entities.NonAbstract.Entity>()
+            diffConfiguration.ConfigureEntity<Inheritance.Entities.NonAbstract.Entity>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Key)
                 .HasValues(x => x.Name)
                 .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<Inheritance.Entities.NonAbstract.SubEntity1>()
+            diffConfiguration.ConfigureEntity<Inheritance.Entities.NonAbstract.SubEntity1>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Key)
                 .HasValues(x => x.Name1);
-            diffConfiguration.Entity<Inheritance.Entities.NonAbstract.SubEntity2>()
+            diffConfiguration.ConfigureEntity<Inheritance.Entities.NonAbstract.SubEntity2>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

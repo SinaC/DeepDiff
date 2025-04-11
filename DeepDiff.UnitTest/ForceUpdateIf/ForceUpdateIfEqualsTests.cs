@@ -51,14 +51,14 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
         private static IDeepDiff CreateDeepDiffWithoutForceUpdate()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<FcrActivationControl>()
+            diffConfiguration.ConfigureEntity<FcrActivationControl>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update).CopyValues(x => x.Status))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => new { x.Day, x.ContractReference })
                 // no values
                 .HasOne(x => x.FcrActivationControlDetail);
-            diffConfiguration.Entity<FcrActivationControlDetail>()
+            diffConfiguration.ConfigureEntity<FcrActivationControlDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -71,7 +71,7 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
         private static IDeepDiff CreateDeepDiffWithForceUpdateIf()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<FcrActivationControl>()
+            diffConfiguration.ConfigureEntity<FcrActivationControl>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update).CopyValues(x => x.Status))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -79,7 +79,7 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
                 // no values
                 .HasOne(x => x.FcrActivationControlDetail)
                 .ForceUpdateIf(cfg => cfg.Equals(x => x.Status, FcrActivationControlStatus.ToBeCalculated)); // force OnUpdate if status is ToBeCalculated
-            diffConfiguration.Entity<FcrActivationControlDetail>()
+            diffConfiguration.ConfigureEntity<FcrActivationControlDetail>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

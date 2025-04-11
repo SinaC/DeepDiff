@@ -18,14 +18,14 @@ public class SimpleEntityNoConfigTests
 
         //
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasMany(x => x.SubEntities);
             //.OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             //.OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price });
             //.OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -41,7 +41,11 @@ public class SimpleEntityNoConfigTests
         Assert.NotNull(result);
         Assert.Equal(PersistChange.None, result.PersistChange);
         Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.None, x.PersistChange));
-        Assert.Empty(operations);
+        // operations are still detected even if not configured
+        Assert.Equal(6, operations.Count);
+        Assert.Single(operations.OfType<DeleteDiffOperation>());
+        Assert.Single(operations.OfType<InsertDiffOperation>());
+        Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
     [Theory]
@@ -53,14 +57,14 @@ public class SimpleEntityNoConfigTests
 
         //
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasMany(x => x.SubEntities)
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             //.OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -78,10 +82,11 @@ public class SimpleEntityNoConfigTests
         Assert.All(result.SubEntities, x => Assert.NotEqual(PersistChange.Update, x.PersistChange));
         Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
         Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
-        Assert.Equal(2, operations.Count);
+        // operations are still detected even if not configured
+        Assert.Equal(6, operations.Count);
         Assert.Single(operations.OfType<DeleteDiffOperation>());
         Assert.Single(operations.OfType<InsertDiffOperation>());
-        Assert.Empty(operations.OfType<UpdateDiffOperation>());
+        Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
     [Theory]
@@ -93,14 +98,14 @@ public class SimpleEntityNoConfigTests
 
         //
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasMany(x => x.SubEntities)
             //.OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             //.OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -119,9 +124,10 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, result.SubEntities.Count(x => x.PersistChange == PersistChange.Update));
         Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
         Assert.Empty(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
-        Assert.Equal(5, operations.Count);
+        // operations are still detected even if not configured
+        Assert.Equal(6, operations.Count);
         Assert.Single(operations.OfType<DeleteDiffOperation>());
-        Assert.Empty(operations.OfType<InsertDiffOperation>());
+        Assert.Single(operations.OfType<InsertDiffOperation>());
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
@@ -134,14 +140,14 @@ public class SimpleEntityNoConfigTests
 
         //
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasMany(x => x.SubEntities)
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update));
             //.OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .HasKey(x => x.Timestamp)
             .HasValues(x => new { x.Power, x.Price })
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -160,8 +166,9 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, result.SubEntities.Count(x => x.PersistChange == PersistChange.Update));
         Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
         Assert.Empty(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
-        Assert.Equal(5, operations.Count);
-        Assert.Empty(operations.OfType<DeleteDiffOperation>());
+        // operations are still detected even if not configured
+        Assert.Equal(6, operations.Count);
+        Assert.Single(operations.OfType<DeleteDiffOperation>());
         Assert.Single(operations.OfType<InsertDiffOperation>());
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }

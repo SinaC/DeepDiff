@@ -324,7 +324,7 @@ public class SimpleEntityMultiLevelNavigationTests
     private static IDeepDiff CreateDeepDiff()
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -333,7 +333,7 @@ public class SimpleEntityMultiLevelNavigationTests
             .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
             .HasOne(x => x.SubEntity)
             .HasMany(x => x.SubEntities);
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -341,7 +341,7 @@ public class SimpleEntityMultiLevelNavigationTests
             .HasValues(x => new { x.Power, x.Price })
             .HasOne(x => x.SubEntity)
             .HasMany(x => x.SubEntities);
-        diffConfiguration.Entity<EntityLevel2>()
+        diffConfiguration.ConfigureEntity<EntityLevel2>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

@@ -21,7 +21,7 @@ public class LoadNoNavigation
 
         var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         noHashtableNaiveComparerDiffConfiguration
-            .Entity<NoNavigationEntity>()
+            .ConfigureEntity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -31,7 +31,7 @@ public class LoadNoNavigation
 
         var noHastablePrecompiledComparerDiffConfiguration = new DeepDiffConfiguration();
         noHastablePrecompiledComparerDiffConfiguration
-            .Entity<NoNavigationEntity>()
+            .ConfigureEntity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -41,7 +41,7 @@ public class LoadNoNavigation
 
         var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
         hastableNaiveComparerDiffConfiguration
-            .Entity<NoNavigationEntity>()
+            .ConfigureEntity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
@@ -51,7 +51,7 @@ public class LoadNoNavigation
 
         var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
-            .Entity<NoNavigationEntity>()
+            .ConfigureEntity<NoNavigationEntity>()
                 .HasKey(x => new { x.Date, x.ContractReference })
                 .HasValues(x => new { x.Penalty, x.Volume, x.Price })
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))

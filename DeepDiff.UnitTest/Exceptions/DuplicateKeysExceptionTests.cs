@@ -27,7 +27,7 @@ namespace DeepDiff.UnitTest.Exceptions
             }).ToArray();
 
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel2>()
+            diffConfiguration.ConfigureEntity<EntityLevel2>()
                 .HasKey(x => x.DeliveryPointEan)
                 .HasValues(x => new { x.Value1, x.Value2 });
             var deepDiff = diffConfiguration.CreateDeepDiff();
@@ -55,7 +55,7 @@ namespace DeepDiff.UnitTest.Exceptions
             }).ToArray();
 
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel2>()
+            diffConfiguration.ConfigureEntity<EntityLevel2>()
                 .HasKey(x => x.DeliveryPointEan)
                 .HasValues(x => new { x.Value1, x.Value2 });
             var deepDiff = diffConfiguration.CreateDeepDiff();
@@ -85,7 +85,7 @@ namespace DeepDiff.UnitTest.Exceptions
             }).ToArray();
 
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.RequestedPower);
             var deepDiff = diffConfiguration.CreateDeepDiff();
@@ -115,7 +115,7 @@ namespace DeepDiff.UnitTest.Exceptions
             }).ToArray();
 
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<EntityLevel0>()
+            diffConfiguration.ConfigureEntity<EntityLevel0>()
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.RequestedPower);
             var deepDiff = diffConfiguration.CreateDeepDiff();

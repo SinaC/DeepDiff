@@ -329,14 +329,14 @@ public class SimpleEntityNavigationOneTests
     private static IDeepDiff CreateDeepDiff()
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update).CopyValues(x => x.AdditionalValueToCopy))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => new { x.StartsOn, x.Direction })
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

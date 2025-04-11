@@ -258,14 +258,14 @@ namespace DeepDiff.UnitTest.Inheritance
         private static IDeepDiff CreateDeepDiff()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entity>()
+            diffConfiguration.ConfigureEntity<Entity>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .HasKey(x => x.Key)
                 .HasValues(x => x.Name)
                 .HasMany(x => x.SubEntities);
-            diffConfiguration.Entity<SubEntity1>()
+            diffConfiguration.ConfigureEntity<SubEntity1>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

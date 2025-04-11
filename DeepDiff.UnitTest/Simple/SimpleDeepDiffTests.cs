@@ -61,7 +61,7 @@ public partial class SimpleDeepDiffTests
         }).ToArray();
 
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -69,7 +69,7 @@ public partial class SimpleDeepDiffTests
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
             .HasMany(x => x.SubEntities);
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

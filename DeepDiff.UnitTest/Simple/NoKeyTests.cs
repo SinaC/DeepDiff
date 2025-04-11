@@ -89,7 +89,7 @@ public class NoKeyTests
     private static IDeepDiff CreateDeepDiff()
     {
         var diffConfiguration = new DeepDiffConfiguration();
-        diffConfiguration.Entity<EntityLevel0>()
+        diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -97,14 +97,14 @@ public class NoKeyTests
             .HasValues(x => new { x.RequestedPower, x.Penalty })
             .OnUpdate(cfg => cfg.CopyValues(x => x.AdditionalValueToCopy))
             .HasOne(x => x.SubEntity);
-        diffConfiguration.Entity<EntityLevel1>()
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .NoKey()
             .HasValues(x => new { x.Power, x.Price })
             .HasMany(x => x.SubEntities);
-        diffConfiguration.Entity<EntityLevel2>()
+        diffConfiguration.ConfigureEntity<EntityLevel2>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

@@ -8,7 +8,7 @@ namespace TestAppNet5.Profile
         public static IEntityConfiguration<TEntity> PersistEntity<TEntity>(this IDeepDiffConfiguration diffConfiguration)
         where TEntity : PersistEntity
         {
-            return diffConfiguration.Entity<TEntity>()
+            return diffConfiguration.ConfigureEntity<TEntity>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));

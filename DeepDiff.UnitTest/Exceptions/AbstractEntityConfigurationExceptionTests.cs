@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void AbstractEntityConfigurationException()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            Assert.Throws<AbstractEntityConfigurationException>(() => diffConfiguration.Entity<SubEntityBase>()
+            Assert.Throws<AbstractEntityConfigurationException>(() => diffConfiguration.ConfigureEntity<SubEntityBase>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

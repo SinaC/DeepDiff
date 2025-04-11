@@ -12,7 +12,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Values_AlsoInKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -28,7 +28,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void CopyValues_AlsoInKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -44,7 +44,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void CopyValues_AlsoInValues()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -61,7 +61,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void CopyValues_AlsoInSetValue()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
@@ -77,7 +77,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Update_SetValue_AlsoInKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnUpdate(cfg => cfg.SetValue(x => x.StartsOn, DateTime.UtcNow))
                 .HasKey(x => new { x.StartsOn, x.Direction });
 
@@ -90,7 +90,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Update_SetValue_AlsoInValues()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnUpdate(cfg => cfg.SetValue(x => x.Penalty, -999m))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);
@@ -104,7 +104,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Insert_SetValue_AlsoInKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.StartsOn, DateTime.UtcNow))
                 .HasKey(x => new { x.StartsOn, x.Direction });
 
@@ -117,7 +117,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Insert_SetValue_AlsoInValues()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnInsert(cfg => cfg.SetValue(x => x.Penalty, -999m))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);
@@ -131,7 +131,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Delete_SetValue_AlsoInKey()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnDelete(cfg => cfg.SetValue(x => x.StartsOn, DateTime.UtcNow))
                 .HasKey(x => new { x.StartsOn, x.Direction });
 
@@ -144,7 +144,7 @@ namespace DeepDiff.UnitTest.Exceptions
         public void Delete_SetValue_AlsoInValues()
         {
             var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.Entity<Entities.Simple.EntityLevel0>()
+            diffConfiguration.ConfigureEntity<Entities.Simple.EntityLevel0>()
                 .OnDelete(cfg => cfg.SetValue(x => x.Penalty, -999m))
                 .HasKey(x => new { x.StartsOn, x.Direction })
                 .HasValues(x => x.Penalty);
