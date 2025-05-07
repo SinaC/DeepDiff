@@ -133,7 +133,7 @@ namespace DeepDiff.Internal
             }
 
             var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
-            var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+            var valuesComparer = entityConfiguration.ValuesConfiguration?.GetComparer(DiffEngineConfiguration.EqualityComparer);
 
             // we are sure there is at least one existing and one new entity
             var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)
