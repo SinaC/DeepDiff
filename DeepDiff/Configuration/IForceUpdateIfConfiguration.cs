@@ -23,6 +23,6 @@ namespace DeepDiff.Configuration
         /// <param name="compareToMember"></param>
         /// <param name="compareToValue"></param>
         /// <returns></returns>
-        IForceUpdateIfConfiguration<TEntity> Equals<TMember>(Expression<Func<TEntity, TMember>> compareToMember, TMember compareToValue);
+        IForceUpdateIfConfiguration<TEntity> Equals<TMember>(Expression<Func<TEntity, TMember>> compareToMember, TMember? compareToValue);
     }
 }

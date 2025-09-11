@@ -52,7 +52,7 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(Convert.ToInt32(x.ExistingValue) * 2, Convert.ToInt32(x.NewValue)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.NavigationParentKeys)); // one parent
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(nameof(EntityLevel0), y.Key))); // one parent of EnityLevel0
-            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(2, y.Value.Count))); // EntityLevel0 has 2 keys (StartsOn and Direction)
+            Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(2, y.Value!.Count))); // EntityLevel0 has 2 keys (StartsOn and Direction)
         }
 
         [Theory]
@@ -86,7 +86,7 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.NotEmpty(x.NavigationParentKeys));
             Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.NavigationParentKeys.Keys));
             Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(nameof(EntityLevel0), y.Key))); // one parent of EnityLevel0
-            Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(2, y.Value.Count))); // EntityLevel0 has 2 keys (StartsOn and Direction)
+            Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.All(x.NavigationParentKeys, y => Assert.Equal(2, y.Value!.Count))); // EntityLevel0 has 2 keys (StartsOn and Direction)
         }
 
         [Theory]
@@ -120,7 +120,7 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.NotEmpty(x.NavigationParentKeys));
             Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.NavigationParentKeys.Keys));
             Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.NavigationParentKeys), x => Assert.Equal(nameof(EntityLevel0), x.Key)); // one parent of EnityLevel0
-            Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.NavigationParentKeys), x => Assert.Equal(2, x.Value.Count)); // EntityLevel0 has 2 keys (StartsOn and Direction)
+            Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.NavigationParentKeys), x => Assert.Equal(2, x.Value!.Count)); // EntityLevel0 has 2 keys (StartsOn and Direction)
         }
 
         [Theory]

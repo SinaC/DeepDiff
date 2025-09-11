@@ -16,21 +16,21 @@ namespace DeepDiff.Internal.Comparers
         {
         }
 
-        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
+        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
             EqualsFunc = ExpressionGenerator.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
             HasherFunc = ExpressionGenerator.GenerateHasherFunc<T>(properties);
             CompareFunc = ExpressionGenerator.GenerateCompareFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
         }
 
-        public new bool Equals(object left, object right)
-            => ReferenceEquals(left, right)
-          || left is T leftAsT && right is T rightAsT && EqualsFunc(leftAsT, rightAsT);
+        public new bool Equals(object? left, object? right)
+            => ReferenceEquals(left, right) // will handle left == right == null
+                || left is T leftAsT && right is T rightAsT && EqualsFunc(leftAsT, rightAsT);
 
         public int GetHashCode(object obj)
             => obj is T objAsT ? HasherFunc(objAsT) : obj.GetHashCode();
 
-        public CompareByPropertyResult Compare(object left, object right)
+        public CompareByPropertyResult Compare(object? left, object? right)
         {
             if (ReferenceEquals(left, right)) // will handle left == right == null
                 return new CompareByPropertyResult(true);

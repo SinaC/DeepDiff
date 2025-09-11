@@ -13,7 +13,7 @@ namespace DeepDiff.Internal.Configuration
             NestedEntitiesModifiedEnabled = true;
         }
 
-        public ForceUpdateIfEqualsConfiguration AddEqualsConfiguration(PropertyInfo compareToProperty, object compareToValue)
+        public ForceUpdateIfEqualsConfiguration AddEqualsConfiguration(PropertyInfo compareToProperty, object? compareToValue)
         {
             var config = new ForceUpdateIfEqualsConfiguration(compareToProperty, compareToValue);
             ForceUpdateIfEqualsConfigurations.Add(config);

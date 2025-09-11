@@ -16,7 +16,7 @@ namespace DeepDiff.Internal.Configuration
             Configuration = updateConfiguration;
         }
 
-        public IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
+        public IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember? value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
             Configuration.AddSetValueConfiguration(destinationProperty, value);

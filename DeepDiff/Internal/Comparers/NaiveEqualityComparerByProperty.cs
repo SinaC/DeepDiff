@@ -10,22 +10,22 @@ namespace DeepDiff.Internal.Comparers
         where T : class
     {
         private IReadOnlyCollection<PropertyInfo> Properties { get; }
-        private IReadOnlyDictionary<Type, object> TypeSpecificComparers { get; }
-        private IReadOnlyDictionary<PropertyInfo, object> PropertySpecificComparers { get; }
+        private IReadOnlyDictionary<Type, object>? TypeSpecificComparers { get; }
+        private IReadOnlyDictionary<PropertyInfo, object>? PropertySpecificComparers { get; }
 
         public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
             : this(properties, null, null)
         {
         }
 
-        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
+        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
-            Properties = properties?.ToArray();
+            Properties = properties.ToArray();
             TypeSpecificComparers = typeSpecificComparers;
             PropertySpecificComparers = propertySpecificComparers;
         }
 
-        public new bool Equals(object left, object right)
+        public new bool Equals(object? left, object? right)
         {
             if (ReferenceEquals(left, right)) // will handle left == right == null
                 return true;
@@ -37,8 +37,8 @@ namespace DeepDiff.Internal.Comparers
                 return false;
             foreach (var propertyInfo in Properties)
             {
-                var oldValue = propertyInfo.GetValue(left);
-                var newValue = propertyInfo.GetValue(right);
+                var oldValue = propertyInfo.GetValue(left)!;
+                var newValue = propertyInfo.GetValue(right)!;
 
                 if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
                 {
@@ -79,7 +79,7 @@ namespace DeepDiff.Internal.Comparers
             return hashCode.ToHashCode();
         }
 
-        public CompareByPropertyResult Compare(object left, object right)
+        public CompareByPropertyResult Compare(object? left, object? right)
         {
             if (ReferenceEquals(left, right)) // will handle left == right == null
                 return new CompareByPropertyResult(true);
@@ -122,13 +122,13 @@ namespace DeepDiff.Internal.Comparers
             return new CompareByPropertyResult(details);
         }
 
-        private bool PropertyEquals(PropertyInfo propertyInfo, object equalityComparer, object left, object right)
+        private bool PropertyEquals(PropertyInfo propertyInfo, object equalityComparer, object? left, object? right)
         {
-            Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyInfo.PropertyType);
+            var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyInfo.PropertyType);
             if (equalityComparerType.IsAssignableFrom(equalityComparer.GetType()))
             {
-                var equalMethod = equalityComparerType.GetMethod(nameof(Equals), new[] { propertyInfo.PropertyType, propertyInfo.PropertyType });
-                return (bool)equalMethod.Invoke(equalityComparer, new object[] { left, right });
+                var equalMethod = equalityComparerType.GetMethod(nameof(Equals), new[] { propertyInfo.PropertyType, propertyInfo.PropertyType })!;
+                return (bool)equalMethod.Invoke(equalityComparer, new object[] { left!, right! })!;
             }
             throw new InvalidComparerForPropertyTypeException(propertyInfo.PropertyType); // should never been raised
         }

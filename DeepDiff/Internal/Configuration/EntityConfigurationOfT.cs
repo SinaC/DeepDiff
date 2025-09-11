@@ -27,7 +27,7 @@ namespace DeepDiff.Internal.Configuration
         }
 
         public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression)
-            => HasKey(keyExpression, null);
+            => HasKey(keyExpression, null!);
 
         public IEntityConfiguration<TEntity> HasKey<TKey>(Expression<Func<TEntity, TKey>> keyExpression, Action<IKeyConfiguration<TEntity>> keyConfigurationAction)
         {
@@ -43,7 +43,7 @@ namespace DeepDiff.Internal.Configuration
         }
 
         public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression)
-            => HasValues(valuesExpression, null);
+            => HasValues(valuesExpression, null!);
 
         public IEntityConfiguration<TEntity> HasValues<TValue>(Expression<Func<TEntity, TValue>> valuesExpression, Action<IValuesConfiguration<TEntity>> valuesConfigurationAction)
         {
@@ -58,7 +58,7 @@ namespace DeepDiff.Internal.Configuration
 
         public IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression)
             where TChildEntity : class
-            => HasMany(navigationPropertyExpression, null);
+            => HasMany(navigationPropertyExpression, null!);
 
         public IEntityConfiguration<TEntity> HasMany<TChildEntity>(Expression<Func<TEntity, List<TChildEntity>>> navigationPropertyExpression, Action<INavigationManyConfiguration<TEntity, TChildEntity>> navigationManyConfigurationAction)
             where TChildEntity : class
@@ -73,7 +73,7 @@ namespace DeepDiff.Internal.Configuration
 
         public IEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression)
             where TChildEntity : class
-            => HasOne(navigationPropertyExpression, null);
+            => HasOne(navigationPropertyExpression, null!);
 
         public IEntityConfiguration<TEntity> HasOne<TChildEntity>(Expression<Func<TEntity, TChildEntity>> navigationPropertyExpression, Action<INavigationOneConfiguration<TEntity, TChildEntity>> navigationOneConfigurationAction)
             where TChildEntity : class

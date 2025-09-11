@@ -68,10 +68,10 @@ namespace DeepDiff.Internal.Extensions
                 return true;
             }
 
-            return _components.SequenceEqual(other._components, (p1, p2) => p1.IsSameAs(p2));
+            return _components.SequenceEqual(other._components, (p1, p2) => p1!.IsSameAs(p2!));
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -97,7 +97,7 @@ namespace DeepDiff.Internal.Extensions
             {
                 return _components.Aggregate(
                     0,
-                    (t, n) => t ^ n.DeclaringType.GetHashCode() * n.Name.GetHashCode() * 397);
+                    (t, n) => t ^ n.DeclaringType!.GetHashCode() * n.Name.GetHashCode() * 397);
             }
         }
 

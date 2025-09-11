@@ -16,7 +16,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
+        TEntity? MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity)
             where TEntity : class;
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener)
+        TEntity? MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener? operationListener)
             where TEntity : class;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+        TEntity? MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, Action<IMergeSingleConfiguration>? mergeSingleConfigurationAction)
             where TEntity : class;
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        TEntity MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<IMergeSingleConfiguration> mergeSingleConfigurationAction)
+        TEntity? MergeSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener? operationListener, Action<IMergeSingleConfiguration>? mergeSingleConfigurationAction)
             where TEntity : class;
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)
+        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener? operationListener)
             where TEntity : class;
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, Action<IMergeManyConfiguration>? mergeManyConfigurationAction)
             where TEntity : class;
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<IMergeManyConfiguration> mergeManyConfigurationAction)
+        IEnumerable<TEntity> MergeMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener? operationListener, Action<IMergeManyConfiguration>? mergeManyConfigurationAction)
             where TEntity : class;
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration> diffSingleConfigurationAction)
+        void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration>? diffSingleConfigurationAction)
             where TEntity : class;
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace DeepDiff
         /// <exception cref="Exceptions.DuplicateKeysException"></exception>
         /// <exception cref="Exceptions.MissingConfigurationException"></exception>
         /// <exception cref="Exceptions.NoKeyEntityInNavigationManyException"></exception>
-        void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration> diffManyConfigurationAction)
+        void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration>? diffManyConfigurationAction)
             where TEntity : class;
     }
 }
