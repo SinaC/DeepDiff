@@ -16,7 +16,7 @@ namespace DeepDiff.Internal.Configuration
             Configuration = InsertConfiguration;
         }
 
-        public IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value)
+        public IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember? value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
             Configuration.AddSetValueConfiguration(destinationProperty, value);

@@ -14,29 +14,29 @@ namespace DeepDiff.Internal
     {
         private IReadOnlyDictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; }
         private DiffEngineConfiguration DiffEngineConfiguration { get; }
-        private IOperationListener OperationListener { get; }
-        private Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)> EntityNavigationPath { get; } = new Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object Entity)>(10);
+        private IOperationListener? OperationListener { get; }
+        private Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object? Entity)> EntityNavigationPath { get; } = new Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object? Entity)>(10);
 
-        private DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener operationListener)
+        private DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener)
         {
             EntityConfigurationByTypes = entityConfigurationByTypes;
             DiffEngineConfiguration = diffEngineConfiguration;
             OperationListener = operationListener;
         }
 
-        public static object MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener operationListener, Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
+        public static object? MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
         {
             var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
             return engine.MergeSingleByType(entityType, entityConfiguration, existingEntity, newEntity);
         }
 
-        public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener operationListener, Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
+        public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
         {
             var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
             return engine.MergeManyByType(entityType, entityConfiguration, existingEntities, newEntities);
         }
 
-        private object MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
+        private object? MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object? existingEntity, object? newEntity)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -68,7 +68,7 @@ namespace DeepDiff.Internal
             }
 
             // compare values
-            CompareByPropertyResult compareByPropertyResult = null;
+            CompareByPropertyResult? compareByPropertyResult = null;
             if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
                 var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
@@ -99,7 +99,7 @@ namespace DeepDiff.Internal
             return null;
         }
 
-        private List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
+        private List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object>? existingEntities, IEnumerable<object>? newEntities)
         {
             if (entityConfiguration.NoKey)
                 throw new NoKeyEntityInNavigationManyException(entityType);
@@ -113,7 +113,7 @@ namespace DeepDiff.Internal
             // no existing entities -> return new as inserted
             if (existingEntities == null || !existingEntities.Any())
             {
-                foreach (var newEntity in newEntities)
+                foreach (var newEntity in newEntities ?? Enumerable.Empty<object>())
                 {
                     OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity); // once an entity is inserted, it's children will also be inserted
                     results.Add(newEntity);
@@ -153,7 +153,7 @@ namespace DeepDiff.Internal
                 if (newEntity != null)
                 {
                     // compare values
-                    CompareByPropertyResult compareByPropertyResult = null;
+                    CompareByPropertyResult? compareByPropertyResult = null;
                     if (valuesComparer != null)
                     {
                         compareByPropertyResult = valuesComparer.Compare(existingEntity, newEntity);
@@ -225,7 +225,7 @@ namespace DeepDiff.Internal
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
             => DiffEngineConfiguration.UseHashtable && existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
 
-        private static object SearchMatchingEntityByKey(IComparerByProperty keysComparer, IEnumerable<object> entities, object existingEntity, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
+        private static object? SearchMatchingEntityByKey(IComparerByProperty keysComparer, IEnumerable<object> entities, object existingEntity, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
         {
             try
             {
@@ -348,7 +348,7 @@ namespace DeepDiff.Internal
             return true;
         }
 
-        private void OnUpdate(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult compareByPropertyResult)
+        private void OnUpdate(EntityConfiguration entityConfiguration, object existingEntity, object newEntity, CompareByPropertyResult? compareByPropertyResult)
         {
             if (entityConfiguration.UpdateConfiguration != null)
             {
@@ -362,11 +362,11 @@ namespace DeepDiff.Internal
             OnUpdateCopyModifiedValues(entityConfiguration, existingEntity, compareByPropertyResult);
         }
 
-        private void OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult compareByPropertyResult)
+        private void OnUpdateCopyModifiedValues(EntityConfiguration entityConfiguration, object existingEntity, CompareByPropertyResult? compareByPropertyResult)
         {
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
             {
-                foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo))) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
+                foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details?.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo)) ?? Enumerable.Empty<CompareByPropertyResultDetail>()) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
                 {
                     // notify update
                     OperationListener?.OnUpdate(entityConfiguration.EntityType.Name, compareByPropertyResultDetail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => compareByPropertyResultDetail.OldValue, () => compareByPropertyResultDetail.NewValue, () => GenerateNavigationPathKeysForOperation());
@@ -393,7 +393,7 @@ namespace DeepDiff.Internal
                 updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
         }
 
-        private void OnInsertAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object newEntity)
+        private void OnInsertAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object? newEntity)
         {
             // notify insert
             OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), () => GenerateNavigationPathKeysForOperation());
@@ -430,7 +430,7 @@ namespace DeepDiff.Internal
             PropagateUsingNavigation(entityConfiguration, existingEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnDeleteAndPropagateUsingNavigation(childEntityConfiguration, child));
         }
 
-        private void PropagateUsingNavigation(EntityConfiguration entityConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigation(EntityConfiguration entityConfiguration, object? entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object?> operation)
         {
             if (entityConfiguration.NavigationManyConfigurations != null)
             {
@@ -452,7 +452,7 @@ namespace DeepDiff.Internal
             }
         }
 
-        private void PropagateUsingNavigationManyMultipleTypes(NavigationManyConfiguration navigationManyConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigationManyMultipleTypes(NavigationManyConfiguration navigationManyConfiguration, object? entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object?> operation)
         {
             if (navigationManyConfiguration.NavigationProperty == null)
                 return;
@@ -476,7 +476,7 @@ namespace DeepDiff.Internal
             }
         }
 
-        private void PropagateUsingNavigationManyByType(NavigationManyConfiguration navigationManyConfiguration, object entity, Type childType, IEnumerable<object> children, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigationManyByType(NavigationManyConfiguration navigationManyConfiguration, object? entity, Type childType, IEnumerable<object> children, Action<EntityConfiguration, NavigationConfigurationBase, object, object?> operation)
         {
             if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                 throw new MissingConfigurationException(childType);
@@ -484,7 +484,7 @@ namespace DeepDiff.Internal
                 operation(childEntityConfiguration, navigationManyConfiguration, child, entity);
         }
 
-        private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object> operation)
+        private void PropagateUsingNavigationOne(NavigationOneConfiguration navigationOneConfiguration, object? entity, Action<EntityConfiguration, NavigationConfigurationBase, object, object?> operation)
         {
             if (navigationOneConfiguration.NavigationProperty == null)
                 return;
@@ -503,22 +503,22 @@ namespace DeepDiff.Internal
         {
             if (entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations != null)
             {
-                foreach (var forceUpdateIfEqualsConfiguration in entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations)
+                foreach (var forceUpdateIfEqualsConfiguration in entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations ?? Enumerable.Empty<ForceUpdateIfEqualsConfiguration>())
                 {
                     var value = forceUpdateIfEqualsConfiguration.CompareToProperty.GetValue(entity);
-                    if (value.Equals(forceUpdateIfEqualsConfiguration.CompareToValue))
+                    if (Equals(value, forceUpdateIfEqualsConfiguration.CompareToValue))
                         return true;
                 }
             }
             return false;
         }
 
-        private static Dictionary<string, object> GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object entity)
+        private static Dictionary<string, object?>? GenerateKeysForOperation(EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration, object? entity)
         {
             if (entityConfiguration.NoKey)
                 return null;
 
-            var result = new Dictionary<string, object>();
+            var result = new Dictionary<string, object?>();
             foreach (var propertyInfo in keyConfiguration.KeyProperties)
             {
                 var key = propertyInfo.GetValue(entity);
@@ -527,9 +527,9 @@ namespace DeepDiff.Internal
             return result;
         }
 
-        private Dictionary<string, Dictionary<string, object>> GenerateNavigationPathKeysForOperation()
+        private Dictionary<string, Dictionary<string, object?>?> GenerateNavigationPathKeysForOperation()
         {
-            var result = new Dictionary<string, Dictionary<string, object>>();
+            var result = new Dictionary<string, Dictionary<string, object?>?>();
             foreach (var entry in EntityNavigationPath)
             {
                 var keys = GenerateKeysForOperation(entry.EntityConfiguration, entry.KeyConfiguration, entry.Entity);
@@ -543,7 +543,7 @@ namespace DeepDiff.Internal
             if (entityConfiguration.NoKey)
                 return string.Empty;
 
-            var keys = new List<string>();
+            var keys = new List<string?>();
             foreach (var propertyInfo in keyConfiguration.KeyProperties)
             {
                 var key = propertyInfo.GetValue(entity);

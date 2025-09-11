@@ -6,16 +6,16 @@ namespace DeepDiff.Internal.Comparers
     internal sealed class LambdaEqualityComparer<T> : IEqualityComparer<T>
         where T : class
     {
-        private readonly Func<T, T, bool> _func;
+        private Func<T?, T?, bool> CompareFunc { get; }
 
-        public LambdaEqualityComparer(Func<T, T, bool> func)
+        public LambdaEqualityComparer(Func<T?, T?, bool> compareFunc)
         {
-            _func = func;
+            CompareFunc = compareFunc;
         }
 
-        public bool Equals(T x, T y)
+        public bool Equals(T? x, T? y)
         {
-            return _func(x, y);
+            return CompareFunc(x, y);
         }
 
         public int GetHashCode(T obj)

@@ -18,6 +18,6 @@ namespace DeepDiff.Configuration
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
+        IInsertConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember? value);
     }
 }

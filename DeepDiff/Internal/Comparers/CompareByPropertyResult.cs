@@ -17,6 +17,6 @@ namespace DeepDiff.Internal.Comparers
 
         public bool IsEqual { get; }
 
-        public IReadOnlyCollection<CompareByPropertyResultDetail> Details { get; } // empty if IsEqual is true or if no properties specified in ComparerByProperty or if compared property was not of the expected type
+        public IReadOnlyCollection<CompareByPropertyResultDetail>? Details { get; } // empty if IsEqual is true or if no properties specified in ComparerByProperty or if compared property was not of the expected type
     }
 }

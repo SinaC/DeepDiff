@@ -18,7 +18,7 @@ namespace DeepDiff.Configuration
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember value);
+        IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember? value);
         /// <summary>
         /// When an update is detected, copy the value(s) from the new entity to the existing entity
         /// </summary>

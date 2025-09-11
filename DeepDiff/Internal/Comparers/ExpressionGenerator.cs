@@ -28,7 +28,7 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Equals
-        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
+        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
             // generate the equivalent of
             // var equals = true;
@@ -56,7 +56,7 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Compare
-        internal static CompareFunc<T> GenerateCompareFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
+        internal static CompareFunc<T> GenerateCompareFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
             var compareByPropertyResultDetailType = typeof(CompareByPropertyResultDetail);
 
@@ -79,13 +79,13 @@ namespace DeepDiff.Internal.Comparers
                 // generate equality expression equivalent to left.{propertyInfo}.Equals(right.{propertyInfo})
                 var equalExpression = GenerateEqualityExpression(leftValue, rightValue, propertyInfo, typeSpecificComparers, propertySpecificComparers);
                 // generate detail = new CompareByPropertyResultDetail() { PropertyInfo = propertyInfo, OldValue = left.{propertyInfo}, NewValue = right.{propertyInfo} }
-                var propertyInfoProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.PropertyInfo));
+                var propertyInfoProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.PropertyInfo))!;
                 var propertyInfoAssignment = Expression.Bind(propertyInfoProperty, Expression.Constant(propertyInfo));
 
-                var oldValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.OldValue));
+                var oldValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.OldValue))!;
                 var oldValueAssignment = Expression.Bind(oldValueProperty, Expression.Convert(leftValue, typeof(object)));
 
-                var newValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.NewValue));
+                var newValueProperty = compareByPropertyResultDetailType.GetProperty(nameof(CompareByPropertyResultDetail.NewValue))!;
                 var newValueAssignment = Expression.Bind(newValueProperty, Expression.Convert(rightValue, typeof(object)));
 
                 var newDetail = Expression.New(compareByPropertyResultDetailCtor);
@@ -153,7 +153,7 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Equals by property
-        private static Expression GenerateEqualityExpression(MemberExpression leftValue, MemberExpression rightValue, PropertyInfo propertyInfo, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
+        private static Expression GenerateEqualityExpression(MemberExpression leftValue, MemberExpression rightValue, PropertyInfo propertyInfo, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
             Type propertyType = propertyInfo.PropertyType;
 
@@ -179,12 +179,12 @@ namespace DeepDiff.Internal.Comparers
                 Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
                 if (equalityComparerType.IsAssignableFrom(propertySpecificComparer.GetType()))
                 {
-                    equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType });
+                    equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType })!;
                     equalCall = Expression.Call(Expression.Constant(propertySpecificComparer), equalMethod, leftValue, rightValue);
                 }
                 else
                 {
-                    equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
+                    equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) })!;
                     equalCall = Expression.Call(Expression.Constant(propertySpecificComparer), equalMethod, Expression.Convert(leftValue, typeof(object)), Expression.Convert(rightValue, typeof(object)));
                 }
             }
@@ -193,12 +193,12 @@ namespace DeepDiff.Internal.Comparers
                 Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
                 if (equalityComparerType.IsAssignableFrom(propertyTypeSpecificComparer.GetType()))
                 {
-                    equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType });
+                    equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType })!;
                     equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, leftValue, rightValue);
                 }
                 else
                 {
-                    equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) });
+                    equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { typeof(object), typeof(object) })!;
                     equalCall = Expression.Call(Expression.Constant(propertyTypeSpecificComparer), equalMethod, Expression.Convert(leftValue, typeof(object)), Expression.Convert(rightValue, typeof(object)));
                 }
             }
@@ -207,12 +207,12 @@ namespace DeepDiff.Internal.Comparers
                 Type equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
                 if (equitableType.IsAssignableFrom(propertyType)) // generates left.Equals(right)
                 {
-                    equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType });
+                    equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType })!;
                     equalCall = Expression.Call(leftValue, equalMethod, rightValue);
                 }
                 else // generates left.Equals((object)right)
                 {
-                    equalMethod = propertyType.GetMethod(nameof(Equals), new Type[] { typeof(object) });
+                    equalMethod = propertyType.GetMethod(nameof(Equals), new Type[] { typeof(object) })!;
                     equalCall = Expression.Call(leftValue, equalMethod, Expression.Convert(rightValue, typeof(object)));
                 }
             }

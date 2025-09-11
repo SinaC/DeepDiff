@@ -39,10 +39,10 @@ namespace DeepDiff.UnitTest.Comparer
 
             Assert.NotNull(result);
             Assert.False(result.IsEqual);
-            Assert.Single(result.Details);
-            Assert.Equal(nameof(EntityLevel1.Price), result.Details.Single().PropertyInfo.Name);
-            Assert.Equal((object)7.1234500000m, result.Details.Single().OldValue);
-            Assert.Equal((object)7.1234599999m, result.Details.Single().NewValue);
+            Assert.Single(result.Details!);
+            Assert.Equal(nameof(EntityLevel1.Price), result.Details!.Single().PropertyInfo.Name);
+            Assert.Equal((object)7.1234500000m, result.Details!.Single().OldValue);
+            Assert.Equal((object)7.1234599999m, result.Details!.Single().NewValue);
         }
     }
 }

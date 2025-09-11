@@ -22,7 +22,7 @@ namespace DeepDiff.Internal.Configuration
             return this;
         }
 
-        public IForceUpdateIfConfiguration<TEntity> Equals<TMember>(Expression<Func<TEntity, TMember>> compareToMember, TMember compareToValue)
+        public IForceUpdateIfConfiguration<TEntity> Equals<TMember>(Expression<Func<TEntity, TMember>> compareToMember, TMember? compareToValue)
         {
             var compareToProperty = compareToMember.GetSimplePropertyAccess().Single();
             Configuration.AddEqualsConfiguration(compareToProperty, compareToValue);
