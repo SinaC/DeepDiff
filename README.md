@@ -7,7 +7,7 @@
 # Sample
 
 ## How do I get started
-First configure DeepDiff to know what types you want to compare, in the startup of your application
+First configure DeepDiff to register what types you want to compare, in the startup of your application
 
 ```csharp
 var diffConfiguration = new DiffConfiguration();

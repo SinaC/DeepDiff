@@ -1,5 +1,4 @@
-﻿using DeepDiff.Configuration;
-using DeepDiff.Exceptions;
+﻿using DeepDiff.Exceptions;
 using DeepDiff.Internal.Comparers;
 using DeepDiff.Internal.Configuration;
 using DeepDiff.Internal.Extensions;
@@ -24,19 +23,19 @@ namespace DeepDiff.Internal
             OperationListener = operationListener;
         }
 
-        public static object? MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, Type entityType, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
+        public static object? MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
         {
             var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
-            return engine.MergeSingleByType(entityType, entityConfiguration, existingEntity, newEntity);
+            return engine.MergeSingleByType(entityConfiguration, existingEntity, newEntity);
         }
 
-        public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
+        public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
         {
             var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
-            return engine.MergeManyByType(entityType, entityConfiguration, existingEntities, newEntities);
+            return engine.MergeManyByType(entityConfiguration, existingEntities, newEntities);
         }
 
-        private object? MergeSingleByType(Type entityType, EntityConfiguration entityConfiguration, object? existingEntity, object? newEntity)
+        private object? MergeSingleByType(EntityConfiguration entityConfiguration, object? existingEntity, object? newEntity)
         {
             // no entity
             if (existingEntity == null && newEntity == null)
@@ -99,10 +98,10 @@ namespace DeepDiff.Internal
             return null;
         }
 
-        private List<object> MergeManyByType(Type entityType, EntityConfiguration entityConfiguration, IEnumerable<object>? existingEntities, IEnumerable<object>? newEntities)
+        private List<object> MergeManyByType(EntityConfiguration entityConfiguration, IEnumerable<object>? existingEntities, IEnumerable<object>? newEntities)
         {
             if (entityConfiguration.NoKey)
-                throw new NoKeyEntityInNavigationManyException(entityType);
+                throw new NoKeyEntityInNavigationManyException(entityConfiguration.EntityType);
 
             var results = new List<object>();
 
@@ -191,7 +190,7 @@ namespace DeepDiff.Internal
                 var newEntityFoundInExistingEntities = existingEntitiesHashtable != null
                     ? existingEntitiesHashtable.ContainsKey(newEntity)
                     : SearchMatchingEntityByKey(keysComparer, existingEntities, newEntity, entityConfiguration, entityConfiguration.KeyConfiguration) != null;
-                // new entity not found in existing entity -> it's an insert
+                // new entity not found in existing entities -> it's an insert
                 if (!newEntityFoundInExistingEntities)
                 {
                     OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity); // once an entity is inserted, it's children will also be inserted
@@ -205,6 +204,7 @@ namespace DeepDiff.Internal
         private List<object> MergeManyMultipleTypes(IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
         {
             // perform multiple merge, one by unique type found in existing and new entities collection
+            // this allows to merge multiple derived types in the same collection
             var existingEntitiesByTypes = existingEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
             var newEntitiesByTypes = newEntities?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
 
@@ -215,7 +215,7 @@ namespace DeepDiff.Internal
                     throw new MissingConfigurationException(entityType);
                 var existingEntitiesByType = existingEntitiesByTypes?[entityType];
                 var newEntitiesByType = newEntitiesByTypes?[entityType];
-                var subResults = MergeManyByType(entityType, entityConfiguration, existingEntitiesByType, newEntitiesByType);
+                var subResults = MergeManyByType(entityConfiguration, existingEntitiesByType, newEntitiesByType);
                 results.AddRange(subResults);
             }
 
@@ -302,7 +302,7 @@ namespace DeepDiff.Internal
             {
                 if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
                     throw new MissingConfigurationException(childType);
-                mergedChildren = MergeManyByType(childType, childEntityConfiguration, existingChildren, newChildren);
+                mergedChildren = MergeManyByType(childEntityConfiguration, existingChildren, newChildren);
             }
 
             // convert merged children from IEnumerable<object> to List<ChildType>
@@ -335,7 +335,7 @@ namespace DeepDiff.Internal
             var newEntityChild = navigationOneConfiguration.NavigationProperty.GetValue(newEntity);
 
             // merge child
-            var mergedChild = MergeSingleByType(childType, childEntityConfiguration, existingEntityChild, newEntityChild);
+            var mergedChild = MergeSingleByType(childEntityConfiguration, existingEntityChild, newEntityChild);
 
             // set navigation one property to merged child
             if (!DiffEngineConfiguration.CompareOnly)

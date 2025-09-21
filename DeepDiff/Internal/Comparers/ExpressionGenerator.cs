@@ -23,7 +23,7 @@ namespace DeepDiff.Internal.Comparers
             AddHashCodeMethod = hashCodeType.GetMethods().Single(method => method.Name == nameof(HashCode.Add) && method.GetParameters().Length == 1);
             ToHashCodeMethod = hashCodeType.GetMethod(nameof(HashCode.ToHashCode), BindingFlags.Public | BindingFlags.Instance)!;
             // List<CompareByPropertyResultDetail>
-            Type listOfCompareByPropertyResultDetail = typeof(List<CompareByPropertyResultDetail>);
+            var listOfCompareByPropertyResultDetail = typeof(List<CompareByPropertyResultDetail>);
             AddListOfCompareByPropertyResultDetailCodeMethod = listOfCompareByPropertyResultDetail.GetMethod(nameof(List<CompareByPropertyResultDetail>.Add), BindingFlags.Public | BindingFlags.Instance)!;
         }
 
@@ -50,8 +50,8 @@ namespace DeepDiff.Internal.Comparers
                 var equalityExpression = GenerateEqualityExpression(leftValue, rightValue, propertyInfo, typeSpecificComparers, propertySpecificComparers);
                 equals.Add(equalityExpression);
             }
-            Expression ands = equals.Aggregate((left, right) => Expression.AndAlso(left, right));
-            EqualsFunc<T> andEquals = Expression.Lambda<EqualsFunc<T>>(ands, left, right).Compile();
+            var ands = equals.Aggregate((left, right) => Expression.AndAlso(left, right));
+            var andEquals = Expression.Lambda<EqualsFunc<T>>(ands, left, right).Compile();
             return andEquals;
         }
 
@@ -112,7 +112,7 @@ namespace DeepDiff.Internal.Comparers
                 statements
             );
 
-            CompareFunc<T> convertFunc = Expression.Lambda<CompareFunc<T>>(block, left, right).Compile();
+            var convertFunc = Expression.Lambda<CompareFunc<T>>(block, left, right).Compile();
             return convertFunc;
         }
 
@@ -124,20 +124,20 @@ namespace DeepDiff.Internal.Comparers
             // hash.Add(this.Price);
             // hash.Add(this.When);
             // return hash.ToHashCode();
-            ParameterExpression obj = Expression.Parameter(typeof(T), "obj");
-            ParameterExpression hashCode = Expression.Variable(typeof(HashCode), "hashCode");
+            var obj = Expression.Parameter(typeof(T), "obj");
+            var hashCode = Expression.Variable(typeof(HashCode), "hashCode");
 
-            List<Expression> parts = GenerateAddToHashCodeExpressions(obj, hashCode, properties);
+            var parts = GenerateAddToHashCodeExpressions(obj, hashCode, properties);
             parts.Insert(0, Expression.Assign(hashCode, Expression.New(typeof(HashCode))));
             parts.Add(Expression.Call(hashCode, ToHashCodeMethod));
-            Expression[] body = parts.ToArray();
+            var body = parts.ToArray();
 
-            BlockExpression block = Expression.Block(
+            var block = Expression.Block(
                 typeof(int),
                 new ParameterExpression[] { hashCode },
                 body);
 
-            Func<T, int> hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
+            var hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
             return hasher;
         }
 
@@ -155,7 +155,7 @@ namespace DeepDiff.Internal.Comparers
         // Equals by property
         private static Expression GenerateEqualityExpression(MemberExpression leftValue, MemberExpression rightValue, PropertyInfo propertyInfo, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
-            Type propertyType = propertyInfo.PropertyType;
+            var propertyType = propertyInfo.PropertyType;
 
             // if property specific comparer
             //      if comparer is IEqualityComparer<>
@@ -176,7 +176,7 @@ namespace DeepDiff.Internal.Comparers
             Expression equalCall;
             if (propertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
             {
-                Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
+                var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
                 if (equalityComparerType.IsAssignableFrom(propertySpecificComparer.GetType()))
                 {
                     equalMethod = propertySpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType })!;
@@ -190,7 +190,7 @@ namespace DeepDiff.Internal.Comparers
             }
             else if (typeSpecificComparers?.TryGetValue(propertyType, out var propertyTypeSpecificComparer) == true) // generates Comparer.Equals((object)left, (object)right)
             {
-                Type equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
+                var equalityComparerType = typeof(IEqualityComparer<>).MakeGenericType(propertyType);
                 if (equalityComparerType.IsAssignableFrom(propertyTypeSpecificComparer.GetType()))
                 {
                     equalMethod = propertyTypeSpecificComparer.GetType().GetMethod(nameof(Equals), new Type[] { propertyType, propertyType })!;
@@ -204,7 +204,7 @@ namespace DeepDiff.Internal.Comparers
             }
             else
             {
-                Type equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
+                var equitableType = typeof(IEquatable<>).MakeGenericType(propertyType);
                 if (equitableType.IsAssignableFrom(propertyType)) // generates left.Equals(right)
                 {
                     equalMethod = equitableType.GetMethod(nameof(Equals), new Type[] { propertyType })!;
