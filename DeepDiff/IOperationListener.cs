@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DeepDiff.Configuration
+namespace DeepDiff
 {
     /// <summary>
     /// Defines a listener which will be called on every insert/update/delete detection.
