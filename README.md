@@ -1,5 +1,9 @@
 # Breaking changes
 
+### 1.11.0
+
+- IOperationListener are now mandatory when using CompareSingle and CompareMany methods
+
 ### 1.10.0
 
 - to configure an entity, you must now use the `ConfigureEntity<TEntity>()` method instead of `Entity<TEntity>()`
