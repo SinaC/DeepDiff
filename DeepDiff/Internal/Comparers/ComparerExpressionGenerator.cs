@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Reflection.PortableExecutable;
 
 namespace DeepDiff.Internal.Comparers
 {
@@ -10,13 +12,13 @@ namespace DeepDiff.Internal.Comparers
     internal delegate bool EqualsFunc<T>(T left, T right);
     internal delegate CompareByPropertyResult CompareFunc<T>(T left, T right);
 
-    internal static class ExpressionGenerator
+    internal static class ComparerExpressionGenerator
     {
         internal static MethodInfo AddHashCodeMethod { get; }
         internal static MethodInfo ToHashCodeMethod { get; }
         internal static MethodInfo AddListOfCompareByPropertyResultDetailCodeMethod { get; set; }
 
-        static ExpressionGenerator()
+        static ComparerExpressionGenerator()
         {
             // HashCode
             var hashCodeType = typeof(HashCode);
@@ -28,22 +30,22 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Equals
-        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
+        internal static EqualsFunc<T> GenerateEqualsFunc<T>(IReadOnlyCollection<PropertyInfo> propertInfos, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
             // generate the equivalent of
             // var equals = true;
-            // foreach(var propertyInfo in properties)
+            // foreach(var propertyInfo in propertyInfos)
             // {
             //      equals &= Equals(propertyInfo.GetValue(left), propertyInfo.GetValue(right));
             //             // --> Equals is propertySpecificComparers[propertyInfo.Type] if any, or typeSpecificComparers[propertyInfo.Type] if any, or IEquatable<propertyInfo.Type> if implemented or use left[propertyInfo].Equals(right[propertyInfo])
             //      if (!equals)
             //          return false;
             // }
-            ParameterExpression left = Expression.Parameter(typeof(T), "left");
-            ParameterExpression right = Expression.Parameter(typeof(T), "right");
+            var left = Expression.Parameter(typeof(T), "left");
+            var right = Expression.Parameter(typeof(T), "right");
 
             var equals = new List<Expression>();
-            foreach (PropertyInfo propertyInfo in properties)
+            foreach (var propertyInfo in propertInfos)
             {
                 var leftValue = Expression.Property(left, propertyInfo);
                 var rightValue = Expression.Property(right, propertyInfo);
@@ -56,7 +58,7 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Compare
-        internal static CompareFunc<T> GenerateCompareFunc<T>(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
+        internal static CompareFunc<T> GenerateCompareFunc<T>(IReadOnlyCollection<PropertyInfo> propertyInfos, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
         {
             var compareByPropertyResultDetailType = typeof(CompareByPropertyResultDetail);
 
@@ -71,7 +73,7 @@ namespace DeepDiff.Internal.Comparers
             // generate details = new List<CompareByPropertyResultDetail>()
             var createDetails = Expression.Assign(detailsParam, Expression.New(typeof(List<CompareByPropertyResultDetail>)));
             statements.Add(createDetails);
-            foreach (var propertyInfo in properties)
+            foreach (var propertyInfo in propertyInfos)
             {
                 var leftValue = Expression.Property(left, propertyInfo);
                 var rightValue = Expression.Property(right, propertyInfo);
@@ -117,36 +119,50 @@ namespace DeepDiff.Internal.Comparers
         }
 
         // Hash  (when properties count is 1, this code is slower than the naive implementation)
-        internal static Func<T, int> GenerateHasherFunc<T>(IEnumerable<PropertyInfo> properties)
+        internal static Func<T, int> GenerateHasherFunc<T>(IReadOnlyCollection<PropertyInfo> propertyInfos)
         {
-            // Generates the equivalent of
-            // var hash = new HashCode();
-            // hash.Add(this.Price);
-            // hash.Add(this.When);
-            // return hash.ToHashCode();
-            var obj = Expression.Parameter(typeof(T), "obj");
-            var hashCode = Expression.Variable(typeof(HashCode), "hashCode");
+            if (propertyInfos.Count == 1)
+            {
+                // Generates the equivalent of
+                // return this.Property.GetHashCode();
+                var propertyInfo = propertyInfos.First();
+                var propertyGetHashCodeMethod = propertyInfo.PropertyType.GetMethods().Single(x => x.Name == nameof(object.GetHashCode) && x.GetParameters().Length == 0);
+                var obj = Expression.Parameter(typeof(T), "obj");
+                var callGetHashCode = Expression.Call(Expression.Property(obj, propertyInfo), propertyGetHashCodeMethod);
+                var hasher = Expression.Lambda<Func<T, int>>(callGetHashCode, obj).Compile();
+                return hasher;
+            }
+            else
+            {
+                // Generates the equivalent of
+                // var hash = new HashCode();
+                // hash.Add(this.Price);
+                // hash.Add(this.When);
+                // return hash.ToHashCode();
+                var obj = Expression.Parameter(typeof(T), "obj");
+                var hashCode = Expression.Variable(typeof(HashCode), "hashCode");
 
-            var parts = GenerateAddToHashCodeExpressions(obj, hashCode, properties);
-            parts.Insert(0, Expression.Assign(hashCode, Expression.New(typeof(HashCode))));
-            parts.Add(Expression.Call(hashCode, ToHashCodeMethod));
-            var body = parts.ToArray();
+                var parts = GenerateAddToHashCodeExpressions(obj, hashCode, propertyInfos);
+                parts.Insert(0, Expression.Assign(hashCode, Expression.New(typeof(HashCode))));
+                parts.Add(Expression.Call(hashCode, ToHashCodeMethod));
+                var body = parts.ToArray();
 
-            var block = Expression.Block(
-                typeof(int),
-                new ParameterExpression[] { hashCode },
-                body);
+                var block = Expression.Block(
+                    typeof(int),
+                    new ParameterExpression[] { hashCode },
+                    body);
 
-            var hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
-            return hasher;
+                var hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();
+                return hasher;
+            }
         }
 
-        private static List<Expression> GenerateAddToHashCodeExpressions(ParameterExpression obj, ParameterExpression hashCode, IEnumerable<PropertyInfo> properties)
+        private static List<Expression> GenerateAddToHashCodeExpressions(ParameterExpression obj, ParameterExpression hashCode, IReadOnlyCollection<PropertyInfo> propertyInfos)
         {
             var adders = new List<Expression>();
-            foreach (PropertyInfo propertyInfo in properties)
+            foreach (var propertyInfo in propertyInfos)
             {
-                MethodInfo boundAddMethod = AddHashCodeMethod.MakeGenericMethod(propertyInfo.PropertyType);
+                var boundAddMethod = AddHashCodeMethod.MakeGenericMethod(propertyInfo.PropertyType);
                 adders.Add(Expression.Call(hashCode, boundAddMethod, Expression.Property(obj, propertyInfo)));
             }
             return adders;

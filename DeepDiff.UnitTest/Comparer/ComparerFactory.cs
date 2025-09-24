@@ -1,4 +1,5 @@
-﻿using DeepDiff.Internal.Comparers;
+﻿using DeepDiff.Internal;
+using DeepDiff.Internal.Comparers;
 using DeepDiff.Internal.Extensions;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,8 @@ namespace DeepDiff.UnitTest.Comparer
 
         public NaiveEqualityComparerByProperty<TEntity> CreateNaiveComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
         {
-            var properties = expression.GetSimplePropertyAccessList().Select(p => p.Single());
-            return new NaiveEqualityComparerByProperty<TEntity>(properties, typeSpecificComparers, propertySpecificComparers);
+            var propertyExts = expression.GetSimplePropertyAccessList().Select(p => p.Single()).Select(x => new PropertyInfoExt(typeof(TEntity), x)).ToArray();
+            return new NaiveEqualityComparerByProperty<TEntity>(propertyExts, typeSpecificComparers, propertySpecificComparers);
         }
 
         public PrecompiledEqualityComparerByProperty<TEntity> CreatePrecompiledComparer<TKey>(Expression<Func<TEntity, TKey>> expression)
@@ -25,7 +26,7 @@ namespace DeepDiff.UnitTest.Comparer
 
         public PrecompiledEqualityComparerByProperty<TEntity> CreatePrecompiledComparer<TKey>(Expression<Func<TEntity, TKey>> expression, IReadOnlyDictionary<Type, object> typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object> propertySpecificComparers)
         {
-            var properties = expression.GetSimplePropertyAccessList().Select(p => p.Single());
+            var properties = expression.GetSimplePropertyAccessList().Select(p => p.Single()).ToArray();
             return new PrecompiledEqualityComparerByProperty<TEntity>(properties, typeSpecificComparers, propertySpecificComparers);
         }
 

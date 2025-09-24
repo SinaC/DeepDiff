@@ -33,26 +33,26 @@ namespace DeepDiff.Internal.Configuration
 
         public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
         {
-            KeyConfiguration = new KeyConfiguration(keyProperties.ToArray());
+            KeyConfiguration = new KeyConfiguration(EntityType, keyProperties.ToArray());
             return KeyConfiguration;
         }
 
         public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties)
         {
-            ValuesConfiguration = new ValuesConfiguration(valuesProperties);
+            ValuesConfiguration = new ValuesConfiguration(EntityType, valuesProperties);
             return ValuesConfiguration;
         }
 
         public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
         {
-            var navigationManyConfiguration = new NavigationManyConfiguration(navigationManyProperty, navigationManyDestinationType);
+            var navigationManyConfiguration = new NavigationManyConfiguration(EntityType, navigationManyProperty, navigationManyDestinationType);
             NavigationManyConfigurations.Add(navigationManyConfiguration);
             return navigationManyConfiguration;
         }
 
         public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty, Type navigationOneChildType)
         {
-            var navigationOneConfiguration = new NavigationOneConfiguration(navigationOneProperty, navigationOneChildType);
+            var navigationOneConfiguration = new NavigationOneConfiguration(EntityType, navigationOneProperty, navigationOneChildType);
             NavigationOneConfigurations.Add(navigationOneConfiguration);
             return navigationOneConfiguration;
         }

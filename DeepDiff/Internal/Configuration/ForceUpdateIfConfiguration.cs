@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DeepDiff.Internal.Configuration
@@ -13,9 +14,9 @@ namespace DeepDiff.Internal.Configuration
             NestedEntitiesModifiedEnabled = true;
         }
 
-        public ForceUpdateIfEqualsConfiguration AddEqualsConfiguration(PropertyInfo compareToProperty, object? compareToValue)
+        public ForceUpdateIfEqualsConfiguration AddEqualsConfiguration(Type entityType, PropertyInfo compareToProperty, object? compareToValue)
         {
-            var config = new ForceUpdateIfEqualsConfiguration(compareToProperty, compareToValue);
+            var config = new ForceUpdateIfEqualsConfiguration(entityType, compareToProperty, compareToValue);
             ForceUpdateIfEqualsConfigurations.Add(config);
             return config;
         }

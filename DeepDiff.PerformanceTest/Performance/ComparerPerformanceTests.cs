@@ -69,7 +69,7 @@ public class ComparerPerformanceTests
 
         var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
         entityConfiguration.HasKey(x => x.Timestamp);
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
         sw.Restart();
         foreach (var existingEntity in existingEntities)
@@ -145,7 +145,7 @@ public class ComparerPerformanceTests
 
         var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
         entityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
         sw.Restart();
         foreach (var existingEntity in existingEntities)
@@ -233,7 +233,7 @@ public class ComparerPerformanceTests
 
         var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
         entityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties, typeSpecificComparers, null);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray(), typeSpecificComparers, null);
 
         sw.Restart();
         foreach (var existingEntity in existingEntities)

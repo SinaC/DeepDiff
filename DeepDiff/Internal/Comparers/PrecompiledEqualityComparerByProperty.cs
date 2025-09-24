@@ -11,16 +11,16 @@ namespace DeepDiff.Internal.Comparers
         private Func<T, int> HasherFunc { get; init; }
         private CompareFunc<T> CompareFunc { get; init; }
 
-        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
+        public PrecompiledEqualityComparerByProperty(IReadOnlyCollection<PropertyInfo> properties)
             : this(properties, null, null)
         {
         }
 
-        public PrecompiledEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
+        public PrecompiledEqualityComparerByProperty(IReadOnlyCollection<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
-            EqualsFunc = ExpressionGenerator.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
-            HasherFunc = ExpressionGenerator.GenerateHasherFunc<T>(properties);
-            CompareFunc = ExpressionGenerator.GenerateCompareFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
+            EqualsFunc = ComparerExpressionGenerator.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
+            HasherFunc = ComparerExpressionGenerator.GenerateHasherFunc<T>(properties);
+            CompareFunc = ComparerExpressionGenerator.GenerateCompareFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);
         }
 
         public new bool Equals(object? left, object? right)

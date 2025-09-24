@@ -366,7 +366,7 @@ namespace DeepDiff.Internal
         {
             if (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
             {
-                foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details?.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Contains(x.PropertyInfo)) ?? Enumerable.Empty<CompareByPropertyResultDetail>()) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
+                foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details?.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Any(y => y.PropertyInfo.Equals(x.PropertyInfo))) ?? Enumerable.Empty<CompareByPropertyResultDetail>()) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
                 {
                     // notify update
                     OperationListener?.OnUpdate(entityConfiguration.EntityType.Name, compareByPropertyResultDetail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => compareByPropertyResultDetail.OldValue, () => compareByPropertyResultDetail.NewValue, () => GenerateNavigationPathKeysForOperation());
@@ -519,10 +519,10 @@ namespace DeepDiff.Internal
                 return null;
 
             var result = new Dictionary<string, object?>();
-            foreach (var propertyInfo in keyConfiguration.KeyProperties)
+            foreach (var propertyInfoExt in keyConfiguration.KeyProperties)
             {
-                var key = propertyInfo.GetValue(entity);
-                result.Add(propertyInfo.Name, key);
+                var key = propertyInfoExt.GetValue(entity);
+                result.Add(propertyInfoExt.Name, key);
             }
             return result;
         }

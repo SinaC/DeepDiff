@@ -1,7 +1,6 @@
 using DeepDiff.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace DeepDiff.Internal.Comparers
@@ -9,18 +8,18 @@ namespace DeepDiff.Internal.Comparers
     internal sealed class NaiveEqualityComparerByProperty<T> : IComparerByProperty
         where T : class
     {
-        private IReadOnlyCollection<PropertyInfo> Properties { get; }
+        private IReadOnlyCollection<PropertyInfoExt> PropertyExts { get; }
         private IReadOnlyDictionary<Type, object>? TypeSpecificComparers { get; }
         private IReadOnlyDictionary<PropertyInfo, object>? PropertySpecificComparers { get; }
 
-        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties)
-            : this(properties, null, null)
+        public NaiveEqualityComparerByProperty(IReadOnlyCollection<PropertyInfoExt> propertyExts)
+            : this(propertyExts, null, null)
         {
         }
 
-        public NaiveEqualityComparerByProperty(IEnumerable<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
+        public NaiveEqualityComparerByProperty(IReadOnlyCollection<PropertyInfoExt> propertyExts, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
-            Properties = properties.ToArray();
+            PropertyExts = propertyExts;
             TypeSpecificComparers = typeSpecificComparers;
             PropertySpecificComparers = propertySpecificComparers;
         }
@@ -29,28 +28,28 @@ namespace DeepDiff.Internal.Comparers
         {
             if (ReferenceEquals(left, right)) // will handle left == right == null
                 return true;
-            if (Properties == null)
+            if (PropertyExts == null)
                 return left == null || left.Equals(right);
             if (left is not T)
                 return false;
             if (right is not T)
                 return false;
-            foreach (var propertyInfo in Properties)
+            foreach (var propertyInfoExt in PropertyExts)
             {
-                var oldValue = propertyInfo.GetValue(left)!;
-                var newValue = propertyInfo.GetValue(right)!;
+                var oldValue = propertyInfoExt.GetValue(left)!;
+                var newValue = propertyInfoExt.GetValue(right)!;
 
-                if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                if (PropertySpecificComparers?.TryGetValue(propertyInfoExt.PropertyInfo, out var propertySpecificComparer) == true)
                 {
-                    if (!PropertyEquals(propertyInfo, propertySpecificComparer, oldValue, newValue))
+                    if (!PropertyEquals(propertyInfoExt.PropertyInfo, propertySpecificComparer, oldValue, newValue))
                         return false;
                 }
-                else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+                else if (TypeSpecificComparers?.TryGetValue(propertyInfoExt.PropertyType, out var propertyTypeSpecificComparer) == true)
                 {
-                    if (!PropertyEquals(propertyInfo, propertyTypeSpecificComparer, oldValue, newValue))
+                    if (!PropertyEquals(propertyInfoExt.PropertyInfo, propertyTypeSpecificComparer, oldValue, newValue))
                         return false;
                 }
-                else if (propertyInfo.PropertyType.IsValueType)
+                else if (propertyInfoExt.PropertyType.IsValueType)
                 {
                     if (!object.Equals(oldValue, newValue))
                         return false;
@@ -68,10 +67,10 @@ namespace DeepDiff.Internal.Comparers
         {
             if (obj is not T)
                 return obj.GetHashCode();
-            if (Properties == null)
+            if (PropertyExts == null)
                 return obj.GetHashCode();
             var hashCode = new HashCode();
-            foreach (var propertyInfo in Properties)
+            foreach (var propertyInfo in PropertyExts)
             {
                 var existingValue = propertyInfo.GetValue(obj);
                 hashCode.Add(existingValue);
@@ -83,27 +82,27 @@ namespace DeepDiff.Internal.Comparers
         {
             if (ReferenceEquals(left, right)) // will handle left == right == null
                 return new CompareByPropertyResult(true);
-            if (Properties == null)
+            if (PropertyExts == null)
                 return new CompareByPropertyResult(left == null || left.Equals(right));
             if (left is not T)
                 return new CompareByPropertyResult(false);
             if (right is not T)
                 return new CompareByPropertyResult(false);
             var details = new List<CompareByPropertyResultDetail>();
-            foreach (var propertyInfo in Properties)
+            foreach (var propertyInfo in PropertyExts)
             {
                 var isEqualByProperty = true; // equal by default
                 var oldValue = propertyInfo.GetValue(left);
                 var newValue = propertyInfo.GetValue(right);
 
-                if (PropertySpecificComparers?.TryGetValue(propertyInfo, out var propertySpecificComparer) == true)
+                if (PropertySpecificComparers?.TryGetValue(propertyInfo.PropertyInfo, out var propertySpecificComparer) == true)
                 {
-                    if (!PropertyEquals(propertyInfo, propertySpecificComparer, oldValue, newValue))
+                    if (!PropertyEquals(propertyInfo.PropertyInfo, propertySpecificComparer, oldValue, newValue))
                         isEqualByProperty = false;
                 }
                 else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
                 {
-                    if (!PropertyEquals(propertyInfo, propertyTypeSpecificComparer, oldValue, newValue))
+                    if (!PropertyEquals(propertyInfo.PropertyInfo, propertyTypeSpecificComparer, oldValue, newValue))
                         isEqualByProperty = false;
                 }
                 else if (propertyInfo.PropertyType.IsValueType)
@@ -117,7 +116,7 @@ namespace DeepDiff.Internal.Comparers
                         isEqualByProperty = false;
                 }
                 if (!isEqualByProperty)
-                    details.Add(new CompareByPropertyResultDetail { PropertyInfo = propertyInfo, OldValue = oldValue, NewValue = newValue });
+                    details.Add(new CompareByPropertyResultDetail { PropertyInfo = propertyInfo.PropertyInfo, OldValue = oldValue, NewValue = newValue });
             }
             return new CompareByPropertyResult(details);
         }
