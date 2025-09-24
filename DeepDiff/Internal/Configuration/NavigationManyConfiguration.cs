@@ -7,8 +7,8 @@ namespace DeepDiff.Internal.Configuration
     {
         public bool UseDerivedTypes { get; private set; }
 
-        public NavigationManyConfiguration(PropertyInfo navigationProperty, Type navigationChildType)
-            : base(navigationProperty, navigationChildType)
+        public NavigationManyConfiguration(Type entityType, PropertyInfo navigationProperty, Type navigationChildType)
+            : base(entityType, navigationProperty, navigationChildType)
         {
             if (NavigationChildType.IsAbstract) // we force UseDerivedTypes if child entity type is abstract
                 UseDerivedTypes = true;

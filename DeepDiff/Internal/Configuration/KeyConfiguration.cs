@@ -12,20 +12,24 @@ namespace DeepDiff.Internal.Configuration
         private IComparerByProperty PrecompiledEqualityComparer { get; set; } = null!;
         private IComparerByProperty NaiveEqualityComparer { get; set; } = null!;
 
-        public IReadOnlyCollection<PropertyInfo> KeyProperties { get; } = null!;
+        public IReadOnlyCollection<PropertyInfoExt> KeyProperties { get; } = null!;
 
-        public KeyConfiguration(IEnumerable<PropertyInfo> keyProperties)
+        public KeyConfiguration(Type entityType, IEnumerable<PropertyInfo> keyProperties)
         {
-            KeyProperties = keyProperties.ToArray();
+            KeyProperties = keyProperties.Select(x => new PropertyInfoExt(entityType, x)).ToArray();
         }
 
-        public void CreateComparers(Type typeOfT, ComparerConfiguration comparerConfiguration)
+        public void CreateComparers(Type entityType, ComparerConfiguration comparerConfiguration)
         {
-            var naiveEqualityComparerByPropertyTypeOfT = typeof(NaiveEqualityComparerByProperty<>).MakeGenericType(typeOfT);
+            // NaiveEqualityComparerByProperty<T> ctor
+            // public NaiveEqualityComparerByProperty(IReadOnlyCollection<PropertyInfoExt> propertyExts, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
+            var naiveEqualityComparerByPropertyTypeOfT = typeof(NaiveEqualityComparerByProperty<>).MakeGenericType(entityType);
             NaiveEqualityComparer = (IComparerByProperty)Activator.CreateInstance(naiveEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers)!;
 
-            var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(typeOfT);
-            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties, comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers)!;
+            // PrecompiledEqualityComparerByProperty<T> ctor
+            // public PrecompiledEqualityComparerByProperty(IReadOnlyCollection<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
+            var precompiledEqualityComparerByPropertyTypeOfT = typeof(PrecompiledEqualityComparerByProperty<>).MakeGenericType(entityType);
+            PrecompiledEqualityComparer = (IComparerByProperty)Activator.CreateInstance(precompiledEqualityComparerByPropertyTypeOfT, KeyProperties.Select(x => x.PropertyInfo).ToArray(), comparerConfiguration?.TypeSpecificComparers, comparerConfiguration?.PropertySpecificComparers)!;
         }
 
         public IComparerByProperty GetComparer(EqualityComparers equalityComparers)

@@ -12,7 +12,7 @@ namespace DeepDiff.PerformanceTest.Performance;
 
 public class HashPerformanceTests
 {
-    private const int EntityCount = 10000000;
+    private const int EntityCount = 50000000;
 
     private static IReadOnlyCollection<EntityLevel1> Entities { get; } = Enumerable.Range(0, EntityCount).Select(x => new EntityLevel1
     {
@@ -44,7 +44,7 @@ public class HashPerformanceTests
     {
         var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
         entityConfiguration.HasKey(x => x.Timestamp);
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
         TestGetHashCode(comparer);
     }
@@ -64,7 +64,7 @@ public class HashPerformanceTests
     {
         var entityConfiguration = new EntityConfiguration<EntityLevel1>(new EntityConfiguration(typeof(EntityLevel1)));
         entityConfiguration.HasKey(x => new { x.Timestamp, x.Price, x.Power, x.Comment });
-        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties);
+        var comparer = new PrecompiledEqualityComparerByProperty<EntityLevel1>(entityConfiguration.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
         TestGetHashCode(comparer);
     }

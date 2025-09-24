@@ -19,14 +19,14 @@ namespace DeepDiff.Internal.Configuration
         public IUpdateConfiguration<TEntity> SetValue<TMember>(Expression<Func<TEntity, TMember>> destinationMember, TMember? value)
         {
             var destinationProperty = destinationMember.GetSimplePropertyAccess().Single();
-            Configuration.AddSetValueConfiguration(destinationProperty, value);
+            Configuration.AddSetValueConfiguration(typeof(TEntity), destinationProperty, value);
             return this;
         }
 
         public IUpdateConfiguration<TEntity> CopyValues<TValue>(Expression<Func<TEntity, TValue>> copyValuesExpression)
         {
             var copyValuesProperties = copyValuesExpression.GetSimplePropertyAccessList().Select(p => p.Single());
-            Configuration.SetCopyValuesConfiguration(copyValuesProperties);
+            Configuration.SetCopyValuesConfiguration(typeof(TEntity), copyValuesProperties);
             return this;
         }
     }

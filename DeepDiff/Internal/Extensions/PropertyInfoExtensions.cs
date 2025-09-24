@@ -19,11 +19,11 @@ namespace DeepDiff.Internal.Extensions
                         || otherPropertyInfo.DeclaringType!.GetInterfaces().Contains(propertyInfo.DeclaringType!));
         }
 
-        public static void CopyPropertyValues(this IEnumerable<PropertyInfo> properties, object existingEntity, object newEntity)
+        public static void CopyPropertyValues(this IEnumerable<PropertyInfo> propertyInfos, object existingEntity, object newEntity)
         {
-            if (properties == null)
+            if (propertyInfos == null)
                 return;
-            foreach (var propertyInfo in properties)
+            foreach (var propertyInfo in propertyInfos)
             {
                 var newValue = propertyInfo.GetValue(newEntity);
                 propertyInfo.SetValue(existingEntity, newValue);

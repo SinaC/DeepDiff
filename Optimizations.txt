@@ -1,0 +1,542 @@
+void Main()
+{
+	var e1 = new Entity
+	{
+		Text = "tsekwa",
+		Number = 753
+	};
+	
+	var e2 = new Entity
+	{
+		Text = "gamin",
+		Number = 157
+	};
+	
+	var entity_Text_PropertyInfo = typeof(Entity).GetProperty("Text");
+	var entity_Text_GetSet = new CGetterSetter(entity_Text_PropertyInfo);
+	var entity_Text_GetGenericExpression = ExpressionUtils.CreateGetter<Entity, string>(x => x.Text);
+	var entity_Text_SetGenericExpression = ExpressionUtils.CreateSetter<Entity, string>(x => x.Text);
+	var entity_TextGetDelegate = MethodHelper.CreateGetValueDelegate(entity_Text_PropertyInfo);
+	var entity_TextSetDelegate = MethodHelper.CreateSetValueDelegate(entity_Text_PropertyInfo);
+	//var entity_TextSetDelegate2 = GetSetMethods<Entity>()["Text"];
+	//var entity_TextGetDelegate2 = GetGetMethods<Entity>()["Text"];
+	var propDict = CreatePropertyDictionary(typeof(Entity));
+	var entity_TextGetDynamicDelegate = propDict.Single(x => x.PropName == "Text").Getter;
+	var entity_TextSetDynamicDelegate = propDict.Single(x => x.PropName == "Text").Setter;
+	
+	////
+	//entity_Text_GetSet.Set(e2, entity_Text_GetSet.Get(e1));
+	//e1.Dump();
+	//e2.Dump();
+	var sw = new Stopwatch();
+
+	const int count = 10000000;
+		
+    //
+	sw.Restart();
+	for(var i = 0; i < count; i++)
+	{
+		entity_Text_PropertyInfo.SetValue(e2, entity_Text_PropertyInfo.GetValue(e1));
+	}
+	sw.Stop();
+	sw.Dump("get/set value");
+
+    //
+	sw.Restart();
+	for(var i = 0; i < count; i++)
+	{
+		entity_Text_GetSet.Set(e2, entity_Text_GetSet.Get(e1));
+	}
+	sw.Stop();
+	sw.Dump("non-generic get/set expression");
+	
+    //
+	sw.Restart();
+	for(var i = 0; i < count; i++)
+	{
+		entity_Text_SetGenericExpression(e2, entity_Text_GetGenericExpression(e1));
+	}
+	sw.Stop();
+	sw.Dump("generic get/set expression");
+	
+	//
+	sw.Restart();
+	for(var i = 0; i < count; i++)
+	{
+		entity_TextSetDelegate.Invoke(e2, entity_TextGetDelegate.Invoke(e1));
+	}
+	sw.Stop();
+	sw.Dump("get/set delegate");
+	
+	//
+	sw.Restart();
+	for(var i = 0; i < count; i++)
+	{
+		entity_TextSetDynamicDelegate.Invoke(e2, entity_TextGetDynamicDelegate.Invoke(e1));
+	}
+	sw.Stop();
+	sw.Dump("get/set dynamic delegate");
+}
+
+// https://github.com/OnTopicCMS/OnTopic-Library/issues/90
+public class MethodHelper {
+
+  private static Action<object, object> CallInnerSetDelegate<TClass, TParam>(Action<TClass, TParam> action)
+    => (instance, value) => action((TClass)instance, (TParam)value);
+
+  private static readonly MethodInfo CallInnerSetDelegateMethod = typeof(MethodHelper).GetMethod(nameof(CallInnerSetDelegate), BindingFlags.NonPublic | BindingFlags.Static)!;
+
+  public static Action<object, object> CreateSetValueDelegate(PropertyInfo propertyInfo) {
+
+    var delegateType = typeof(Action<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+    var delegateSetter = propertyInfo.GetSetMethod().CreateDelegate(delegateType);
+    var setterWithTypes = CallInnerSetDelegateMethod.MakeGenericMethod(propertyInfo.DeclaringType!, propertyInfo.PropertyType);
+    var setter = (Action<object, object>)setterWithTypes.Invoke(null, new[] { delegateSetter })!;
+
+	return setter;
+  }
+  
+  private static Func<object, object> CallInnerGetDelegate<TClass, TParam>(Func<TClass, TParam> func)
+    => (instance) => (TParam)func((TClass)instance);
+
+  private static readonly MethodInfo CallInnerGetDelegateMethod = typeof(MethodHelper).GetMethod(nameof(CallInnerGetDelegate), BindingFlags.NonPublic | BindingFlags.Static)!;
+  
+  public static Func<object, object> CreateGetValueDelegate(PropertyInfo propertyInfo) {
+
+    var delegateType = typeof(Func<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+    var delegateGetter = propertyInfo.GetGetMethod().CreateDelegate(delegateType);
+    var getterWithTypes = CallInnerGetDelegateMethod.MakeGenericMethod(propertyInfo.DeclaringType!, propertyInfo.PropertyType);
+    var getter = (Func<object, object>)getterWithTypes.Invoke(null, new[] { delegateGetter })!;
+
+	return getter;
+  }
+}
+
+// https://www.bytefish.de/blog/expression_trees_csharp.html
+public static class ExpressionUtils
+{
+    public static PropertyInfo GetProperty<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
+    {
+        var member = GetMemberExpression(expression).Member;
+        var property = member as PropertyInfo;
+        if (property == null)
+        {
+            throw new InvalidOperationException(string.Format("Member with Name '{0}' is not a property.", member.Name));
+        }
+        return property;
+    }
+
+    private static MemberExpression GetMemberExpression<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
+    {
+        MemberExpression memberExpression = null;
+        if (expression.Body.NodeType == ExpressionType.Convert)
+        {
+            var body = (UnaryExpression)expression.Body;
+            memberExpression = body.Operand as MemberExpression;
+        }
+        else if (expression.Body.NodeType == ExpressionType.MemberAccess)
+        {
+            memberExpression = expression.Body as MemberExpression;
+        }
+
+        if (memberExpression == null)
+        {
+            throw new ArgumentException("Not a member access", "expression");
+        }
+
+        return memberExpression;
+    }
+
+    public static Action<TEntity, TProperty> CreateSetter<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+    {
+        PropertyInfo propertyInfo = ExpressionUtils.GetProperty(property);
+
+        ParameterExpression instance = Expression.Parameter(typeof(TEntity), "instance");
+        ParameterExpression parameter = Expression.Parameter(typeof(TProperty), "param");
+
+        var body = Expression.Call(instance, propertyInfo.GetSetMethod(), parameter);
+        var parameters = new ParameterExpression[] { instance, parameter };
+
+        return Expression.Lambda<Action<TEntity, TProperty>>(body, parameters).Compile();
+    }
+
+    public static Func<TEntity, TProperty> CreateGetter<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+    {
+        PropertyInfo propertyInfo = ExpressionUtils.GetProperty(property);
+
+        ParameterExpression instance = Expression.Parameter(typeof(TEntity), "instance");
+
+        var body = Expression.Call(instance, propertyInfo.GetGetMethod());
+        var parameters = new ParameterExpression[] { instance };
+
+        return Expression.Lambda<Func<TEntity, TProperty>>(body, parameters).Compile();
+    }
+
+    public static Func<TEntity> CreateDefaultConstructor<TEntity>()
+    {
+        var body = Expression.New(typeof(TEntity));
+        var lambda = Expression.Lambda<Func<TEntity>>(body);
+
+        return lambda.Compile();
+    }
+}
+
+// https://www.codeproject.com/articles/FieldInfo-PropertyInfo-GetValue-SetValue-Alternati
+public class CGetterSetter
+{
+    /// <summary>
+    /// Get the helper method signature one time
+    /// </summary>
+    private static MethodInfo sm_valueAssignerMethod = 
+        typeof( CGetterSetter )
+        .GetMethod( "ValueAssigner", BindingFlags.Static | BindingFlags.NonPublic );
+
+    /// <summary>
+    /// This is the internal method responsible for assigning one value to a member.
+    /// This is required to make this class compliant with .NET 3.5 (Unity3d compatible)
+    /// </summary>
+    /// <typeparam name="T">The Type of the values to assign</typeparam>
+    /// <param name="dest">The destination member</param>
+    /// <param name="src">The value to assign</param>
+    private static void ValueAssigner<T>( out T dest, T src )
+    {
+        dest = src;
+    }
+
+    /// <summary>
+    /// The delegate for getting the value of the member
+    /// </summary>
+    private Func<object, object> m_getter;
+
+    /// <summary>
+    /// The delegate for setting the value of the member
+    /// </summary>
+    private Action<object, object> m_setter;
+
+    /// <summary>
+    /// Get the value of the member on a provided object.
+    /// </summary>
+    /// <param name="p_obj">The object to query for the member value</param>
+    /// <returns>The value of the member on the provided object</returns>
+    public object Get( object p_obj )
+    {
+        return m_getter( p_obj );
+    }
+
+    /// <summary>
+    /// Set the value on a given object to a given value.
+    /// </summary>
+    /// <param name="p_obj">The object whose member value to set</param>
+    /// <param name="p_value">The value to assign to the member</param>
+    public void Set( object p_obj, object p_value )
+    {
+        m_setter( p_obj, p_value );
+    }
+
+    /// <summary>
+    /// Construct a new member accessor based on a Reflection MemberInfo- either a
+    /// PropertyInfo or a FieldInfo
+    /// </summary>
+    /// <param name="p_member">
+    /// A PropertyInfo or a FieldInfo describing the member to access
+    /// </param>
+    public CGetterSetter( MemberInfo p_member )
+    {
+        if (p_member == null)
+            throw new ArgumentNullException( "Must initialize with a non-null Field or Property" );
+
+        MemberExpression exMember = null;
+
+        if (p_member is FieldInfo)
+        {
+            var fi = p_member as FieldInfo;
+            var assignmentMethod = sm_valueAssignerMethod.MakeGenericMethod( fi.FieldType );
+
+            Init( fi.DeclaringType, fi.FieldType,
+                _ex => exMember = Expression.Field( _ex, fi ), // Create a Field expression, 
+                			// and SAVE that field expression for the Call expression
+                ( _, _val ) => Expression.Call( assignmentMethod, 
+                exMember, _val ) // We're going to call the static 
+                                 // "ValueAssigner" method on this class
+            );
+        }
+        else if (p_member is PropertyInfo)
+        {
+            var pi = p_member as PropertyInfo;
+            var assignmentMethod = pi.GetSetMethod();
+
+            Init( pi.DeclaringType, pi.PropertyType,
+                _ex => exMember = Expression.Property( _ex, pi ), // Create a Property expression
+                ( _obj, _val ) => Expression.Call
+                ( _obj, assignmentMethod, _val ) // We're going to call 
+                                                 // the SetMethod on the PropertyInfo object
+            );
+        }
+        else
+        {
+            throw new ArgumentException
+            ( "The member must be either a Field or a Property, not " + p_member.MemberType );
+        }
+    }
+
+    /// <summary>
+    /// Internal initialization routine. The difference between Field and Property
+    /// access is extremely similar, but just different enough to require the two
+    /// delegates back into the calling routine provide the specialized information.
+    /// </summary>
+    /// <param name="p_objectType">
+    /// The Type of the objects that will have this member accessed
+    /// </param>
+    /// <param name="p_valueType">The Type of the member</param>
+    /// <param name="p_fnGetMember">
+    /// A delegate that returns the correct Expression for the member- either
+    /// <see cref="Expression.Property"/> or <see cref="Expression.Field"/>
+    /// </param>
+    /// <param name="p_fnMakeCallExpression">
+    /// Get a method that actually calls the Assignment function appropriate for the
+    /// MemberType. The order of the parameters for Fields vs Properties is slightly
+    /// different, as the Field assignment is static while the Property assignment is an
+    /// instance method.
+    /// </param>
+    private void Init(
+        Type p_objectType,
+        Type p_valueType,
+        Func<Expression, MemberExpression> p_fnGetMember,
+        Func<Expression, Expression, MethodCallExpression> p_fnMakeCallExpression )
+    {
+        var exObjParam = Expression.Parameter( typeof( object ), "theObject" );
+        var exValParam = Expression.Parameter( typeof( object ), "theProperty" );
+
+        var exObjConverted = Expression.Convert( exObjParam, p_objectType );
+        var exValConverted = Expression.Convert( exValParam, p_valueType );
+
+        Expression exMember = p_fnGetMember( exObjConverted );
+
+        Expression getterMember = p_valueType.IsValueType ? 
+                             Expression.Convert( exMember, typeof( object ) ) : exMember;
+        m_getter = Expression.Lambda<Func<object, object>>( getterMember, exObjParam ).Compile();
+
+        Expression exAssignment = p_fnMakeCallExpression( exObjConverted, exValConverted );
+        m_setter = Expression.Lambda<Action<object, object>>
+                               ( exAssignment, exObjParam, exValParam ).Compile();
+    }
+
+#if false // The following code was refactored because of the extreme similarities between the methods.
+    public CGenGetterSetter( MemberInfo p_member )
+    {
+        if (p_member == null)
+            throw new ArgumentNullException( "Must initialize with a non-null Field or Property" );
+
+        if (p_member is FieldInfo)
+            InitAsField( p_member as FieldInfo );
+        else if (p_member is PropertyInfo)
+            InitAsProperty( p_member as PropertyInfo );
+        else
+            throw new ArgumentException
+            ( "The member must be either a Field or a Property, not " + p_member.MemberType );
+    }
+
+    private void InitAsProperty( PropertyInfo p_propertyInfo )
+    {
+        var objType = p_propertyInfo.DeclaringType;
+        var valType = p_propertyInfo.PropertyType;
+
+        var assignmentMethod = p_propertyInfo.GetSetMethod();
+
+
+
+        var exObjParam = Expression.Parameter( typeof( object ), "theObject" );
+        var exValParam = Expression.Parameter( typeof( object ), "theProperty" );
+
+        var exObjConverted = Expression.Convert( exObjParam, objType );
+        var exValConverted = Expression.Convert( exValParam, valType );
+
+        /**/
+        Expression exMember = Expression.Property( exObjConverted, p_propertyInfo );
+
+        Expression getterMember = valType.IsValueType ? 
+                   Expression.Convert( exMember, typeof( object ) ) : exMember;
+        m_getter = Expression.Lambda<Func<object, object>>( getterMember, exObjParam ).Compile();
+
+        /**/
+        Expression exAssignment = Expression.Call
+                         ( exObjConverted, assignmentMethod, exValConverted );
+        m_setter = Expression.Lambda<Action<object, object>>
+                   ( exAssignment, exObjParam, exValParam ).Compile();
+    }
+
+    private void InitAsField( FieldInfo p_fieldInfo )
+    {
+        var objType = p_fieldInfo.DeclaringType;
+        var valType = p_fieldInfo.FieldType;
+
+        var assignmentMethod = typeof( CGenGetterSetter )
+                        .GetMethod( "ValueAssigner", BindingFlags.Static | BindingFlags.NonPublic )
+                        .MakeGenericMethod( valType );
+
+        var exObjParam = Expression.Parameter( typeof( object ), "theObject" );
+        var exValParam = Expression.Parameter( typeof( object ), "theProperty" );
+
+        var exObjConverted = Expression.Convert( exObjParam, objType );
+        var exValConverted = Expression.Convert( exValParam, valType );
+
+        /**/
+        Expression exMember = Expression.Field( exObjConverted, p_fieldInfo );
+
+        Expression getterMember = valType.IsValueType ? 
+            Expression.Convert( exMember, typeof( object ) ) : exMember;
+        m_getter = Expression.Lambda<Func<object, object>>( getterMember, exObjParam ).Compile();
+
+        /**/
+        var exAssignment = Expression.Call( assignmentMethod, exMember, exValConverted );
+        m_setter = Expression.Lambda<Action<object, object>>
+                  ( exAssignment, exObjParam, exValParam ).Compile();
+    }
+#endif
+
+}
+
+// https://titiandragomir.wordpress.com/2009/12/22/getting-and-setting-property-values-dynamically/
+public class MyProp
+{
+	public string PropName { get; set; }
+	public Func<object,object> Getter{get;set;}
+	public Action<object,object> Setter{get;set;}
+}
+public static MyProp[] CreatePropertyDictionary(Type type)
+{
+	var allProps = type.GetProperties();
+	var props = new MyProp[allProps.Length];
+
+	for(int i =0;i<allProps.Length;i++)
+	{
+		var prop = allProps[i];
+		// Getter dynamic method the signature would be :
+		// object Get(object thisReference)
+		// { return ((TestClass)thisReference).Prop; }
+
+		DynamicMethod dmGet = new DynamicMethod("Get", typeof(object), new Type[] { typeof(object), });
+		ILGenerator ilGet = dmGet.GetILGenerator();
+		// Load first argument to the stack
+		ilGet.Emit(OpCodes.Ldarg_0);
+		// Cast the object on the stack to the apropriate type
+		ilGet.Emit(OpCodes.Castclass, type);
+		// Call the getter method passing the object on teh stack as the this reference
+		ilGet.Emit(OpCodes.Callvirt, prop.GetGetMethod());
+		// If the property type is a value type (int/DateTime/..)
+		// box the value so we can return it
+		if (prop.PropertyType.IsValueType)
+		{
+			ilGet.Emit(OpCodes.Box, prop.PropertyType);
+		}
+		// Return from the method
+		ilGet.Emit(OpCodes.Ret);
+
+
+		// Getter dynamic method the signature would be :
+		// object Set(object thisReference, object propValue)
+		// { return ((TestClass)thisReference).Prop = (PropType)propValue; }
+
+		DynamicMethod dmSet = new DynamicMethod("Set", typeof(void), new Type[] { typeof(object), typeof(object) });
+		ILGenerator ilSet = dmSet.GetILGenerator();
+		// Load first argument to the stack and cast it
+		ilSet.Emit(OpCodes.Ldarg_0);
+		ilSet.Emit(OpCodes.Castclass, type);
+
+		// Load secons argument to the stack and cast it or unbox it
+		ilSet.Emit(OpCodes.Ldarg_1);
+		if (prop.PropertyType.IsValueType)
+		{
+			ilSet.Emit(OpCodes.Unbox_Any,prop.PropertyType);
+		}
+		else
+		{
+			ilSet.Emit(OpCodes.Castclass, prop.PropertyType);
+		}
+		// Call Setter method and return
+		ilSet.Emit(OpCodes.Callvirt, prop.GetSetMethod());
+		ilSet.Emit(OpCodes.Ret);
+
+		// Create the delegates for invoking the dynamic methods and add the to an array for later use
+		props[i] =  new MyProp()
+			{
+				PropName = prop.Name,
+				Setter = (Action<object, object>) dmSet.CreateDelegate(typeof(Action<object, object>)),
+				Getter = (Func<object, object>) dmGet.CreateDelegate(typeof(Func<object, object>)),
+			};
+
+		}
+	return props;
+}
+
+/*
+// https://stackoverflow.com/questions/51028886/create-delegate-of-getter-with-changed-return-type
+public static Dictionary<string, Func<T, object>> GetGetMethods<T>()
+{
+    var getMethods = new Dictionary<string, Func<T, object>>();
+    foreach (var prop in typeof(T).GetProperties())
+    {    
+        Func<T, object> del;
+        if (prop.PropertyType.IsValueType)
+        {
+            var dynMethod = new DynamicMethod(string.Format("Dynamic_Get_{0}_{1}", typeof(T).Name, prop.Name), typeof(object), new[] { typeof(T) }, typeof(T).Module);
+            var ilGen = dynMethod.GetILGenerator();
+            ilGen.Emit(OpCodes.Ldarg_0);
+            ilGen.Emit(OpCodes.Callvirt, prop.GetGetMethod());
+            ilGen.Emit(OpCodes.Box, prop.PropertyType);
+            ilGen.Emit(OpCodes.Ret);
+
+            del = (Func<T, object>)dynMethod.CreateDelegate(typeof(Func<T, object>));
+        }
+        else
+        {
+            del = (Func<T, object>)Delegate.CreateDelegate(typeof(Func<T, object>), null, prop.GetGetMethod());
+        }
+
+        getMethods[prop.Name] = del;
+    }
+
+    return getMethods;
+}
+
+public static Dictionary<string, Action<T, object>> GetSetMethods<T>()
+{
+    var setMethods = new Dictionary<string, Action<T, object>>();
+    foreach (var prop in typeof(T).GetProperties())
+    {    
+        Action<T, object> del;
+        if (prop.PropertyType.IsValueType)
+        {
+            var dynMethod = new DynamicMethod(string.Format("Dynamic_Set_{0}_{1}", typeof(T).Name, prop.Name), typeof(object), new[] { typeof(T) }, typeof(T).Module);
+            var ilGen = dynMethod.GetILGenerator();
+            ilGen.Emit(OpCodes.Ldarg_0);
+            ilGen.Emit(OpCodes.Callvirt, prop.GetSetMethod());
+            ilGen.Emit(OpCodes.Box, prop.PropertyType);
+            ilGen.Emit(OpCodes.Ret);
+
+            del = (Action<T, object>)dynMethod.CreateDelegate(typeof(Action<T, object>));
+        }
+        else
+        {
+            del = (Action<T, object>)Delegate.CreateDelegate(typeof(Action<T, object>), null, prop.GetSetMethod());
+        }
+
+        setMethods[prop.Name] = del;
+    }
+
+    return setMethods;
+}
+*/
+//
+public class Entity
+{
+	public string Text { get; set; }
+	public int Number { get; set; }
+	public List<SubEntity> SubEntities { get; set; }
+}
+
+public class SubEntity
+{
+	public string SubText { get; set; }
+	public string SubNumber { get; set; }
+}

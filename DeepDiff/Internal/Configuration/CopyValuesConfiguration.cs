@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,11 +7,11 @@ namespace DeepDiff.Internal.Configuration
 {
     internal sealed class CopyValuesConfiguration
     {
-        public IReadOnlyCollection<PropertyInfo> CopyValuesProperties { get; } = null!;
+        public IReadOnlyCollection<PropertyInfoExt> CopyValuesProperties { get; } = null!;
 
-        public CopyValuesConfiguration(IEnumerable<PropertyInfo> copyValuesProperties)
+        public CopyValuesConfiguration(Type entityType, IEnumerable<PropertyInfo> copyValuesProperties)
         {
-            CopyValuesProperties = copyValuesProperties.ToArray();
+            CopyValuesProperties = copyValuesProperties.Select(x => new PropertyInfoExt(entityType, x)).ToArray();
         }
     }
 }
