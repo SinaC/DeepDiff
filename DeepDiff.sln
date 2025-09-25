@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepDiff.Benchmark", "DeepD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAppNet5", "TestAppNet5\TestAppNet5.csproj", "{6B315DAC-2330-40E8-B6D9-8AA473759180}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepDiff.PerformanceTest", "DeepDiff.PerformanceTest\DeepDiff.PerformanceTest.csproj", "{665CB559-16D0-402E-9977-553E406E3DC9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNet8", "TestAppNet8\TestAppNet8.csproj", "{185B3144-8128-DF94-91E9-60B6D3282D38}"
 EndProject
 Global
@@ -49,10 +47,6 @@ Global
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B315DAC-2330-40E8-B6D9-8AA473759180}.Release|Any CPU.Build.0 = Release|Any CPU
-		{665CB559-16D0-402E-9977-553E406E3DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{665CB559-16D0-402E-9977-553E406E3DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{665CB559-16D0-402E-9977-553E406E3DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{665CB559-16D0-402E-9977-553E406E3DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{185B3144-8128-DF94-91E9-60B6D3282D38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{185B3144-8128-DF94-91E9-60B6D3282D38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{185B3144-8128-DF94-91E9-60B6D3282D38}.Release|Any CPU.ActiveCfg = Release|Any CPU

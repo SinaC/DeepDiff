@@ -15,6 +15,58 @@ Hash
 | NaiveHash4PropertiesGetHashCode        | 1000000 | 55,962,286.5079 ns | 878,345.4797 ns | 778,630.3896 ns | 56,056,805.5556 ns |
 | PrecompiledHash4Properties_GetHashCode | 1000000 | 25,149,544.7917 ns |  64,553.2451 ns |  50,398.9276 ns | 25,146,006.2500 ns |
 
+Compare
+| Method                        | N     | Option     | Mean                 | Error              | StdDev             | Median               |
+|------------------------------ |------ |----------- |---------------------:|-------------------:|-------------------:|---------------------:|
+| Naive1Property_Equals         | 100   | Identical  |       219,269.278 ns |      4,372.7764 ns |      4,294.6511 ns |       219,375.195 ns |
+| Precompiled1Property_Equals   | 100   | Identical  |        21,790.309 ns |        112.3938 ns |         93.8539 ns |        21,774.396 ns |
+| Naive4Properties_Equals       | 100   | Identical  |       229,916.890 ns |      1,111.1879 ns |        867.5424 ns |       229,995.288 ns |
+| Precompiled4Properties_Equals | 100   | Identical  |        28,064.478 ns |         70.1443 ns |         62.1811 ns |        28,034.077 ns |
+| Naive1Property_Equals         | 100   | NoExisting |             6.209 ns |          0.0220 ns |          0.0205 ns |             6.212 ns |
+| Precompiled1Property_Equals   | 100   | NoExisting |             6.196 ns |          0.0103 ns |          0.0086 ns |             6.196 ns |
+| Naive4Properties_Equals       | 100   | NoExisting |             8.300 ns |          0.0276 ns |          0.0245 ns |             8.305 ns |
+| Precompiled4Properties_Equals | 100   | NoExisting |             6.206 ns |          0.0331 ns |          0.0258 ns |             6.199 ns |
+| Naive1Property_Equals         | 100   | NoNew      |           765.396 ns |          4.0998 ns |          3.6343 ns |           763.712 ns |
+| Precompiled1Property_Equals   | 100   | NoNew      |           763.397 ns |          3.7824 ns |          3.1585 ns |           762.542 ns |
+| Naive4Properties_Equals       | 100   | NoNew      |           763.628 ns |          0.6981 ns |          0.6530 ns |           763.720 ns |
+| Precompiled4Properties_Equals | 100   | NoNew      |           762.167 ns |          0.8894 ns |          0.7427 ns |           762.245 ns |
+| Naive1Property_Equals         | 100   | Random     |       233,389.453 ns |      3,285.0176 ns |      2,912.0826 ns |       232,964.502 ns |
+| Precompiled1Property_Equals   | 100   | Random     |        22,054.282 ns |        366.5644 ns |        489.3529 ns |        21,890.501 ns |
+| Naive4Properties_Equals       | 100   | Random     |       274,158.800 ns |      4,921.1172 ns |      4,109.3557 ns |       273,796.631 ns |
+| Precompiled4Properties_Equals | 100   | Random     |        33,272.969 ns |        600.7077 ns |        561.9023 ns |        32,996.478 ns |
+| Naive1Property_Equals         | 1000  | Identical  |    23,277,009.704 ns |    445,776.8364 ns |    495,479.7725 ns |    22,987,712.500 ns |
+| Precompiled1Property_Equals   | 1000  | Identical  |     2,746,303.646 ns |     43,283.7503 ns |     33,793.1051 ns |     2,735,654.492 ns |
+| Naive4Properties_Equals       | 1000  | Identical  |    23,570,368.029 ns |    231,307.2627 ns |    193,152.0403 ns |    23,606,212.500 ns |
+| Precompiled4Properties_Equals | 1000  | Identical  |     3,253,564.481 ns |     22,695.0368 ns |     20,118.5590 ns |     3,246,898.242 ns |
+| Naive1Property_Equals         | 1000  | NoExisting |             6.431 ns |          0.1457 ns |          0.1620 ns |             6.438 ns |
+| Precompiled1Property_Equals   | 1000  | NoExisting |             6.257 ns |          0.0089 ns |          0.0074 ns |             6.256 ns |
+| Naive4Properties_Equals       | 1000  | NoExisting |             6.266 ns |          0.0093 ns |          0.0082 ns |             6.266 ns |
+| Precompiled4Properties_Equals | 1000  | NoExisting |             6.304 ns |          0.0757 ns |          0.0671 ns |             6.284 ns |
+| Naive1Property_Equals         | 1000  | NoNew      |         7,702.101 ns |        116.0649 ns |        108.5672 ns |         7,629.751 ns |
+| Precompiled1Property_Equals   | 1000  | NoNew      |         7,754.246 ns |        118.3949 ns |        110.7466 ns |         7,785.104 ns |
+| Naive4Properties_Equals       | 1000  | NoNew      |         7,845.433 ns |        155.5831 ns |        259.9443 ns |         7,714.170 ns |
+| Precompiled4Properties_Equals | 1000  | NoNew      |         7,768.211 ns |        114.2736 ns |        117.3506 ns |         7,721.454 ns |
+| Naive1Property_Equals         | 1000  | Random     |    24,411,004.375 ns |    397,301.3033 ns |    755,907.0206 ns |    24,170,090.625 ns |
+| Precompiled1Property_Equals   | 1000  | Random     |     2,752,563.320 ns |     33,741.0580 ns |     31,561.4066 ns |     2,770,752.539 ns |
+| Naive4Properties_Equals       | 1000  | Random     |    27,544,901.562 ns |    403,560.8148 ns |    357,746.1508 ns |    27,517,826.562 ns |
+| Precompiled4Properties_Equals | 1000  | Random     |     4,213,278.385 ns |     76,344.3301 ns |     71,412.5338 ns |     4,199,776.562 ns |
+| Naive1Property_Equals         | 10000 | Identical  | 2,299,154,146.154 ns | 18,378,488.5871 ns | 15,346,870.3361 ns | 2,302,684,300.000 ns |
+| Precompiled1Property_Equals   | 10000 | Identical  |   320,475,112.500 ns |  6,334,368.2095 ns |  4,945,458.0409 ns |   322,020,775.000 ns |
+| Naive4Properties_Equals       | 10000 | Identical  | 2,456,355,100.000 ns | 25,825,638.4934 ns | 22,893,755.8450 ns | 2,464,617,250.000 ns |
+| Precompiled4Properties_Equals | 10000 | Identical  |   356,973,546.667 ns |  7,107,427.7152 ns |  6,648,292.2946 ns |   355,520,900.000 ns |
+| Naive1Property_Equals         | 10000 | NoExisting |             6.412 ns |          0.0102 ns |          0.0085 ns |             6.411 ns |
+| Precompiled1Property_Equals   | 10000 | NoExisting |             6.379 ns |          0.0174 ns |          0.0163 ns |             6.379 ns |
+| Naive4Properties_Equals       | 10000 | NoExisting |             6.406 ns |          0.0531 ns |          0.0471 ns |             6.404 ns |
+| Precompiled4Properties_Equals | 10000 | NoExisting |             6.397 ns |          0.0172 ns |          0.0143 ns |             6.397 ns |
+| Naive1Property_Equals         | 10000 | NoNew      |        77,603.779 ns |        545.9268 ns |        483.9498 ns |        77,782.928 ns |
+| Precompiled1Property_Equals   | 10000 | NoNew      |        77,553.181 ns |        323.3224 ns |        286.6169 ns |        77,639.722 ns |
+| Naive4Properties_Equals       | 10000 | NoNew      |        77,652.990 ns |        455.4487 ns |        403.7434 ns |        77,791.980 ns |
+| Precompiled4Properties_Equals | 10000 | NoNew      |        77,751.364 ns |        106.5249 ns |         94.4316 ns |        77,720.129 ns |
+| Naive1Property_Equals         | 10000 | Random     | 2,451,967,947.059 ns | 48,117,239.7558 ns | 49,412,862.6146 ns | 2,456,129,200.000 ns |
+| Precompiled1Property_Equals   | 10000 | Random     |   316,958,550.000 ns |  3,188,503.9764 ns |  2,489,374.1739 ns |   316,819,300.000 ns |
+| Naive4Properties_Equals       | 10000 | Random     | 2,803,009,338.889 ns | 54,471,858.7167 ns | 58,284,278.5450 ns | 2,805,920,750.000 ns |
+| Precompiled4Properties_Equals | 10000 | Random     |   451,274,269.231 ns |  5,842,936.2271 ns |  4,879,116.3775 ns |   448,558,200.000 ns |
+
 LoadNavigation (3 levels, 1st level: N 2nd level: 96 items, 3rd level: 255 items)
 | Method                           | N   | Option     | Mean             | Error            | StdDev           | Median           |
 |--------------------------------- |---- |----------- |-----------------:|-----------------:|-----------------:|-----------------:|

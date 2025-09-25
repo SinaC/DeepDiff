@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Attributes;
 using DeepDiff.Benchmark.Entities;
-using DeepDiff.Configuration;
 using DeepDiff.Internal.Comparers;
 using DeepDiff.Internal.Configuration;
 
@@ -8,29 +7,26 @@ namespace DeepDiff.Benchmark;
 
 public class Hash
 {
-    private Random Random { get; }
     private IReadOnlyCollection<NavigationEntityLevel1> Entities { get; set; } = null!;
     
-    private IComparerByProperty NaiveHash1Property { get; }
-    private IComparerByProperty NaiveHash4Properties { get; }
-    private IComparerByProperty PrecompiledHash1Property { get; }
-    private IComparerByProperty PrecompiledHash4Properties { get; }
+    private IComparerByProperty NaiveComparer1Property { get; }
+    private IComparerByProperty NaiveComparer4Properties { get; }
+    private IComparerByProperty PrecompiledComparer1Property { get; }
+    private IComparerByProperty PrecompiledComparer4Properties { get; }
 
     public Hash()
     {
-        Random = new Random();
-
         var entityConfiguration1Property = new EntityConfiguration<NavigationEntityLevel1>(new EntityConfiguration(typeof(NavigationEntityLevel1)));
         entityConfiguration1Property.HasKey(x => x.Timestamp);
 
-        NaiveHash1Property = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties);
-        PrecompiledHash1Property = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
+        NaiveComparer1Property = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties);
+        PrecompiledComparer1Property = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
         var entityConfiguration4Properties = new EntityConfiguration<NavigationEntityLevel1>(new EntityConfiguration(typeof(NavigationEntityLevel1)));
         entityConfiguration4Properties.HasKey(x => new { x.Id, x.Timestamp, x.Power, x.Comment });
 
-        NaiveHash4Properties = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties);
-        PrecompiledHash4Properties = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
+        NaiveComparer4Properties = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties);
+        PrecompiledComparer4Properties = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
 
     }
 
@@ -40,46 +36,42 @@ public class Hash
     [GlobalSetup]
     public void GlobalSetup()
     {
-        GenerateRandom();
+        Generate();
     }
 
     [Benchmark]
-    public void NaiveHash1PropertyGetHashCode()
+    public void Naive1PropertyGetHashCode()
     {
-        foreach (var entity in Entities)
-        {
-            var hashCode = NaiveHash1Property.GetHashCode(entity);
-        }
+        Test_GetHashCode(NaiveComparer1Property);
     }
 
     [Benchmark]
-    public void PrecompiledHash1PropertyGetHashCode()
+    public void Precompiled1Property_GetHashCode()
     {
-        foreach (var entity in Entities)
-        {
-            var hashCode = PrecompiledHash1Property.GetHashCode(entity);
-        }
+        Test_GetHashCode(PrecompiledComparer1Property);
     }
 
     [Benchmark]
-    public void NaiveHash4PropertiesGetHashCode()
+    public void Naive4Properties_GetHashCode()
     {
-        foreach (var entity in Entities)
-        {
-            var hashCode = NaiveHash4Properties.GetHashCode(entity);
-        }
+        Test_GetHashCode(NaiveComparer4Properties);
     }
 
     [Benchmark]
-    public void PrecompiledHash4Properties_GetHashCode()
+    public void Precompiled4Properties_GetHashCode()
+    {
+        Test_GetHashCode(PrecompiledComparer4Properties);
+    }
+
+    private void Test_GetHashCode(IComparerByProperty comparer)
     {
         foreach (var entity in Entities)
         {
-            var hashCode = PrecompiledHash4Properties.GetHashCode(entity);
+            var hashCode = comparer.GetHashCode(entity);
         }
     }
 
-    private void GenerateRandom()
+    private void Generate()
     {
         Entities = Enumerable.Range(0, N)
             .Select(x => new NavigationEntityLevel1
