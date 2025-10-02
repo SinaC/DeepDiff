@@ -4,7 +4,6 @@ using DeepDiff.UnitTest.Entities.Simple;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DeepDiff.UnitTest.OperationListener
@@ -28,19 +27,19 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.NotEmpty(operations);
             // 1 delete
             Assert.Single(operations.OfType<DeleteDiffOperation>());
-            Assert.Single(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)));
+            Assert.Single(operations.OfType<DeleteDiffOperation>(), x => x.EntityName == nameof(EntityLevel1));
             Assert.NotEmpty(operations.OfType<DeleteDiffOperation>().Single().Keys);
             Assert.All(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
             // 1 insert
             Assert.Single(operations.OfType<InsertDiffOperation>());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)));
+            Assert.Single(operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(EntityLevel1));
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>().Single().Keys);
             Assert.All(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
             // 1 update on EntityLevel0 and 4 updates on EntityLevel1
             // each update EntityLevel1 are on Power property -> generate 1 UpdatedProperty (Power)
             Assert.Equal(5, operations.OfType<UpdateDiffOperation>().Count());
             //
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(EntityLevel0));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.UpdatedProperties));
             Assert.Equal(nameof(EntityLevel0.Penalty), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).UpdatedProperties.Single().PropertyName);
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
@@ -77,7 +76,7 @@ namespace DeepDiff.UnitTest.OperationListener
             // 6 inserts: 1 for EntityLevel0 and 5 for EntityLevel1
             Assert.Equal(6, operations.OfType<InsertDiffOperation>().Count());
             // EntityLevel0
-            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.Single(operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(EntityLevel0));
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).Keys);
             Assert.Empty(operations.OfType<InsertDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).NavigationParentKeys); // no parent
             // EntityLevel1
@@ -111,7 +110,7 @@ namespace DeepDiff.UnitTest.OperationListener
             // 6 delete: 1 for EntityLevel0 and 5 for EntityLevel1
             Assert.Equal(6, operations.OfType<DeleteDiffOperation>().Count());
             // EntityLevel0
-            Assert.Single(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.Single(operations.OfType<DeleteDiffOperation>(), x => x.EntityName == nameof(EntityLevel0));
             Assert.NotEmpty(operations.OfType<DeleteDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).Keys);
             Assert.Empty(operations.OfType<DeleteDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).NavigationParentKeys); // no parent
             // EntityLevel1
@@ -155,14 +154,14 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.NotEmpty(operations.OfType<InsertDiffOperation>().SelectMany(x => x.Keys));
             // 10 update on EntityLevel0 and 40 updates on EntityLevel1
             // each update EntityLevel1 are on Power property -> generate 1 UpdatedProperty (Power)
-            Assert.Equal(5*10, operations.OfType<UpdateDiffOperation>().Count());
+            Assert.Equal(5 * 10, operations.OfType<UpdateDiffOperation>().Count());
             //
             Assert.Equal(10, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(EntityLevel0)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.UpdatedProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Equal(nameof(EntityLevel0.Penalty), x.UpdatedProperties.Single().PropertyName));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
             //
-            Assert.Equal(4*10, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(EntityLevel1)));
+            Assert.Equal(4 * 10, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(EntityLevel1)));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)), x => Assert.Single(x.UpdatedProperties));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.Equal(nameof(EntityLevel1.Power), x.PropertyName));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.UpdatedProperties), x => Assert.NotEqual(x.ExistingValue, x.NewValue));
@@ -220,7 +219,7 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         private static EntityLevel0 GenerateExisting(int level0Index)
-            => new ()
+            => new()
             {
                 Index = level0Index,
 

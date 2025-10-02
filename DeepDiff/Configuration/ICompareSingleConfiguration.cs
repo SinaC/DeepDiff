@@ -1,6 +1,4 @@
-﻿using DeepDiff.Internal.Configuration;
-
-namespace DeepDiff.Configuration
+﻿namespace DeepDiff.Configuration
 {
     /// <summary>
     /// Interface for configuring the comparison of a single entity.
@@ -28,5 +26,12 @@ namespace DeepDiff.Configuration
         /// <remarks>default value for <paramref name="equalityComparer"/> is <c>EqualityComparers.Precompiled</c></remarks>
         /// <returns></returns>
         ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled);
+        /// <summary>
+        /// Indicates whether to check for duplicate keys in entities or nested entities.
+        /// </summary>
+        /// <param name="checkDuplicateKeys"></param>
+        /// <remarks>default value for <paramref name="use"/> is <c>true</c></remarks>
+        /// <returns></returns>
+        ICompareSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true);
     }
 }

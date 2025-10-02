@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public interface IUpdateConfiguration<TEntity>
-        where TEntity: class
+        where TEntity : class
     {
         /// <summary>
         /// When an update is detected, overwrite property with a specific value

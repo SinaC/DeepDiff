@@ -34,5 +34,11 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(force);
             return this;
         }
+
+        public IMergeManyConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
+        {
+            Configuration.SetCheckDuplicateKeys(checkDuplicateKeys);
+            return this;
+        }
     }
 }

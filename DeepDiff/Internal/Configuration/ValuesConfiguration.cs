@@ -35,7 +35,7 @@ namespace DeepDiff.Internal.Configuration
         public IComparerByProperty GetComparer(EqualityComparers equalityComparers)
             => equalityComparers switch
             {
-                EqualityComparers.Naive=> NaiveEqualityComparer,
+                EqualityComparers.Naive => NaiveEqualityComparer,
                 EqualityComparers.Precompiled => PrecompiledEqualityComparer,
                 _ => throw new ArgumentOutOfRangeException(nameof(equalityComparers))
             };

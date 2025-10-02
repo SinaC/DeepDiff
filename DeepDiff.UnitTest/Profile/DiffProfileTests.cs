@@ -30,18 +30,18 @@ namespace DeepDiff.UnitTest.Profile
             // missing volume is different on every qh
             // obligated volume is different on every qh
             // available volume is different on 95 qh
-            Assert.Single(results.Where(x => x.PersistChange == PersistChange.Insert));
-            Assert.Empty(results.Where(x => x.PersistChange == PersistChange.Update));
+            Assert.Single(results, x => x.PersistChange == PersistChange.Insert);
+            Assert.DoesNotContain(results, x => x.PersistChange == PersistChange.Update);
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == PersistChange.None).CapacityMarketUnitId);
-            Assert.Equal(1+QhCount, operations.OfType<InsertDiffOperation>().Count());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(1 + QhCount, operations.OfType<InsertDiffOperation>().Count());
+            Assert.Single(operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability));
             Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
             Assert.Empty(operations.OfType<DeleteDiffOperation>());
             Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.MissingVolume)) == 1));
             Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.ObligatedVolume)) == 1));
-            Assert.Equal(QhCount-1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.AvailableVolume)) == 1));
-            Assert.Empty(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Equal(QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.AvailableVolume)) == 1));
+            Assert.DoesNotContain(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability));
             Assert.Equal(3 * QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
         }
 
@@ -56,7 +56,7 @@ namespace DeepDiff.UnitTest.Profile
             diffConfiguration.AddProfile<CapacityAvailabilityProfile>();
             var deepDiff = diffConfiguration.CreateDeepDiff();
 
-            var listener = new StoreAllOperationListener(); 
+            var listener = new StoreAllOperationListener();
             var results = deepDiff.MergeMany(existingEntities, newEntities, listener, cfg => cfg.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
             var operations = listener.Operations;
 
@@ -68,15 +68,15 @@ namespace DeepDiff.UnitTest.Profile
             //  missing volume is different on every qh
             //  obligated volume is different on every qh
             //  available volume is different on 95 qh
-            Assert.Single(results.Where(x => x.PersistChange == PersistChange.Insert));
-            Assert.Single(results.Where(x => x.PersistChange == PersistChange.Update));
+            Assert.Single(results, x => x.PersistChange == PersistChange.Insert);
+            Assert.Single(results, x => x.PersistChange == PersistChange.Update);
             Assert.Equal("CMUIDNew", results.Single(x => x.PersistChange == PersistChange.Insert).CapacityMarketUnitId);
             Assert.Equal("CMUIDExisting", results.Single(x => x.PersistChange == PersistChange.Update).CapacityMarketUnitId);
             Assert.Equal(1 + QhCount, operations.OfType<InsertDiffOperation>().Count());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+            Assert.Single(operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability));
             Assert.Equal(QhCount, operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
             Assert.Empty(operations.OfType<DeleteDiffOperation>());
-            Assert.Empty(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability))); // no operation on CapacityAvailability, update has been triggered from nested level
+            Assert.DoesNotContain(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)); // no operation on CapacityAvailability, update has been triggered from nested level
             Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.MissingVolume)) == 1));
             Assert.Equal(QhCount, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.ObligatedVolume)) == 1));
             Assert.Equal(QhCount - 1, operations.OfType<UpdateDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail) && x.UpdatedProperties.Count(y => y.PropertyName == nameof(CapacityAvailabilityDetail.AvailableVolume)) == 1));
@@ -240,7 +240,7 @@ namespace DeepDiff.UnitTest.Profile
                 StartsOn = day.AddDays(dayShift).AddMinutes(15 * tick),
                 AvailableVolume = (1 + calculationShift) * tick,
                 MissingVolume = 3 + calculationShift + tick,
-                ObligatedVolume = 2 * (1+ calculationShift) + tick,
+                ObligatedVolume = 2 * (1 + calculationShift) + tick,
                 Status = status
             };
 

@@ -53,23 +53,23 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Empty(listener.Operations.OfType<InsertDiffOperation>());
             Assert.Empty(listener.Operations.OfType<DeleteDiffOperation>());
             Assert.Equal(2, listener.Operations.OfType<UpdateDiffOperation>().Count());
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)));
+            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl));
             Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).SelectMany(x => x.UpdatedProperties));
             Assert.Equal((5m).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().NewValue);
             Assert.Equal((3).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(Entities.ActivationControl.ActivationControl)).UpdatedProperties.Single().ExistingValue);
             Assert.Equal(nameof(Entities.ActivationControl.ActivationControl.TotalEnergyToBeSupplied), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).UpdatedProperties.Single().PropertyName);
             Assert.Equal(2, listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Count);
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Where(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.Day)));
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Where(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.ContractReference)));
+            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys, x => x.Key == nameof(Entities.ActivationControl.ActivationControl.Day));
+            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys, x => x.Key == nameof(Entities.ActivationControl.ActivationControl.ContractReference));
             Assert.Equal($"{deliveryDate}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Single(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.Day)).Value);
             Assert.Equal("CREF", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControl)).Keys.Single(x => x.Key == nameof(Entities.ActivationControl.ActivationControl.ContractReference)).Value);
-            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)));
+            Assert.Single(listener.Operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(ActivationControlDpTimestampDetail));
             Assert.Equal((-7m).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().NewValue);
             Assert.Equal((420).ToString(), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().ExistingValue);
             Assert.Equal(nameof(ActivationControlDpTimestampDetail.EnergySupplied), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).UpdatedProperties.Single().PropertyName);
             Assert.Single(listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys);
             Assert.Equal(nameof(ActivationControlDpTimestampDetail.Timestamp), listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Key);
-            Assert.Equal($"{deliveryDate.UtcDateTime.AddMinutes(5*15).AddSeconds(7*4)}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Value);
+            Assert.Equal($"{deliveryDate.UtcDateTime.AddMinutes(5 * 15).AddSeconds(7 * 4)}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Value);
         }
 
         [Theory]
@@ -256,9 +256,9 @@ namespace DeepDiff.UnitTest.ActivationControl
                             .Select(y => new ActivationControlDpDetail
                             {
                                 ActivationControlId = 1,
-                                DeliveryPointEan = $"DPEAN_{(x+1) * (y+1)}",
+                                DeliveryPointEan = $"DPEAN_{(x + 1) * (y + 1)}",
 
-                                DeliveryPointName = $"DPNAME_{(x+1) * (y+1)}",
+                                DeliveryPointName = $"DPNAME_{(x + 1) * (y + 1)}",
                                 Direction = (x * y) % 2 == 0 ? Direction.Up : Direction.Down,
                                 DeliveryPointType = (2 * x * y) % 2 == 0 ? DeliveryPointType.SingleUnit : DeliveryPointType.ProvidingGroup,
                                 TotalEnergySupplied = 3 * x * y,

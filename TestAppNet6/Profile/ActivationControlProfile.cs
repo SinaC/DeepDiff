@@ -9,7 +9,7 @@ public class ActivationControlProfile : DiffProfile
         CreateConfiguration<Entities.ActivationControl.ActivationControl>()
             .PersistEntity()
             .HasKey(x => new { x.Day, x.ContractReference })
-            .HasValues(x => new {x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount})
+            .HasValues(x => new { x.TotalEnergyRequested, x.TotalDiscrepancy, x.TotalEnergyToBeSupplied, x.FailedPercentage, x.IsMeasurementExcludedCount, x.IsJumpExcludedCount })
             .OnUpdate(cfg => cfg.CopyValues(x => x.Status))
             .HasMany(x => x.ActivationControlDetails);
         CreateConfiguration<Entities.ActivationControl.ActivationControlDetail>()

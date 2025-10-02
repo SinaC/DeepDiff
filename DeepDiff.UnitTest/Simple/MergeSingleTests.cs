@@ -81,8 +81,8 @@ public class MergeSingleTests
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.None, result.PersistChange);
-        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
-        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
+        Assert.Single(result.SubEntities, x => x.PersistChange == PersistChange.Insert);
+        Assert.Single(result.SubEntities, x => x.PersistChange == PersistChange.Delete);
         Assert.Equal(4, result.SubEntities.Where(x => x.PersistChange == PersistChange.Update).Count());
     }
 
@@ -158,8 +158,8 @@ public class MergeSingleTests
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);
-        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Insert));
-        Assert.Single(result.SubEntities.Where(x => x.PersistChange == PersistChange.Delete));
+        Assert.Single(result.SubEntities, x => x.PersistChange == PersistChange.Insert);
+        Assert.Single(result.SubEntities, x => x.PersistChange == PersistChange.Delete);
         Assert.Equal(4, result.SubEntities.Where(x => x.PersistChange == PersistChange.Update).Count());
     }
 

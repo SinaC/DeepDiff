@@ -11,7 +11,7 @@ namespace DeepDiff.Internal.Configuration
 
         public void AddIgnoredProperties(IEnumerable<PropertyInfo> properties)
         {
-            foreach(var property in properties)
+            foreach (var property in properties)
             {
                 if (IgnoredProperties.All(x => !x.IsSameAs(property)))
                     IgnoredProperties.Add(property);

@@ -1,6 +1,5 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl;
-using System;
 
 namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
 {

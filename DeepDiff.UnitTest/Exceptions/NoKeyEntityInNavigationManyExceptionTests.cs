@@ -21,10 +21,10 @@ namespace DeepDiff.UnitTest.Exceptions
             {
                 Index = x,
 
-                Timestamp = DateTime.Now.AddMinutes(15*x),
+                Timestamp = DateTime.Now.AddMinutes(15 * x),
 
                 Power = x,
-                Price = 2*x
+                Price = 2 * x
             }).ToArray();
 
             var newEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
@@ -69,7 +69,7 @@ namespace DeepDiff.UnitTest.Exceptions
                 Price = 2 * x + 1
             }).ToArray();
 
-            var result =  deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
+            var result = deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
 
             Assert.NotNull(result);
         }

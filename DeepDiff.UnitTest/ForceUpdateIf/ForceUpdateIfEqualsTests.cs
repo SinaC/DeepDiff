@@ -9,7 +9,7 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
         [Theory]
         [InlineData(EqualityComparers.Precompiled)]
         [InlineData(EqualityComparers.Naive)]
-        public void FromToBeCalculatedToCalculated_WithoutForceUpdate(EqualityComparers equalityComparer) 
+        public void FromToBeCalculatedToCalculated_WithoutForceUpdate(EqualityComparers equalityComparer)
         {
             var deepDiff = CreateDeepDiffWithoutForceUpdate();
 
@@ -45,7 +45,7 @@ namespace DeepDiff.UnitTest.ForceUpdateIf
             var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
 
             Assert.NotNull(result);
-            Assert.Equal(FcrActivationControlStatus.Validated,  result.Status); // status has NOT been updated because it was not ToBeCalculated
+            Assert.Equal(FcrActivationControlStatus.Validated, result.Status); // status has NOT been updated because it was not ToBeCalculated
         }
 
         private static IDeepDiff CreateDeepDiffWithoutForceUpdate()

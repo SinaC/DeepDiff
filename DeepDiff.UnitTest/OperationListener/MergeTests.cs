@@ -27,34 +27,34 @@ namespace DeepDiff.UnitTest.OperationListener
             Assert.NotEmpty(operations);
             // 1 delete
             Assert.Single(operations.OfType<DeleteDiffOperation>());
-            Assert.Single(operations.OfType<DeleteDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)));
+            Assert.Single(operations.OfType<DeleteDiffOperation>(), x => x.EntityName == nameof(EntityLevel1));
             Assert.Single(operations.OfType<DeleteDiffOperation>().Single().Keys);
             Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Key);
             Assert.Equal(DateTime.Today.ToString(), operations.OfType<DeleteDiffOperation>().Single().Keys.Single().Value);
             // 1 insert
             Assert.Single(operations.OfType<InsertDiffOperation>());
-            Assert.Single(operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)));
+            Assert.Single(operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(EntityLevel1));
             Assert.Single(operations.OfType<InsertDiffOperation>().Single().Keys);
             Assert.Equal(nameof(EntityLevel1.Timestamp), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Key);
             Assert.Equal(DateTime.Today.AddMinutes(5).ToString(), operations.OfType<InsertDiffOperation>().Single().Keys.Single().Value);
             // 1 update on EntityLevel0 and 4 updates on EntityLevel1
             Assert.Equal(5, operations.OfType<UpdateDiffOperation>().Count());
             Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).Count());
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(EntityLevel0));
             Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Count());
             Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Count());
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.StartsOn)));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Where(x => x.Key == nameof(EntityLevel0.Direction)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys), x => x.Key == nameof(EntityLevel0.StartsOn));
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys), x => x.Key == nameof(EntityLevel0.Direction));
             Assert.Equal(DateTime.Today.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.StartsOn)).Value);
             Assert.Equal(Direction.Up.ToString(), operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)).SelectMany(x => x.Keys).Single(x => x.Key == nameof(EntityLevel0.Direction)).Value);
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Select(x => x.Key), x => Assert.Equal(nameof(EntityLevel1.Timestamp), x));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(1).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(2).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(3).ToString()));
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys).Where(x => x.Value == DateTime.Today.AddMinutes(4).ToString()));
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys), x => x.Value == DateTime.Today.AddMinutes(1).ToString());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys), x => x.Value == DateTime.Today.AddMinutes(2).ToString());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys), x => x.Value == DateTime.Today.AddMinutes(3).ToString());
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel1)).SelectMany(x => x.Keys), x => x.Value == DateTime.Today.AddMinutes(4).ToString());
             // each update EntityLevel1 are on Power property -> generate 1 UpdatedProperty (Power)
             //
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(EntityLevel0));
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Single(x.UpdatedProperties));
             Assert.Equal(nameof(EntityLevel0.Penalty), operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel0)).UpdatedProperties.Single().PropertyName);
             Assert.All(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel0)), x => Assert.Empty(x.NavigationParentKeys)); // no parent
@@ -197,10 +197,10 @@ namespace DeepDiff.UnitTest.OperationListener
             var operations = listener.Operations;
 
             // only check entity2 update operations
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Where(x => x.EntityName == nameof(EntityLevel2)));
+            Assert.Single(operations.OfType<UpdateDiffOperation>(), x => x.EntityName == nameof(EntityLevel2));
             Assert.Equal(2, operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Count); // parent and grand-parent
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Where(x => x.Key == nameof(EntityLevel1))); // one parent
-            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys.Where(x => x.Key == nameof(EntityLevel0))); // one grand-parent
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys, x => x.Key == nameof(EntityLevel1)); // one parent
+            Assert.Single(operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(EntityLevel2)).NavigationParentKeys, x => x.Key == nameof(EntityLevel0)); // one grand-parent
         }
 
         private static (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities(int level0Index)

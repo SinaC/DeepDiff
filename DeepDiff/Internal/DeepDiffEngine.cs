@@ -112,6 +112,8 @@ namespace DeepDiff.Internal
             // no existing entities -> return new as inserted
             if (existingEntities == null || !existingEntities.Any())
             {
+                if (DiffEngineConfiguration.CheckDuplicateKeys)
+                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer), newEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
                 foreach (var newEntity in newEntities ?? Enumerable.Empty<object>())
                 {
                     OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity); // once an entity is inserted, it's children will also be inserted
@@ -123,7 +125,9 @@ namespace DeepDiff.Internal
             // no new entities -> return existing as deleted
             if (newEntities == null || !newEntities.Any())
             {
-                foreach (var existingEntity in existingEntities)
+                if (DiffEngineConfiguration.CheckDuplicateKeys)
+                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer), existingEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
+                foreach (var existingEntity in existingEntities ?? Enumerable.Empty<object>())
                 {
                     OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity); // once an entity is deleted, it's children will also be deleted
                     results.Add(existingEntity);
@@ -221,9 +225,25 @@ namespace DeepDiff.Internal
 
             return results;
         }
-
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
             => DiffEngineConfiguration.UseHashtable && existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
+
+        private static void CheckDuplicateKeys(IComparerByProperty keysComparer, IEnumerable<object>? entities, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
+        {
+            var seenEntities = new Hashtable(keysComparer);
+            foreach (var entity in entities ?? Enumerable.Empty<object>())
+            {
+                try
+                {
+                    seenEntities.Add(entity, entity);
+                }
+                catch (ArgumentException)
+                {
+                    var keys = GenerateKeysForException(entityConfiguration, keyConfiguration, entity);
+                    throw new DuplicateKeysException(entityConfiguration.EntityType, keys);
+                }
+            }
+        }
 
         private static object? SearchMatchingEntityByKey(IComparerByProperty keysComparer, IEnumerable<object> entities, object existingEntity, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
         {
@@ -404,7 +424,7 @@ namespace DeepDiff.Internal
                 // use SetValue from InsertConfiguration
                 if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
                 {
-                    foreach(var setValueConfiguration in insertConfiguration.SetValueConfigurations)
+                    foreach (var setValueConfiguration in insertConfiguration.SetValueConfigurations)
                         setValueConfiguration.DestinationProperty.SetValue(newEntity, setValueConfiguration.Value);
                 }
             }
