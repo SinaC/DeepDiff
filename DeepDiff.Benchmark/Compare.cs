@@ -144,7 +144,7 @@ public class Compare
     private void GenerateRandom()
     {
         const int SampleSize = 10;
-        var guids = Enumerable.Range(0,SampleSize).Select(x => Guid.NewGuid()).ToArray();
+        var guids = Enumerable.Range(0, SampleSize).Select(x => Guid.NewGuid()).ToArray();
         var timestamps = Enumerable.Range(0, SampleSize).Select(x => DateTime.Today.AddMicroseconds(x)).ToArray();
         var powers = Enumerable.Range(0, SampleSize).ToArray();
         ExistingEntities = Enumerable.Range(0, N)

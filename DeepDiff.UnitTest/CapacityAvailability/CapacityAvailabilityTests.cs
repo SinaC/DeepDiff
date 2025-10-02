@@ -60,7 +60,7 @@ public class CapacityAvailabilityTests
         Assert.Equal(newCmuId, results.Single().CapacityMarketUnitId);
         Assert.Equal(97, listener.Operations.Count); // 1 at root level and 96 at detail level
         Assert.Equal(97, listener.Operations.OfType<InsertDiffOperation>().Count());
-        Assert.Single(listener.Operations.OfType<InsertDiffOperation>().Where(x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability)));
+        Assert.Single(listener.Operations.OfType<InsertDiffOperation>(), x => x.EntityName == nameof(Entities.CapacityAvailability.CapacityAvailability));
         Assert.Equal(96, listener.Operations.OfType<InsertDiffOperation>().Count(x => x.EntityName == nameof(CapacityAvailabilityDetail)));
     }
 
@@ -78,7 +78,7 @@ public class CapacityAvailabilityTests
 
     private static void AssignFK(IEnumerable<Entities.CapacityAvailability.CapacityAvailability> capacityAvailabilities, bool assignNavigationProperty)
     {
-        foreach(var capacityAvailability in capacityAvailabilities)
+        foreach (var capacityAvailability in capacityAvailabilities)
         {
             foreach (var capacityAvailabilityDetail in capacityAvailability.CapacityAvailabilityDetails)
             {

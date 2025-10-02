@@ -35,7 +35,7 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
     }
 
     private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
-        => new ()
+        => new()
         {
             Day = deliveryDate,
             ContractReference = "CREF",

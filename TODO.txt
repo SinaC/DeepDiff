@@ -1,16 +1,5 @@
 try to use List instead of IEnumerable and IList
-it seems naive comparer GetHashCode is faster on a single property
-HasKey is optional if related entity only appear in HasOne and MergeSingle
+HasKey should be optional if related entity only appear in HasOne and MergeSingle
 
 more tests
 	complex scenario (see aFRR Activation Control)
-
-
-use delegate instead of GetValue and SetValue
-	https://codeblog.jonskeet.uk/2008/08/09/making-reflection-fly-and-exploring-delegates/
-	https://stackoverflow.com/questions/1027980/improving-performance-reflection-what-alternatives-should-i-consider
-	https://www.codeproject.com/articles/FieldInfo-PropertyInfo-GetValue-SetValue-Alternati
-	https://github.com/OnTopicCMS/OnTopic-Library/issues/90
-	https://www.bytefish.de/blog/expression_trees_csharp.html
-	https://titiandragomir.wordpress.com/2009/12/22/getting-and-setting-property-values-dynamically/
-	https://stackoverflow.com/questions/51028886/create-delegate-of-getter-with-changed-return-type

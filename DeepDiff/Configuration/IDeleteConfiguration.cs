@@ -8,7 +8,7 @@ namespace DeepDiff.Configuration
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public interface IDeleteConfiguration<TEntity>
-        where TEntity: class
+        where TEntity : class
     {
         /// <summary>
         /// When a delete is detected, overwrite property with a specific value

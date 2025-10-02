@@ -30,5 +30,11 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
+
+        public ICompareSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
+        {
+            Configuration.SetCheckDuplicateKeys(checkDuplicateKeys);
+            return this;
+        }
     }
 }

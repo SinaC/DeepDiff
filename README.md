@@ -269,7 +269,7 @@ IMergeSingleConfiguration HashtableThreshold(int threshold = 15)
 
 ### ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel
 
-Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified
+Force OnUpdate to be triggered if a nested entity has been modified even if current entity is not modified (false by default))
 
 ```csharp
 IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
@@ -281,6 +281,14 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 
 ```csharp
 IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### SetCheckDuplicateKeys
+
+Indicates whether to check for duplicate keys in entities or nested entities (true by default).
+
+```csharp
+IMergeSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
 ```
 
 ## MergeMany configuration
@@ -317,6 +325,14 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
+### SetCheckDuplicateKeys
+
+Indicates whether to check for duplicate keys in entities or nested entities (true by default).
+
+```csharp
+IMergeManyConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
+```
+
 ## CompareSingle configuration
 
 ### UseHashtable
@@ -341,6 +357,14 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 
 ```csharp
 ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
+```
+
+### SetCheckDuplicateKeys
+
+Indicates whether to check for duplicate keys in entities or nested entities (true by default).
+
+```csharp
+ICompareSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
 ```
 
 ## CompareMany configuration
@@ -369,6 +393,14 @@ Choose which equality comparer engine will use to compare keys and values (Preco
 ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
+### SetCheckDuplicateKeys
+
+Indicates whether to check for duplicate keys in entities or nested entities (true by default).
+
+```csharp
+ICompareManyConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
+```
+
 ## OperationListener
 
 Defines a listener which will be called on every insert/update/delete detection
@@ -376,19 +408,19 @@ Defines a listener which will be called on every insert/update/delete detection
 ### OnInsert
 
 ```csharp
-void OnDelete(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
+void OnDelete(string entityTypeName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 ### OnDelete
 
 ```csharp
-void OnInsert(string entityName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
+void OnInsert(string entityTypeName, Func<Dictionary<string, object>> getKeysFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 ### OnUpdate
 
 ```csharp
-void OnUpdate(string entityName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
+void OnUpdate(string entityTypeName, string propertyName, Func<Dictionary<string, object>> getKeysFunc, Func<object> getOriginalValueFunc, Func<Dictionary<string, Dictionary<string, object>>> getNavigationParentKeysFunc);
 ```
 
 # Deep Diff Configuration

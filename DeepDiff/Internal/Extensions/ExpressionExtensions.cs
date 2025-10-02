@@ -58,13 +58,13 @@ namespace DeepDiff.Internal.Extensions
             var propertyPath = parameterExpression.MatchPropertyAccess(propertyAccessExpression);
 
             return propertyPath is not null && propertyPath.Count == 1
-                ? propertyPath 
+                ? propertyPath
                 : null;
         }
 
         private static Expression RemoveConvert(this Expression expression)
         {
-            while (expression.NodeType == ExpressionType.Convert 
+            while (expression.NodeType == ExpressionType.Convert
                 || expression.NodeType == ExpressionType.ConvertChecked)
             {
                 expression = ((UnaryExpression)expression).Operand;
@@ -77,7 +77,7 @@ namespace DeepDiff.Internal.Extensions
         {
             return newExpression.Members == null
                    || !newExpression.Members
-                       .Where( (t, i) => !string.Equals(t.Name, propertyPaths.ElementAt(i).Last().Name, StringComparison.Ordinal))
+                       .Where((t, i) => !string.Equals(t.Name, propertyPaths.ElementAt(i).Last().Name, StringComparison.Ordinal))
                        .Any();
         }
 

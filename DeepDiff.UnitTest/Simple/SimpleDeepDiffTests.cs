@@ -86,18 +86,18 @@ public partial class SimpleDeepDiffTests
         Assert.Equal(11, results.Length);
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Insert));
         Assert.Equal(1, results.Count(x => x.PersistChange == PersistChange.Delete));
-        Assert.Equal(6, results.Count(x => x.PersistChange == PersistChange.Update)); 
+        Assert.Equal(6, results.Count(x => x.PersistChange == PersistChange.Update));
         Assert.Equal(3, results.Count(x => x.PersistChange == PersistChange.None));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Insert), x => Assert.Equal(5, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Insert), x => Assert.All(x.SubEntities, y => Assert.Equal(PersistChange.Insert, y.PersistChange)));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Delete), x => Assert.Equal(5, x.SubEntities.Count));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Delete), x => Assert.All(x.SubEntities, y => Assert.Equal(PersistChange.Delete, y.PersistChange)));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Equal(2, x.SubEntities.Count));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Insert)));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Delete)));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities, y => y.PersistChange == PersistChange.Insert));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.Update), x => Assert.Single(x.SubEntities, y => y.PersistChange == PersistChange.Delete));
         Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Equal(2, x.SubEntities.Count));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Insert)));
-        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities.Where(y => y.PersistChange == PersistChange.Delete)));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities, y => y.PersistChange == PersistChange.Insert));
+        Assert.All(results.Where(x => x.PersistChange == PersistChange.None), x => Assert.Single(x.SubEntities, y => y.PersistChange == PersistChange.Delete));
 
         Assert.All(results.Where(x => x.PersistChange != PersistChange.Insert), x => Assert.StartsWith("Existing", x.Comment)); // Comment is not copied
         Assert.StartsWith("NewAdditionalValue", results.Single(x => x.PersistChange == PersistChange.Insert).AdditionalValueToCopy); // AdditionalValueToCopy is copied

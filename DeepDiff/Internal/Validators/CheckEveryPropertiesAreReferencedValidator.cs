@@ -45,6 +45,6 @@ namespace DeepDiff.Internal.Validators
                     || entityConfiguration.InsertConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Any(x => x.IsSameAs(property)) == true
                     || entityConfiguration.DeleteConfiguration?.SetValueConfigurations?.Select(x => x.DestinationProperty)?.Any(x => x.IsSameAs(property)) == true;
 
-        
+
     }
 }

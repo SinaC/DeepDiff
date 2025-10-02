@@ -9,6 +9,7 @@ namespace DeepDiff.Internal.Configuration
         public bool ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel { get; private set; }
         public bool CompareOnly { get; private set; }
         public EqualityComparers EqualityComparer { get; private set; } = EqualityComparers.Precompiled;
+        public bool CheckDuplicateKeys { get; private set; } = true;
 
         public void SetUseHashtable(bool useHashtable)
         {
@@ -33,6 +34,11 @@ namespace DeepDiff.Internal.Configuration
         public void SetEqualityComparer(EqualityComparers equalityComparer)
         {
             EqualityComparer = equalityComparer;
+        }
+
+        public void SetCheckDuplicateKeys(bool checkDuplicateKeys)
+        {
+            CheckDuplicateKeys = checkDuplicateKeys;
         }
     }
 }

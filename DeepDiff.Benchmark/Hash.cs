@@ -8,7 +8,7 @@ namespace DeepDiff.Benchmark;
 public class Hash
 {
     private IReadOnlyCollection<NavigationEntityLevel1> Entities { get; set; } = null!;
-    
+
     private IComparerByProperty NaiveComparer1Property { get; }
     private IComparerByProperty NaiveComparer4Properties { get; }
     private IComparerByProperty PrecompiledComparer1Property { get; }

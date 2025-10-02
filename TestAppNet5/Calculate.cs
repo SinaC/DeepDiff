@@ -38,13 +38,13 @@ namespace TestAppNet5
             calculated.TotalEnergyToBeSupplied = 5m;
             calculated.ActivationControlDetails[5].DpDetails[2].TimestampDetails[7].EnergySupplied = -7m;
 
-            var result =  DeepDiff.MergeSingle(existing, calculated);
+            var result = DeepDiff.MergeSingle(existing, calculated);
 
             Logger.Information($"result?: {result != null}");
         }
 
         private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
-            => new ()
+            => new()
             {
                 Day = deliveryDate,
                 ContractReference = "CREF",

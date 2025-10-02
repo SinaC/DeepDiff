@@ -29,5 +29,12 @@
         /// <param name="force"></param>
         /// <returns></returns>
         IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false);
+        /// <summary>
+        /// Checks for duplicate keys in entities or nested entities.
+        /// </summary>
+        /// <param name="checkDuplicateKeys"></param>
+        /// <remarks>default value for <paramref name="use"/> is <c>true</c></remarks>
+        /// <returns></returns>
+        IMergeSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true);
     }
 }

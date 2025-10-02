@@ -102,7 +102,7 @@ public class NoValuesTests
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
             .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
             .HasKey(x => x.DeliveryPointEan);
-            //don't declare HasValues to be able to test a regression .HasValues(x => new { x.Value1, x.Value2 });
+        //don't declare HasValues to be able to test a regression .HasValues(x => new { x.Value1, x.Value2 });
         var deepDiff = diffConfiguration.CreateDeepDiff();
         return deepDiff;
     }

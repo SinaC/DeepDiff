@@ -104,7 +104,7 @@ namespace DeepDiff.Internal.Extensions
 
         #region IEnumerable Members
 
-        IEnumerator<PropertyInfo> IEnumerable<PropertyInfo>.GetEnumerator() 
+        IEnumerator<PropertyInfo> IEnumerable<PropertyInfo>.GetEnumerator()
             => Components.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()

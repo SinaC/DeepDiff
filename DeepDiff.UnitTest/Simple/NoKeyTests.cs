@@ -1,9 +1,9 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.Simple;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using Xunit;
 
 namespace DeepDiff.UnitTest.Simple;
@@ -15,9 +15,9 @@ public class NoKeyTests
 {
     [Theory]
     [InlineData(EqualityComparers.Precompiled)]
-    
+
     [InlineData(EqualityComparers.Naive)]
-    
+
     public void Identical(EqualityComparers equalityComparer)
     {
 
