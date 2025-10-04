@@ -1,3 +1,5 @@
+bug when using CompareSingle or CompareMany with ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel set to true and no changes were detected in nested entities ?
+
 try to use List instead of IEnumerable and IList
 HasKey should be optional if related entity only appear in HasOne and MergeSingle
 
