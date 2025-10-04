@@ -1,5 +1,9 @@
 # Breaking changes
 
+### 1.11.1
+
+- By default, DeepDiff will now check for duplicate keys in entities and nested entities. You can disable this behavior using SetCheckDuplicateKeys(false) in MergeSingle, MergeMany, CompareSingle and CompareMany configuration
+
 ### 1.11.0
 
 - IOperationListener are now mandatory when using CompareSingle and CompareMany methods
