@@ -1,7 +1,8 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl;
+using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Extensions;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Profiles
 {
     internal class ActivationControlDiffProfile : DiffProfile
     {

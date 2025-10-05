@@ -12,33 +12,47 @@
 
 - to configure an entity, you must now use the `ConfigureEntity<TEntity>()` method instead of `Entity<TEntity>()`
 
-# Sample
+# Example
 
 ## How do I get started
 First configure DeepDiff to register what types you want to compare, in the startup of your application
 
 ```csharp
 var diffConfiguration = new DiffConfiguration();
-diffConfiguration.ConfigureEntity<Entity>()
-   .HasKey(x => new { x.StartsOn, x.Name })
-   .HasValues(x => new { x.Price, x.Volume })
-   .HasMany(x => x.SubEntities)
-   .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-   .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-   .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-diffConfiguration.ConfigureEntity<SubEntity>()
-   .HasKey(x => x.SubName)
-   .HasValues(x => x.Energy)
-   .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-   .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-   .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-var deepDiff = diffConfiguration.CreateDeepDiff();
+diffConfiguration.ConfigureEntity<Entity>()                       // configure Entity type
+   .HasKey(x => new { x.StartsOn, x.Name })                       // business key
+   .HasValues(x => new { x.Price, x.Volume })                     // properties to compare for update (and copy on update)
+   .HasMany(x => x.SubEntities)                                   // one-to-many relation
+   .OnInsert(cfg => cfg                                           // operations to perform on insert
+          .SetValue(x => x.PersistChange, PersistChange.Insert))  //     change PersistChange property to Insert
+   .OnUpdate(cfg => cfg                                           // operations to perform on update
+          .SetValue(x => x.PersistChange, PersistChange.Update))  //     change PersistChange property to Update
+   .OnDelete(cfg => cfg                                           // operations to perform on delete
+          .SetValue(x => x.PersistChange, PersistChange.Delete)); //     change PersistChange property to Delete
+
+diffConfiguration.ConfigureEntity<SubEntity>()                    // configure SubEntity type
+   .HasKey(x => x.SubName)                                        // business key
+   .HasValues(x => x.Energy)                                      // property to compare for update (and copy on update)
+   .OnInsert(cfg => cfg                                           // operations to perform on insert
+          .SetValue(x => x.PersistChange, PersistChange.Insert))  //     change PersistChange property to Insert
+   .OnUpdate(cfg => cfg                                           // operations to perform on update
+          .SetValue(x => x.PersistChange, PersistChange.Update)   //     change PersistChange property to Update
+          .CopyValues(x => x.Description)                         //     copy Description property from new to existing entity
+   .OnDelete(cfg => cfg                                           // operations to perform on delete
+          .SetValue(x => x.PersistChange, PersistChange.Delete))  //     change PersistChange property to Delete
+   .Ignore(x => new { x.Entity, x.EntityId} );                    //     foreign key and navigation are not relevant for diff
+
+var deepDiff = diffConfiguration.CreateDeepDiff();                // finalize configuration
 ```
-Then in your application code, this will detect insert/update/delete between existing and new entities. In case of update, properties will be copied from new to existing entity
+
+Then in your application code, this will detect insert/update/delete between existing and new entities. In case of update, properties will be copied from new to existing entity.
+PersistChange property will be set accordingly, so you can persist changes in your database and in case of update Description property will also be copied from new to existing sub entity.
+
 ```csharp
 var resultEntities = deepDiff.MergeMany(existingEntities, newEntities); // resultEntities will contain 'merged' entities
 ```
-Sample entities definition
+
+Example entities definition
 ```csharp
 public class Entity
 {
@@ -56,16 +70,18 @@ public class SubEntity
   public Guid Id { get; set; } // DB Key
   public string SubName { get; set; } // Business Key
   public int Energy { get; set; }
+  public string Description { get; set; } // Not part of key or values, will not be used in diff
   public PersistChange PersistChange { get; set; }
   public Guid EntityId { get; set; } // Foreign Key
+  public Entity Entity { get; set; } // Navigation property
 }
 
 public enum PersistChange
 {
   None,
-  Inserted,
-  Updated,
-  Deleted
+  Insert,
+  Update,
+  Delete
 }
 ```
 

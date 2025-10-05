@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace DeepDiff.UnitTest.Entities.ActivationControl;

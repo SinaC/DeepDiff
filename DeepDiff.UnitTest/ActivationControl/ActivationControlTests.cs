@@ -1,7 +1,6 @@
 using DeepDiff.Configuration;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Entities.ActivationControl;
-using System.Linq;
 using Xunit;
 
 namespace DeepDiff.UnitTest.ActivationControl

@@ -1,7 +1,6 @@
 using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
 using DeepDiff.UnitTest.Entities;
-using System;
 using Xunit;
 
 namespace DeepDiff.UnitTest.Exceptions

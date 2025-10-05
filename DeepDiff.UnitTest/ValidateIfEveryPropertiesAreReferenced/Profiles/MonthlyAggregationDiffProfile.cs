@@ -1,7 +1,8 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.MonthlyAggregation;
+using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Extensions;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Profiles
 {
     public class MonthlyAggregationDiffProfile : DiffProfile
     {

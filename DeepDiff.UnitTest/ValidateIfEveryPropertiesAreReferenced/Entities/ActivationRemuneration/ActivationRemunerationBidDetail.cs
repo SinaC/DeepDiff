@@ -1,5 +1,4 @@
 ﻿using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
-using System;
 using System.Diagnostics;
 
 namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationRemuneration

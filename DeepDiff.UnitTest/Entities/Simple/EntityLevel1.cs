@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace DeepDiff.UnitTest.Entities.Simple;
 
 internal class EntityLevel1 : PersistEntity

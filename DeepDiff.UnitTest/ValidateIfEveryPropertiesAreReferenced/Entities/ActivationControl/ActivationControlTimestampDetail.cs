@@ -1,6 +1,5 @@
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas;
-using System;
 using System.Diagnostics;
 
 namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl

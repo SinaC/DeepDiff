@@ -1,8 +1,9 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.MonthlyAggregation;
+using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Extensions;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Profiles
 {
     public class InvalidMonthlyAggregationDiffProfile : DiffProfile
     {
@@ -17,8 +18,8 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
 
             // Id, AuditedOn, AuditedBy are missing
             CreateConfiguration<MonthlyAggregationDetail<MonthlyAggregationImputation>>()
-                .WithComparer<decimal>(new DecimalComparer(6))
-                .WithComparer<decimal?>(new NullableDecimalComparer(6))
+                .WithComparer(new DecimalComparer(6))
+                .WithComparer(new NullableDecimalComparer(6))
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))

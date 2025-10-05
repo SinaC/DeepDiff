@@ -1,8 +1,6 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Inheritance.Entities.NonAbstract;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace DeepDiff.UnitTest.Inheritance

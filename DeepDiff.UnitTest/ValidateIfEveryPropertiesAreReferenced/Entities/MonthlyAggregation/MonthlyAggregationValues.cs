@@ -1,5 +1,4 @@
 ﻿using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas;
-using System;
 
 namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.MonthlyAggregation
 {

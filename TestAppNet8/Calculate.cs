@@ -13,14 +13,14 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
     private ILogger Logger { get; } = logger;
     private IDeepDiff DeepDiff { get; } = deepDiff;
 
-    public void Perform(Date deliveryDate)
+    public void Perform(DateOnly deliveryDate)
     {
         var (existingEntities, newEntities) = GenerateEntities(500);
         var deepDiff = CreateDeepDiff();
         var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
     }
 
-    public void Perform2(Date deliveryDate)
+    public void Perform2(DateOnly deliveryDate)
     {
         Logger.Information($"Start calculation for {deliveryDate}");
 
@@ -34,7 +34,7 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
         Logger.Information($"result?: {result != null}");
     }
 
-    private static ActivationControl Generate(Date deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
+    private static ActivationControl Generate(DateOnly deliveryDate, ActivationControlStatus status, string internalComment, string tsoComment)
         => new()
         {
             Day = deliveryDate,
@@ -51,7 +51,7 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
             ActivationControlDetails = [.. Enumerable.Range(0, 96)
                 .Select(x => new ActivationControlDetail
                 {
-                    StartsOn = deliveryDate.UtcDateTime.AddMinutes(15 * x),
+                    StartsOn = deliveryDate.ToDateTime(new TimeOnly()).ToUniversalTime().AddMinutes(15 * x),
 
                     OfferedVolumeUp = x,
                     OfferedVolumeDown = 2 * x,
@@ -65,7 +65,7 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
                     TimestampDetails = [.. Enumerable.Range(0, 255)
                         .Select(y => new ActivationControlTimestampDetail
                         {
-                            Timestamp = deliveryDate.UtcDateTime.AddMinutes(15 * x).AddSeconds(4 * y),
+                            Timestamp = deliveryDate.ToDateTime(new TimeOnly()).ToUniversalTime().AddMinutes(15 * x).AddSeconds(4 * y),
 
                             PowerMeasured = x * y,
                             PowerBaseline = 2 * x * y,
@@ -95,7 +95,7 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
                             TimestampDetails = [.. Enumerable.Range(0, 255)
                                 .Select(z => new ActivationControlDpTimestampDetail
                                 {
-                                    Timestamp = deliveryDate.UtcDateTime.AddMinutes(15 * x).AddSeconds(4 * z),
+                                    Timestamp = deliveryDate.ToDateTime(new TimeOnly()).ToUniversalTime().AddMinutes(15 * x).AddSeconds(4 * z),
 
                                     PowerMeasured = x * y * z,
                                     PowerBaseline = 2 * x * y * z,
