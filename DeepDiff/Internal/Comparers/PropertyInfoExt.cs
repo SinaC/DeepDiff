@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace DeepDiff.Internal
+namespace DeepDiff.Internal.Comparers
 {
     internal class PropertyInfoExt
     {
@@ -11,7 +11,6 @@ namespace DeepDiff.Internal
         public Type PropertyType => PropertyInfo.PropertyType;
         private Func<object?, object?> Getter { get; }
         private Action<object?, object?> Setter { get; }
-
 
         public PropertyInfoExt(Type type, PropertyInfo propertyInfo)
         {

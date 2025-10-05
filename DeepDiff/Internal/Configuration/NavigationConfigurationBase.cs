@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeepDiff.Internal.Comparers;
+using System;
 using System.Reflection;
 
 namespace DeepDiff.Internal.Configuration

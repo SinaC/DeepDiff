@@ -44,6 +44,6 @@ class Program
         var serviceProvider = new AutofacServiceProvider(container);
 
         var calculate = serviceProvider.GetService<ICalculate>();
-        calculate!.Perform(Date.Today);
+        calculate!.Perform(DateOnly.FromDateTime(DateTime.Today));
     }
 }

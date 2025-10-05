@@ -1,5 +1,3 @@
-using System;
-
 namespace DeepDiff.UnitTest.Entities.Simple;
 
 internal class EntityLevel2 : PersistEntity

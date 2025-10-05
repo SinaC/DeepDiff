@@ -1,5 +1,4 @@
 ﻿using DeepDiff.UnitTest.Entities;
-using System.Collections.Generic;
 
 namespace DeepDiff.UnitTest.Inheritance.Entities.Abstract
 {

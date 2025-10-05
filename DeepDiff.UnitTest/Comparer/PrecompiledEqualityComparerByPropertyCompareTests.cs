@@ -1,7 +1,4 @@
 ﻿using DeepDiff.UnitTest.Entities.Simple;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 

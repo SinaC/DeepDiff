@@ -6,7 +6,7 @@ namespace TestAppNet8.Entities.ActivationControl;
 public class ActivationControl : UpdateAuditEntity
 {
     public string ContractReference { get; set; } = null!;
-    public Date Day { get; set; }
+    public DateOnly Day { get; set; }
 
     public decimal TotalEnergyRequested { get; set; }
     public decimal TotalDiscrepancy { get; set; }

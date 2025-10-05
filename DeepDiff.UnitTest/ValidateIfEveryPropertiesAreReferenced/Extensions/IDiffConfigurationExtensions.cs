@@ -1,8 +1,7 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
-using System;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Extensions
 {
     public static class IDiffConfigurationExtensions
     {
@@ -10,8 +9,8 @@ namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced
             where TEntity : PersistEntity
         {
             return entityConfiguration
-                .WithComparer<decimal>(new DecimalComparer(6))
-                .WithComparer<decimal?>(new NullableDecimalComparer(6))
+                .WithComparer(new DecimalComparer(6))
+                .WithComparer(new NullableDecimalComparer(6))
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));

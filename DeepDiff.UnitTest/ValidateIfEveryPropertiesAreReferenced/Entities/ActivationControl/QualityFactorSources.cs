@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl
 {
     [Flags]
     public enum QualityFactorSources : short

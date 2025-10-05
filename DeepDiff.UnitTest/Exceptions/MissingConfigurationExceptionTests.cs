@@ -1,6 +1,5 @@
 using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
-using System.Linq;
 using Xunit;
 
 namespace DeepDiff.UnitTest.Exceptions

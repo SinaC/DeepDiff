@@ -1,6 +1,5 @@
 ﻿using DeepDiff.Configuration;
 using DeepDiff.UnitTest.Entities;
-using System;
 
 namespace DeepDiff.UnitTest.ActivationControl
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace DeepDiff.UnitTest.Entities;
 
 public abstract class CreateAuditEntity<TId> : IdEntity<TId>
