@@ -19,7 +19,7 @@ public class Program
             //    .WithToolchain(InProcessNoEmitToolchain.Instance));
             .AddJob(Job.Default);
 
-        var summary = args[1].ToLowerInvariant() switch
+        var summary = args[0].ToLowerInvariant() switch
         {
             "compare" => BenchmarkRunner.Run<Compare>(config),
             "hash" => BenchmarkRunner.Run<Hash>(config),
