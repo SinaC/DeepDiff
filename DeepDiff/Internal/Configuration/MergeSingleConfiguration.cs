@@ -11,21 +11,9 @@ namespace DeepDiff.Internal.Configuration
             Configuration = new DiffEngineConfiguration();
         }
 
-        public IMergeSingleConfiguration UseHashtable(bool use = true)
-        {
-            Configuration.SetUseHashtable(use);
-            return this;
-        }
-
         public IMergeSingleConfiguration HashtableThreshold(int threshold = 15)
         {
             Configuration.SetHashtableThreshold(threshold);
-            return this;
-        }
-
-        public IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-        {
-            Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
 

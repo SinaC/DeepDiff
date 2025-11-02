@@ -1,9 +1,9 @@
 using BenchmarkDotNet.Attributes;
-using DeepDiff.Benchmark.Entities;
-using DeepDiff.Internal.Comparers;
-using DeepDiff.Internal.Configuration;
+using DeepDiff.POC.Benchmark.Entities;
+using DeepDiff.POC.Benchmark.Helpers;
+using DeepDiff.POC.Comparers;
 
-namespace DeepDiff.Benchmark;
+namespace DeepDiff.POC.Benchmark;
 
 public class Hash
 {
@@ -16,18 +16,11 @@ public class Hash
 
     public Hash()
     {
-        var entityConfiguration1Property = new EntityConfiguration<NavigationEntityLevel1>(new EntityConfiguration(typeof(NavigationEntityLevel1)));
-        entityConfiguration1Property.HasKey(x => x.Timestamp);
-
-        NaiveComparer1Property = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties);
-        PrecompiledComparer1Property = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration1Property.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
-
-        var entityConfiguration4Properties = new EntityConfiguration<NavigationEntityLevel1>(new EntityConfiguration(typeof(NavigationEntityLevel1)));
-        entityConfiguration4Properties.HasKey(x => new { x.Id, x.Timestamp, x.Power, x.Comment });
-
-        NaiveComparer4Properties = new NaiveEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties);
-        PrecompiledComparer4Properties = new PrecompiledEqualityComparerByProperty<NavigationEntityLevel1>(entityConfiguration4Properties.Configuration.KeyConfiguration.KeyProperties.Select(x => x.PropertyInfo).ToArray());
-
+        var factory = new ComparerFactory<NavigationEntityLevel1>();
+        NaiveComparer1Property = factory.CreateNaiveComparer(x => x.Timestamp);
+        PrecompiledComparer1Property = factory.CreatePrecompiledComparer(x => x.Timestamp);
+        NaiveComparer4Properties = factory.CreateNaiveComparer(x => new { x.Id, x.Timestamp, x.Power, x.Comment });
+        PrecompiledComparer4Properties = factory.CreatePrecompiledComparer(x => new { x.Id, x.Timestamp, x.Power, x.Comment });
     }
 
     [Params(10000, 100000, 1000000)]

@@ -13,21 +13,9 @@ namespace DeepDiff.Internal.Configuration
             Configuration.SetCompareOnly(true);
         }
 
-        public ICompareSingleConfiguration UseHashtable(bool use = true)
-        {
-            Configuration.SetUseHashtable(use);
-            return this;
-        }
-
         public ICompareSingleConfiguration HashtableThreshold(int threshold = 15)
         {
             Configuration.SetHashtableThreshold(threshold);
-            return this;
-        }
-
-        public ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-        {
-            Configuration.SetEqualityComparer(equalityComparer);
             return this;
         }
 

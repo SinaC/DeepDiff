@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class OnUpdateTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OnUpdate_SetValue_Precompiled(EqualityComparers equalityComparer)
+    [Fact]
+    public void OnUpdate_SetValue()
     {
         var existingEntity = new EntityLevel0
         {
@@ -69,7 +67,7 @@ public class OnUpdateTests
                 .CopyValues(x => x.AdditionalValueToCopy));
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);
@@ -79,10 +77,8 @@ public class OnUpdateTests
         Assert.Equal("Existing", result.Comment); // comment is not copied
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OnUpdate_MultipleSetValue(EqualityComparers equalityComparer)
+    [Fact]
+    public void OnUpdate_MultipleSetValue()
     {
         var existingEntity = new EntityLevel0
         {
@@ -142,7 +138,7 @@ public class OnUpdateTests
                 .CopyValues(x => x.AdditionalValueToCopy));
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity);
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);

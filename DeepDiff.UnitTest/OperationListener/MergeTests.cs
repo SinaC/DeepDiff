@@ -8,17 +8,15 @@ namespace DeepDiff.UnitTest.OperationListener
     public class MergeTests
     {
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void MergeSingle(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void MergeSingle(bool defineOperationsOnEntity)
         {
             var (existingEntity, newEntity) = GenerateEntities(0);
 
             var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -66,11 +64,9 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void CheckNavigationPathKeys(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CheckNavigationPathKeys(bool defineOperationsOnEntity)
         {
             var existingEntity = new EntityLevel0
             {
@@ -190,7 +186,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = diffConfiguration.CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             // only check entity2 update operations

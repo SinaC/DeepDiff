@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleEntityNavigationManyTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OneChildDelete(EqualityComparers equalityComparer)
+    [Fact]
+    public void OneChildDelete()
     {
         var existingEntities = new[]
         {
@@ -65,7 +63,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -75,10 +73,8 @@ public class SimpleEntityNavigationManyTests
         Assert.Same(existingEntities.Single().SubEntities.Single(), results.Single().SubEntities.Single());
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void OneChildInsert(EqualityComparers equalityComparer)
+    [Fact]
+    public void OneChildInsert()
     {
         var existingEntities = new[]
         {
@@ -133,7 +129,7 @@ public class SimpleEntityNavigationManyTests
             .HasValues(x => new { x.Power });
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);

@@ -21,10 +21,8 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.NotNull(deepDiff);
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Single_2Updates(EqualityComparers equalityComparer)
+        [Fact]
+        public void Single_2Updates()
         {
             var deliveryDate = Date.Today;
 
@@ -36,7 +34,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existing, calculated, listener);
 
             //
             Assert.NotNull(result);
@@ -71,10 +69,8 @@ namespace DeepDiff.UnitTest.ActivationControl
             Assert.Equal($"{deliveryDate.UtcDateTime.AddMinutes(5 * 15).AddSeconds(7 * 4)}", listener.Operations.OfType<UpdateDiffOperation>().Single(x => x.EntityName == nameof(ActivationControlDpTimestampDetail)).Keys.Single().Value);
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Decimal6(EqualityComparers equalityComparer)
+        [Fact]
+        public void Decimal6()
         {
             var deliveryDate = Date.Today;
             var existing = new Entities.ActivationControl.ActivationControl
@@ -95,7 +91,7 @@ namespace DeepDiff.UnitTest.ActivationControl
             //
             var deepDiff = CreateDeepDiffWithoutExtensions();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existing, calculated, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existing, calculated, listener);
 
             //
             Assert.Null(result); // no diff

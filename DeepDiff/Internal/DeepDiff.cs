@@ -7,7 +7,6 @@ using System.Linq;
 
 using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("DeepDiff.UnitTest")]
-[assembly: InternalsVisibleTo("DeepDiff.PerformanceTest")]
 [assembly: InternalsVisibleTo("DeepDiff.Benchmark")]
 
 namespace DeepDiff.Internal

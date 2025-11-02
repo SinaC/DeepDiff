@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleWithComparerTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_Modifications(EqualityComparers equalityComparer)
+    [Fact]
+    public void ComparersOnType_Modifications()
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel2>()
@@ -40,7 +38,7 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         Assert.NotNull(result);
@@ -52,10 +50,8 @@ public class SimpleWithComparerTests
         Assert.All(operations.OfType<UpdateDiffOperation>(), x => Assert.Single(x.UpdatedProperties));
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_NoModifications(EqualityComparers equalityComparer)
+    [Fact]
+    public void ComparersOnType_NoModifications()
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel2>()
@@ -85,17 +81,15 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         Assert.Null(result);
         Assert.Empty(operations);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ComparersOnType_ComparerOnProperty_Modifications(EqualityComparers equalityComparer)
+    [Fact]
+    public void ComparersOnType_ComparerOnProperty_Modifications()
     {
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel2>()
@@ -126,7 +120,7 @@ public class SimpleWithComparerTests
         };
 
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         Assert.NotNull(result);

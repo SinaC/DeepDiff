@@ -1,8 +1,8 @@
-﻿using DeepDiff.UnitTest.Entities.Simple;
+﻿using DeepDiff.POC.UnitTest.Entities.Simple;
 using System.Reflection;
 using Xunit;
 
-namespace DeepDiff.UnitTest.Comparer
+namespace DeepDiff.POC.UnitTest.Comparer
 {
     public class PrecompiledEqualityComparerByPropertyEqualTests
     {

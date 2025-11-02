@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleEntityNavigationOneTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NotInExisting(EqualityComparers equalityComparer)
+    [Fact]
+    public void NotInExisting()
     {
         var existingEntities = new[]
         {
@@ -50,17 +48,15 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Insert, results.Single().SubEntity.PersistChange);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NotInNew(EqualityComparers equalityComparer)
+    [Fact]
+    public void NotInNew()
     {
         var existingEntities = new[]
         {
@@ -100,17 +96,15 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
         Assert.Equal(PersistChange.Delete, results.Single().SubEntity.PersistChange);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Identical(EqualityComparers equalityComparer)
+    [Fact]
+    public void Identical()
     {
         var existingEntities = new[]
         {
@@ -159,15 +153,13 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Empty(results);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void KeyDifferent(EqualityComparers equalityComparer)
+    [Fact]
+    public void KeyDifferent()
     {
         var existingEntities = new[]
         {
@@ -216,7 +208,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -225,10 +217,8 @@ public class SimpleEntityNavigationOneTests
     }
 
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void ValueDifferent(EqualityComparers equalityComparer)
+    [Fact]
+    public void ValueDifferent()
     {
         var existingEntities = new[]
         {
@@ -277,7 +267,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         Assert.Single(results);
         Assert.Equal(PersistChange.None, results.Single().PersistChange);
@@ -285,10 +275,8 @@ public class SimpleEntityNavigationOneTests
         Assert.Equal(newEntities.Single().SubEntity.Power, results.Single().SubEntity.Power);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void InsertHasOneNoModifOnRoot(EqualityComparers equalityComparer)
+    [Fact]
+    public void InsertHasOneNoModifOnRoot()
     {
         var existingEntity = new EntityLevel0
         {
@@ -315,7 +303,7 @@ public class SimpleEntityNavigationOneTests
         };
 
         var deepDiff = CreateDeepDiff();
-        var result = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(true).SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, calculatedEntity, cfg => cfg.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(true));
 
         Assert.NotNull(result);
         Assert.Equal(PersistChange.Update, result.PersistChange);

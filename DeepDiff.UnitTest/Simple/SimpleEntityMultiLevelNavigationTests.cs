@@ -7,17 +7,15 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleEntityMultiLevelNavigationTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void CheckPropagation(EqualityComparers equalityComparer)
+    [Fact]
+    public void CheckPropagation()
     {
         var existingEntities = Array.Empty<EntityLevel0>();
 
         var newEntities = GenerateEntities(DateTime.Now).ToList();
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         Assert.Equal(5, results.Length);
         Assert.Equal(25, results.SelectMany(x => x.SubEntities).Count());
@@ -29,10 +27,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.All(results.SelectMany(x => x.SubEntities).Select(x => x.SubEntity), x => Assert.Equal(PersistChange.Insert, x.PersistChange));
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenInsertingNavigationManyNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenInsertingNavigationManyNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -52,7 +48,7 @@ public class SimpleEntityMultiLevelNavigationTests
         });
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -73,10 +69,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal(98765, results.Single().SubEntities.Single().SubEntities.Single().Index);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenDeletingNavigationManyNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenDeletingNavigationManyNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -86,7 +80,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntities[2].SubEntities.RemoveAt(1);
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -107,10 +101,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal(3 * 100 + 2 * 10 + 1, results.Single().SubEntities.Single().SubEntities.Single().Index);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenUpdatingNavigationManyNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenUpdatingNavigationManyNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -120,7 +112,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntities[2].SubEntities[1].Value2 = 13579m;
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -142,10 +134,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal(13579m, results.Single().SubEntities.Single().SubEntities.Single().Value2);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetAndDeletePropagationWhenDeletingNavigationManyNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetAndDeletePropagationWhenDeletingNavigationManyNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -155,7 +145,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntities.RemoveAt(2);
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -174,10 +164,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.All(results.Single().SubEntities.Single().SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenUpdatingNavigationOneNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenUpdatingNavigationOneNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -187,7 +175,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntities[2].SubEntity.Value2 = 13579m;
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -208,10 +196,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal("DP_3_2_1000", results.Single().SubEntities.Single().SubEntity.DeliveryPointEan);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenInsertingNavigationManyInsideNavigationOneNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenInsertingNavigationManyInsideNavigationOneNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -231,7 +217,7 @@ public class SimpleEntityMultiLevelNavigationTests
         });
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -251,10 +237,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal("DP_INSERTED", results.Single().SubEntity.SubEntities.Single().DeliveryPointEan);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenDeletingNavigationManyInsideNavigationOneNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenDeletingNavigationManyInsideNavigationOneNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -264,7 +248,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntity.SubEntities.RemoveAt(1);
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);
@@ -284,10 +268,8 @@ public class SimpleEntityMultiLevelNavigationTests
         Assert.Equal("DP_3_1000_1", results.Single().SubEntity.SubEntities.Single().DeliveryPointEan);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void UpdateSetWhenUpdatingNavigationManyInsideNavigationOneNestedEntity(EqualityComparers equalityComparer)
+    [Fact]
+    public void UpdateSetWhenUpdatingNavigationManyInsideNavigationOneNestedEntity()
     {
         var now = DateTime.Now;
         // existing == newEntities
@@ -297,7 +279,7 @@ public class SimpleEntityMultiLevelNavigationTests
         newEntities[3].SubEntity.SubEntities[1].Value2 = 13579m;
 
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, cfg => cfg.SetEqualityComparer(equalityComparer)).ToArray();
+        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
 
         // Entity0: 4th -> none
         Assert.Single(results);

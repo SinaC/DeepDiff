@@ -1,20 +1,11 @@
-﻿using DeepDiff.Configuration;
-
-namespace DeepDiff.Internal.Configuration
+﻿namespace DeepDiff.Internal.Configuration
 {
     internal sealed class DiffEngineConfiguration
     {
-        public bool UseHashtable { get; private set; } = true;
         public int HashtableThreshold { get; private set; } = 15;
         public bool ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel { get; private set; }
         public bool CompareOnly { get; private set; }
-        public EqualityComparers EqualityComparer { get; private set; } = EqualityComparers.Precompiled;
         public bool CheckDuplicateKeys { get; private set; } = true;
-
-        public void SetUseHashtable(bool useHashtable)
-        {
-            UseHashtable = useHashtable;
-        }
 
         public void SetHashtableThreshold(int hashtableThreshold)
         {
@@ -29,11 +20,6 @@ namespace DeepDiff.Internal.Configuration
         public void SetCompareOnly(bool compareOnly)
         {
             CompareOnly = compareOnly;
-        }
-
-        public void SetEqualityComparer(EqualityComparers equalityComparer)
-        {
-            EqualityComparer = equalityComparer;
         }
 
         public void SetCheckDuplicateKeys(bool checkDuplicateKeys)

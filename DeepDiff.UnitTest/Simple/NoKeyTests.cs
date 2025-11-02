@@ -10,12 +10,9 @@ namespace DeepDiff.UnitTest.Simple;
 //          0/Many EntityLevel2
 public class NoKeyTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
+    [Fact]
 
-    [InlineData(EqualityComparers.Naive)]
-
-    public void Identical(EqualityComparers equalityComparer)
+    public void Identical()
     {
 
         var now = DateTime.Now;
@@ -25,16 +22,14 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
+        var entities = deepDiff.MergeMany(existingEntities, newEntities);
 
         //
         Assert.Empty(entities);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Level1_Update(EqualityComparers equalityComparer)
+    [Fact]
+    public void Level1_Update()
     {
 
         var now = DateTime.Now;
@@ -45,7 +40,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var entities = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
+        var entities = deepDiff.MergeMany(existingEntities, newEntities);
 
         //
         Assert.Single(entities);
@@ -56,10 +51,8 @@ public class NoKeyTests
         Assert.Equal(-500m, entities.Single().SubEntity.Power);
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void Level2_Update(EqualityComparers equalityComparer)
+    [Fact]
+    public void Level2_Update()
     {
 
         var now = DateTime.Now;
@@ -70,7 +63,7 @@ public class NoKeyTests
 
         //
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities, opt => opt.SetEqualityComparer(equalityComparer));
+        var results = deepDiff.MergeMany(existingEntities, newEntities);
 
         //
         Assert.Single(results);

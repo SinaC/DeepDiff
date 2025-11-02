@@ -1,5 +1,9 @@
 # Breaking changes
 
+### 1.12.0
+
+- Hashtable and PrecompiledComparer are now mandatory
+
 ### 1.11.1
 
 - By default, DeepDiff will now check for duplicate keys in entities and nested entities. You can disable this behavior using SetCheckDuplicateKeys(false) in MergeSingle, MergeMany, CompareSingle and CompareMany configuration
@@ -271,14 +275,6 @@ void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEn
 
 ## MergeSingle configuration
 
-### UseHashtable
-
-When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
-
-```csharp
-IMergeSingleConfiguration UseHashtable(bool use = true)
-```
-
 ### HashtableThreshold
 
 Defines minimum number of entries in collection to use hashtable (15 by default)
@@ -295,14 +291,6 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
-### SetEqualityComparer
-
-Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
-
-```csharp
-IMergeSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-```
-
 ### SetCheckDuplicateKeys
 
 Indicates whether to check for duplicate keys in entities or nested entities (true by default).
@@ -312,14 +300,6 @@ IMergeSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
 ```
 
 ## MergeMany configuration
-
-### UseHashtable
-
-When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
-
-```csharp
-IMergeManyConfiguration UseHashtable(bool use = true)
-```
 
 ### HashtableThreshold
 
@@ -337,14 +317,6 @@ Force OnUpdate to be triggered if a nested entity has been modified even if curr
 IMergeManyConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
 ```
 
-### SetEqualityComparer
-
-Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
-
-```csharp
-IMergeManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
-```
-
 ### SetCheckDuplicateKeys
 
 Indicates whether to check for duplicate keys in entities or nested entities (true by default).
@@ -355,28 +327,12 @@ IMergeManyConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
 
 ## CompareSingle configuration
 
-### UseHashtable
-
-When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
-
-```csharp
-ICompareSingleConfiguration UseHashtable(bool use = true);
-```
-
 ### HashtableThreshold
 
 Defines minimum number of entries in collection to use hashtable (15 by default)
 
 ```csharp
 ICompareSingleConfiguration HashtableThreshold(int threshold = 15);
-```
-
-### SetEqualityComparer
-
-Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
-
-```csharp
-ICompareSingleConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
 ### SetCheckDuplicateKeys
@@ -389,28 +345,12 @@ ICompareSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true
 
 ## CompareMany configuration
 
-### UseHashtable
-
-When set to true, hashtable will be used when searching in a collection of entities with a minimum HashtableThreshold (15 by default) entries (true by default)
-
-```csharp
-ICompareManyConfiguration UseHashtable(bool use = true);
-```
-
 ### HashtableThreshold
 
 Defines minimum number of entries in collection to use hashtable (15 by default)
 
 ```csharp
 ICompareManyConfiguration HashtableThreshold(int threshold = 15);
-```
-
-### SetEqualityComparer
-
-Choose which equality comparer engine will use to compare keys and values (Precompiled by default)
-
-```csharp
-ICompareManyConfiguration SetEqualityComparer(EqualityComparers equalityComparer = EqualityComparers.Precompiled)
 ```
 
 ### SetCheckDuplicateKeys
