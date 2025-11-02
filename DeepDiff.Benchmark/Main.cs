@@ -7,7 +7,7 @@ namespace DeepDiff.Benchmark;
 public class Program
 {
     // open console and run
-    //  dotnet run -c Release compare|hash|navigation|nonavigation
+    //  dotnet run -c Release hashthreshold|navigation|nonavigation
     public static void Main(string[] args)
     {
         //https://stackoverflow.com/questions/73475521/benchmarkdotnet-inprocessemittoolchain-complete-sample
@@ -21,11 +21,10 @@ public class Program
 
         var summary = args[0].ToLowerInvariant() switch
         {
-            "compare" => BenchmarkRunner.Run<Compare>(config),
-            "hash" => BenchmarkRunner.Run<Hash>(config),
+            "hashthreshold" => BenchmarkRunner.Run<HashThreshold>(config),
             "navigation" => BenchmarkRunner.Run<LoadNavigation>(config),
             "nonavigation" => BenchmarkRunner.Run<LoadNoNavigation>(config),
-            _ => throw new ArgumentOutOfRangeException($"Unknown benchmark: {args[1]}")
+            _ => throw new ArgumentOutOfRangeException($"Unknown benchmark: {args[0]}")
         };
     }
 }

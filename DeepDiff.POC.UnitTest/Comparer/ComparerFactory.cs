@@ -1,9 +1,9 @@
-﻿using DeepDiff.Internal.Comparers;
-using DeepDiff.Internal.Extensions;
+﻿using DeepDiff.POC.Comparers;
+using DeepDiff.POC.Extensions;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DeepDiff.UnitTest.Comparer
+namespace DeepDiff.POC.UnitTest.Comparer
 {
     internal class ComparerFactory<TEntity>
             where TEntity : class

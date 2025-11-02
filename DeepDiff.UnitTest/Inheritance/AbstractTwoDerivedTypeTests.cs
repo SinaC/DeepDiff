@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Inheritance
 {
     public class AbstractTwoDerivedTypeTests
     {
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Identical(EqualityComparers equalityComparer)
+        [Fact]
+        public void Identical()
         {
             var existingEntity = new Entity
             {
@@ -52,17 +50,15 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.Null(result);
             Assert.Empty(operations);
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void InsertEntity(EqualityComparers equalityComparer)
+        [Fact]
+        public void InsertEntity()
         {
             var existingEntity = (Entity)null!;
 
@@ -92,7 +88,7 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotNull(result);
@@ -101,10 +97,8 @@ namespace DeepDiff.UnitTest.Inheritance
             Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Insert, x.PersistChange));
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void InsertSubEntity(EqualityComparers equalityComparer)
+        [Fact]
+        public void InsertSubEntity()
         {
             var existingEntity = new Entity
             {
@@ -151,7 +145,7 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotNull(result);
@@ -161,10 +155,8 @@ namespace DeepDiff.UnitTest.Inheritance
             Assert.Equal(12, result.SubEntities.Single().Key);
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void Deletentity(EqualityComparers equalityComparer)
+        [Fact]
+        public void Deletentity()
         {
             var existingEntity = new Entity
             {
@@ -189,7 +181,7 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotNull(result);
@@ -198,10 +190,8 @@ namespace DeepDiff.UnitTest.Inheritance
             Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void DeleteSubEntity(EqualityComparers equalityComparer)
+        [Fact]
+        public void DeleteSubEntity()
         {
             var existingEntity = new Entity
             {
@@ -238,7 +228,7 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotNull(result);
@@ -248,10 +238,8 @@ namespace DeepDiff.UnitTest.Inheritance
             Assert.Equal(11, result.SubEntities.Single().Key);
         }
 
-        [Theory]
-        [InlineData(EqualityComparers.Precompiled)]
-        [InlineData(EqualityComparers.Naive)]
-        public void UpdateSubEntity(EqualityComparers equalityComparer)
+        [Fact]
+        public void UpdateSubEntity()
         {
             var existingEntity = new Entity
             {
@@ -283,7 +271,7 @@ namespace DeepDiff.UnitTest.Inheritance
 
             var deepDiff = CreateDeepDiff();
             var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotNull(result);

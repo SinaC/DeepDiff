@@ -242,11 +242,11 @@ namespace DeepDiff.Internal.Comparers
             {
                 // generate
                 //       Expression<Func<T, T, bool>> ce = (T x, T y) => object.ReferenceEquals(x, y) || (x != null && x.Equals(y));
-                Expression refEqual = Expression.ReferenceEqual(leftValue, rightValue);
-                Expression nullConst = Expression.Constant(null);
-                Expression leftIsNotNull = Expression.Not(Expression.ReferenceEqual(leftValue, nullConst));
-                Expression leftIsNotNullAndIsEqual = Expression.AndAlso(leftIsNotNull, equalCall);
-                Expression either = Expression.OrElse(refEqual, leftIsNotNullAndIsEqual);
+                var refEqual = Expression.ReferenceEqual(leftValue, rightValue);
+                var nullConst = Expression.Constant(null);
+                var leftIsNotNull = Expression.Not(Expression.ReferenceEqual(leftValue, nullConst));
+                var leftIsNotNullAndIsEqual = Expression.AndAlso(leftIsNotNull, equalCall);
+                var either = Expression.OrElse(refEqual, leftIsNotNullAndIsEqual);
 
                 return either;
             }

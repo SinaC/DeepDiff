@@ -59,7 +59,7 @@ namespace DeepDiff.Internal
             bool areKeysEqual = true;
             if (!entityConfiguration.NoKey && entityConfiguration.KeyConfiguration.KeyProperties != null)
             {
-                var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+                var keysComparer = entityConfiguration.KeyConfiguration.EqualityComparer;
 
                 areKeysEqual = keysComparer.Equals(existingEntity, newEntity);
                 if (!areKeysEqual && !DiffEngineConfiguration.CompareOnly) // keys are different -> copy keys
@@ -70,7 +70,7 @@ namespace DeepDiff.Internal
             CompareByPropertyResult? compareByPropertyResult = null;
             if (entityConfiguration.ValuesConfiguration?.ValuesProperties != null)
             {
-                var valuesComparer = entityConfiguration.ValuesConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
+                var valuesComparer = entityConfiguration.ValuesConfiguration.EqualityComparer;
 
                 compareByPropertyResult = valuesComparer.Compare(existingEntity, newEntity);
             }
@@ -113,7 +113,7 @@ namespace DeepDiff.Internal
             if (existingEntities == null || !existingEntities.Any())
             {
                 if (DiffEngineConfiguration.CheckDuplicateKeys)
-                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer), newEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
+                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.EqualityComparer, newEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
                 foreach (var newEntity in newEntities ?? Enumerable.Empty<object>())
                 {
                     OnInsertAndPropagateUsingNavigation(entityConfiguration, newEntity); // once an entity is inserted, it's children will also be inserted
@@ -126,7 +126,7 @@ namespace DeepDiff.Internal
             if (newEntities == null || !newEntities.Any())
             {
                 if (DiffEngineConfiguration.CheckDuplicateKeys)
-                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer), existingEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
+                    CheckDuplicateKeys(entityConfiguration.KeyConfiguration.EqualityComparer, existingEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
                 foreach (var existingEntity in existingEntities ?? Enumerable.Empty<object>())
                 {
                     OnDeleteAndPropagateUsingNavigation(entityConfiguration, existingEntity); // once an entity is deleted, it's children will also be deleted
@@ -135,8 +135,8 @@ namespace DeepDiff.Internal
                 return results;
             }
 
-            var keysComparer = entityConfiguration.KeyConfiguration.GetComparer(DiffEngineConfiguration.EqualityComparer);
-            var valuesComparer = entityConfiguration.ValuesConfiguration?.GetComparer(DiffEngineConfiguration.EqualityComparer);
+            var keysComparer = entityConfiguration.KeyConfiguration.EqualityComparer;
+            var valuesComparer = entityConfiguration.ValuesConfiguration?.EqualityComparer;
 
             // we are sure there is at least one existing and one new entity
             var existingEntitiesHashtable = CheckIfHashtablesShouldBeUsed(existingEntities)
@@ -226,7 +226,7 @@ namespace DeepDiff.Internal
             return results;
         }
         private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
-            => DiffEngineConfiguration.UseHashtable && existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
+            => existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
 
         private static void CheckDuplicateKeys(IComparerByProperty keysComparer, IEnumerable<object>? entities, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
         {

@@ -16,6 +16,7 @@ namespace DeepDiff.Internal.Comparers
         {
         }
 
+        // following ctor cannot be removed or set as interna/protected because it's used via reflection (in Configuration classes)
         public PrecompiledEqualityComparerByProperty(IReadOnlyCollection<PropertyInfo> properties, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
             EqualsFunc = ComparerExpressionGenerator.GenerateEqualsFunc<T>(properties, typeSpecificComparers, propertySpecificComparers);

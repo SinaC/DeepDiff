@@ -10,44 +10,11 @@ public class LoadNoNavigation
     private IReadOnlyCollection<NoNavigationEntity> ExistingEntities { get; set; } = null!;
     private IReadOnlyCollection<NoNavigationEntity> NewEntities { get; set; } = null!;
 
-    private IDeepDiff NoHashtableNaiveComparerDeepDiff { get; }
-    private IDeepDiff NoHashtablePrecompiledComparerDeepDiff { get; }
-    private IDeepDiff HashtableNaiveComparerDeepDiff { get; }
-    private IDeepDiff HashtablePrecompiledComparerDeepDiff { get; }
+    private IDeepDiff DeepDiff { get; }
 
     public LoadNoNavigation()
     {
         Random = new Random();
-
-        var noHashtableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
-        noHashtableNaiveComparerDiffConfiguration
-            .ConfigureEntity<NoNavigationEntity>()
-                .HasKey(x => new { x.Date, x.ContractReference })
-                .HasValues(x => new { x.Penalty, x.Volume, x.Price })
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        NoHashtableNaiveComparerDeepDiff = noHashtableNaiveComparerDiffConfiguration.CreateDeepDiff();
-
-        var noHastablePrecompiledComparerDiffConfiguration = new DeepDiffConfiguration();
-        noHastablePrecompiledComparerDiffConfiguration
-            .ConfigureEntity<NoNavigationEntity>()
-                .HasKey(x => new { x.Date, x.ContractReference })
-                .HasValues(x => new { x.Penalty, x.Volume, x.Price })
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        NoHashtablePrecompiledComparerDeepDiff = noHastablePrecompiledComparerDiffConfiguration.CreateDeepDiff();
-
-        var hastableNaiveComparerDiffConfiguration = new DeepDiffConfiguration();
-        hastableNaiveComparerDiffConfiguration
-            .ConfigureEntity<NoNavigationEntity>()
-                .HasKey(x => new { x.Date, x.ContractReference })
-                .HasValues(x => new { x.Penalty, x.Volume, x.Price })
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        HashtableNaiveComparerDeepDiff = hastableNaiveComparerDiffConfiguration.CreateDeepDiff();
 
         var hashtableDiffConfiguration = new DeepDiffConfiguration();
         hashtableDiffConfiguration
@@ -57,7 +24,7 @@ public class LoadNoNavigation
                 .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
                 .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
                 .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete));
-        HashtablePrecompiledComparerDeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
+        DeepDiff = hashtableDiffConfiguration.CreateDeepDiff();
     }
 
     [Params(10, 100, 1000)]
@@ -87,27 +54,9 @@ public class LoadNoNavigation
     }
 
     [Benchmark]
-    public void NoHashtableNaiveComparerDiff()
+    public void MergeMany()
     {
-        var results = NoHashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Naive)).ToList();
-    }
-
-    [Benchmark]
-    public void NoHastablePrecompileComparerDiff()
-    {
-        var results = NoHashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.UseHashtable(false).SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
-    }
-
-    [Benchmark]
-    public void HastableNaiveComparerDiff()
-    {
-        var results = HashtableNaiveComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Naive)).ToList();
-    }
-
-    [Benchmark]
-    public void HashtablePrecompileComparerDiff()
-    {
-        var results = HashtablePrecompiledComparerDeepDiff.MergeMany(ExistingEntities, NewEntities, cfg => cfg.SetEqualityComparer(EqualityComparers.Precompiled)).ToList();
+        var results = DeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
     }
 
     private void GenerateIdentical()

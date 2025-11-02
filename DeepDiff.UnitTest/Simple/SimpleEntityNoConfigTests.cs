@@ -7,10 +7,8 @@ namespace DeepDiff.UnitTest.Simple;
 
 public class SimpleEntityNoConfigTests
 {
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NoUpdateInsertDeleteConfig(EqualityComparers equalityComparer)
+    [Fact]
+    public void NoUpdateInsertDeleteConfig()
     {
         var (existingEntity, newEntity) = GenerateEntities();
 
@@ -32,7 +30,7 @@ public class SimpleEntityNoConfigTests
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         // 1 insert, 1 delete, 4 updates -> not detected because no OnInsert/OnDelete/OnUpdate specified
@@ -46,10 +44,8 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NoUpdateConfig(EqualityComparers equalityComparer)
+    [Fact]
+    public void NoUpdateConfig()
     {
         var (existingEntity, newEntity) = GenerateEntities();
 
@@ -71,7 +67,7 @@ public class SimpleEntityNoConfigTests
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         // 1 insert, 1 delete, 4 updates -> insert and deleted will be detected
@@ -87,10 +83,8 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NoInsertConfig(EqualityComparers equalityComparer)
+    [Fact]
+    public void NoInsertConfig()
     {
         var (existingEntity, newEntity) = GenerateEntities();
 
@@ -112,7 +106,7 @@ public class SimpleEntityNoConfigTests
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         // 1 insert, 1 delete, 4 updates -> insert and delete will be detected
@@ -129,10 +123,8 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
-    [Theory]
-    [InlineData(EqualityComparers.Precompiled)]
-    [InlineData(EqualityComparers.Naive)]
-    public void NoDeleteConfig(EqualityComparers equalityComparer)
+    [Fact]
+    public void NoDeleteConfig()
     {
         var (existingEntity, newEntity) = GenerateEntities();
 
@@ -154,7 +146,7 @@ public class SimpleEntityNoConfigTests
 
         var deepDiff = diffConfiguration.CreateDeepDiff();
         var listener = new StoreAllOperationListener();
-        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
         var operations = listener.Operations;
 
         // 1 insert, 1 delete, 4 updates -> insert and updates will be detected

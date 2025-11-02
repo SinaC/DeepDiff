@@ -8,17 +8,15 @@ namespace DeepDiff.UnitTest.OperationListener
     public class CompareTests
     {
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void CompareSingle(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompareSingle(bool defineOperationsOnEntity)
         {
             var (existingEntity, newEntity) = GenerateModifications(1);
 
             var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -52,18 +50,16 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void CompareSingle_NoExisting(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompareSingle_NoExisting(bool defineOperationsOnEntity)
         {
             var existingEntity = (EntityLevel0)null!;
             var newEntity = GenerateNew(1);
 
             var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -86,18 +82,16 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void CompareSingle_NoNew(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompareSingle_NoNew(bool defineOperationsOnEntity)
         {
             var existingEntity = GenerateExisting(1);
             var newEntity = (EntityLevel0)null!;
 
             var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareSingle(existingEntity, newEntity, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareSingle(existingEntity, newEntity, listener);
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);
@@ -120,11 +114,9 @@ namespace DeepDiff.UnitTest.OperationListener
         }
 
         [Theory]
-        [InlineData(EqualityComparers.Precompiled, true)]
-        [InlineData(EqualityComparers.Precompiled, false)]
-        [InlineData(EqualityComparers.Naive, true)]
-        [InlineData(EqualityComparers.Naive, false)]
-        public void CompareMany(EqualityComparers equalityComparer, bool defineOperationsOnEntity)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompareMany(bool defineOperationsOnEntity)
         {
             var existingEntities = new List<EntityLevel0>();
             var newEntities = new List<EntityLevel0>();
@@ -137,7 +129,7 @@ namespace DeepDiff.UnitTest.OperationListener
 
             var deepDiff = CreateDeepDiff(defineOperationsOnEntity);
             var listener = new StoreAllOperationListener();
-            deepDiff.CompareMany(existingEntities, newEntities, listener, cfg => cfg.SetEqualityComparer(equalityComparer));
+            deepDiff.CompareMany(existingEntities, newEntities, listener);
             var operations = listener.Operations;
 
             Assert.NotEmpty(operations);

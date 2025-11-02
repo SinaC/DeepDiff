@@ -1,9 +1,9 @@
-using DeepDiff.Exceptions;
+using DeepDiff.POC.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Comparers
+namespace DeepDiff.POC.Comparers
 {
     internal sealed class NaiveEqualityComparerByProperty<T> : IComparerByProperty
         where T : class
@@ -17,7 +17,7 @@ namespace DeepDiff.Internal.Comparers
         {
         }
 
-        public NaiveEqualityComparerByProperty(IReadOnlyCollection<PropertyInfoExt> propertyExts, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
+        internal NaiveEqualityComparerByProperty(IReadOnlyCollection<PropertyInfoExt> propertyExts, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers) // object is in fact an IEqualityComparer<TProperty>
         {
             PropertyExts = propertyExts;
             TypeSpecificComparers = typeSpecificComparers;
