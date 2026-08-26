@@ -1,15 +1,6 @@
-using System;
+namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public sealed class MissingNavigationManyChildConfigurationException(Type entityType, Type childType) : EntityConfigurationException($"No configuration found for type {childType} as child type for NavigationMany configuration of type {entityType}", entityType)
 {
-    public sealed class MissingNavigationManyChildConfigurationException : EntityConfigurationException
-    {
-        public Type ChildType { get; }
-
-        public MissingNavigationManyChildConfigurationException(Type entityType, Type childType)
-            : base($"No configuration found for type {childType} as child type for NavigationMany configuration of type {entityType}", entityType)
-        {
-            ChildType = childType;
-        }
-    }
+    public Type ChildType { get; } = childType;
 }

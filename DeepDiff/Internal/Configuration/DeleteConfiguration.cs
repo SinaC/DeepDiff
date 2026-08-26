@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace DeepDiff.Internal.Configuration
+namespace DeepDiff.Internal.Configuration;
+
+internal sealed class DeleteConfiguration
 {
-    internal sealed class DeleteConfiguration
-    {
-        public IList<SetValueConfiguration> SetValueConfigurations { get; } = new List<SetValueConfiguration>();
+    public IList<SetValueConfiguration> SetValueConfigurations { get; } = [];
 
-        public SetValueConfiguration AddSetValueConfiguration(Type entityType, PropertyInfo destinationProperty, object? value)
-        {
-            var config = new SetValueConfiguration(entityType, destinationProperty, value);
-            SetValueConfigurations.Add(config);
-            return config;
-        }
+    public SetValueConfiguration AddSetValueConfiguration(Type entityType, PropertyInfo destinationProperty, object? value)
+    {
+        var config = new SetValueConfiguration(entityType, destinationProperty, value);
+        SetValueConfigurations.Add(config);
+        return config;
     }
 }

@@ -1,12 +1,5 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class DuplicateKeyConfigurationException(Type entityType) : EntityConfigurationException($"HasKey has already been configured for {entityType}", entityType)
 {
-    public class DuplicateKeyConfigurationException : EntityConfigurationException
-    {
-        public DuplicateKeyConfigurationException(Type entityType)
-            : base($"HasKey has already been configured for {entityType}", entityType)
-        {
-        }
-    }
 }

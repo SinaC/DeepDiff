@@ -1,38 +1,35 @@
 using DeepDiff.Exceptions;
 using DeepDiff.Internal.Configuration;
-using System;
-using System.Collections.Generic;
 
-namespace DeepDiff.Configuration
+namespace DeepDiff.Configuration;
+
+/// <summary>
+/// Base class for defining a profile for entity configurations.
+/// </summary>
+public abstract class DiffProfile
 {
+    internal Dictionary<Type, EntityConfiguration> EntityConfigurations { get; private set; } = [];
+
     /// <summary>
-    /// Base class for defining a profile for entity configurations.
+    /// Creates a new instance of <see cref="IEntityConfiguration{TEntity}"/> for the specified entity type.
     /// </summary>
-    public abstract class DiffProfile
+    /// <typeparam name="TEntity"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="DuplicateEntityConfigurationException"></exception>
+    protected IEntityConfiguration<TEntity> CreateConfiguration<TEntity>()
+        where TEntity : class
     {
-        internal Dictionary<Type, EntityConfiguration> EntityConfigurations { get; private set; } = new Dictionary<Type, EntityConfiguration>();
+        var entityType = typeof(TEntity);
 
-        /// <summary>
-        /// Creates a new instance of <see cref="IEntityConfiguration{TEntity}"/> for the specified entity type.
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="DuplicateEntityConfigurationException"></exception>
-        protected IEntityConfiguration<TEntity> CreateConfiguration<TEntity>()
-            where TEntity : class
-        {
-            var entityType = typeof(TEntity);
+        if (entityType.IsAbstract)
+            throw new AbstractEntityConfigurationException(entityType);
 
-            if (entityType.IsAbstract)
-                throw new AbstractEntityConfigurationException(entityType);
+        if (EntityConfigurations.ContainsKey(entityType))
+            throw new DuplicateEntityConfigurationException(entityType);
 
-            if (EntityConfigurations.ContainsKey(entityType))
-                throw new DuplicateEntityConfigurationException(entityType);
+        var entityConfiguration = new EntityConfiguration(entityType);
+        EntityConfigurations.Add(entityType, entityConfiguration);
 
-            var entityConfiguration = new EntityConfiguration(entityType);
-            EntityConfigurations.Add(entityType, entityConfiguration);
-
-            return new EntityConfiguration<TEntity>(entityConfiguration);
-        }
+        return new EntityConfiguration<TEntity>(entityConfiguration);
     }
 }

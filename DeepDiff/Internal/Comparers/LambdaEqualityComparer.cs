@@ -1,26 +1,17 @@
-using System;
-using System.Collections.Generic;
+namespace DeepDiff.Internal.Comparers;
 
-namespace DeepDiff.Internal.Comparers
+internal sealed class LambdaEqualityComparer<T>(Func<T?, T?, bool> compareFunc) : IEqualityComparer<T>
+    where T : class
 {
-    internal sealed class LambdaEqualityComparer<T> : IEqualityComparer<T>
-        where T : class
+    private Func<T?, T?, bool> CompareFunc { get; } = compareFunc;
+
+    public bool Equals(T? x, T? y)
     {
-        private Func<T?, T?, bool> CompareFunc { get; }
+        return CompareFunc(x, y);
+    }
 
-        public LambdaEqualityComparer(Func<T?, T?, bool> compareFunc)
-        {
-            CompareFunc = compareFunc;
-        }
-
-        public bool Equals(T? x, T? y)
-        {
-            return CompareFunc(x, y);
-        }
-
-        public int GetHashCode(T obj)
-        {
-            return 0; // force Equals
-        }
+    public int GetHashCode(T obj)
+    {
+        return 0; // force Equals
     }
 }

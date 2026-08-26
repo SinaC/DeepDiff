@@ -1,5 +1,10 @@
 # Breaking changes
 
+### 1.20.0
+
+- DeepDiff now requires .NET 8.0 or higher
+- properties referenced in configuration must be public and have a public getter and setter, otherwise an exception will be thrown during configuration validation
+
 ### 1.12.0
 
 - Hashtable and PrecompiledComparer are now mandatory

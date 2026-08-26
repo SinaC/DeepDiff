@@ -1,18 +1,10 @@
 ﻿using DeepDiff.Internal.Comparers;
-using System;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Configuration
-{
-    internal sealed class ForceUpdateIfEqualsConfiguration
-    {
-        public PropertyInfoExt CompareToProperty { get; } = null!;
-        public object? CompareToValue { get; } = null!;
+namespace DeepDiff.Internal.Configuration;
 
-        public ForceUpdateIfEqualsConfiguration(Type entityType, PropertyInfo compareToProperty, object? compareToValue)
-        {
-            CompareToProperty = new PropertyInfoExt(entityType, compareToProperty);
-            CompareToValue = compareToValue;
-        }
-    }
+internal sealed class ForceUpdateIfEqualsConfiguration(Type entityType, PropertyInfo compareToProperty, object? compareToValue)
+{
+    public PropertyInfoExt CompareToProperty { get; } = new PropertyInfoExt(entityType, compareToProperty);
+    public object? CompareToValue { get; } = compareToValue;
 }

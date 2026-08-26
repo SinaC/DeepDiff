@@ -1,18 +1,10 @@
 ﻿using DeepDiff.Internal.Comparers;
-using System;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Configuration
-{
-    internal abstract class NavigationConfigurationBase
-    {
-        public PropertyInfoExt NavigationProperty { get; } = null!;
-        public Type NavigationChildType { get; } = null!;
+namespace DeepDiff.Internal.Configuration;
 
-        public NavigationConfigurationBase(Type entityType, PropertyInfo navigationProperty, Type navigationChildType)
-        {
-            NavigationProperty = new PropertyInfoExt(entityType, navigationProperty);
-            NavigationChildType = navigationChildType;
-        }
-    }
+internal abstract class NavigationConfigurationBase(Type entityType, PropertyInfo navigationProperty, Type navigationChildType)
+{
+    public PropertyInfoExt NavigationProperty { get; } = new PropertyInfoExt(entityType, navigationProperty);
+    public Type NavigationChildType { get; } = navigationChildType;
 }
