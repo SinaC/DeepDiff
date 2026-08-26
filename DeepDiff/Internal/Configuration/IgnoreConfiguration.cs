@@ -1,21 +1,18 @@
 ﻿using DeepDiff.Internal.Extensions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Configuration
-{
-    internal sealed class IgnoreConfiguration
-    {
-        public IList<PropertyInfo> IgnoredProperties { get; private set; } = new List<PropertyInfo>();
+namespace DeepDiff.Internal.Configuration;
 
-        public void AddIgnoredProperties(IEnumerable<PropertyInfo> properties)
+internal sealed class IgnoreConfiguration
+{
+    public IList<PropertyInfo> IgnoredProperties { get; private set; } = [];
+
+    public void AddIgnoredProperties(IEnumerable<PropertyInfo> properties)
+    {
+        foreach (var property in properties)
         {
-            foreach (var property in properties)
-            {
-                if (IgnoredProperties.All(x => !x.IsSameAs(property)))
-                    IgnoredProperties.Add(property);
-            }
+            if (IgnoredProperties.All(x => !x.IsSameAs(property)))
+                IgnoredProperties.Add(property);
         }
     }
 }

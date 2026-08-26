@@ -1,17 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public sealed class AlreadyDefinedPropertyException(Type entityType, string faultyConfiguration, string alreadyDefinedInConfiguration, IEnumerable<string> alreadyDefinedPropertyNames) : EntityConfigurationException($"{faultyConfiguration} configuration for type {entityType} contains one or more property already configured in {alreadyDefinedInConfiguration}: {string.Join(",", alreadyDefinedPropertyNames)}", entityType)
 {
-    public sealed class AlreadyDefinedPropertyException : EntityConfigurationException
-    {
-        public string[] AlreadyDefinedPropertyNames { get; }
-
-        public AlreadyDefinedPropertyException(Type entityType, string faultyConfiguration, string alreadyDefinedInConfiguration, IEnumerable<string> alreadyDefinedPropertyNames)
-            : base($"{faultyConfiguration} configuration for type {entityType} contains one or more property already configured in {alreadyDefinedInConfiguration}: {string.Join(",", alreadyDefinedPropertyNames)}", entityType)
-        {
-            AlreadyDefinedPropertyNames = alreadyDefinedPropertyNames.ToArray();
-        }
-    }
+    public string[] AlreadyDefinedPropertyNames { get; } = alreadyDefinedPropertyNames.ToArray();
 }

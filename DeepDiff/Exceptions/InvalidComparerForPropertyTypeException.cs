@@ -1,12 +1,5 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class InvalidComparerForPropertyTypeException(Type type) : Exception($"Comparer for {type} is not implementing IEqualityConverter<{type}>")
 {
-    public class InvalidComparerForPropertyTypeException : Exception
-    {
-        public InvalidComparerForPropertyTypeException(Type type)
-            : base($"Comparer for {type} is not implementing IEqualityConverter<{type}>")
-        {
-        }
-    }
 }

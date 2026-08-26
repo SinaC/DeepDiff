@@ -1,12 +1,5 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class DuplicateValuesConfigurationException(Type entityType) : EntityConfigurationException($"HasValues has already been configured for {entityType}", entityType)
 {
-    public class DuplicateValuesConfigurationException : EntityConfigurationException
-    {
-        public DuplicateValuesConfigurationException(Type entityType)
-            : base($"HasValues has already been configured for {entityType}", entityType)
-        {
-        }
-    }
 }

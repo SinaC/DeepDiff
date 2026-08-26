@@ -1,103 +1,99 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Configuration
+namespace DeepDiff.Internal.Configuration;
+
+internal sealed class EntityConfiguration
 {
-    internal sealed class EntityConfiguration
+    public Type EntityType { get; }
+
+    public bool NoKey { get; private set; }
+    public KeyConfiguration KeyConfiguration { get; private set; } = null!;
+    public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
+    public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = [];
+    public IList<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = [];
+    public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
+    public InsertConfiguration InsertConfiguration { get; private set; } = null!;
+    public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
+    public IgnoreConfiguration IgnoreConfiguration { get; private set; } = null!;
+    public ForceUpdateIfConfiguration ForceUpdateIfConfiguration { get; private set; } = null!;
+    public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
+
+    internal EntityConfiguration(Type entityType)
     {
-        public Type EntityType { get; }
+        EntityType = entityType;
+    }
 
-        public bool NoKey { get; private set; }
-        public KeyConfiguration KeyConfiguration { get; private set; } = null!;
-        public ValuesConfiguration ValuesConfiguration { get; private set; } = null!;
-        public IList<NavigationManyConfiguration> NavigationManyConfigurations { get; private set; } = new List<NavigationManyConfiguration>();
-        public IList<NavigationOneConfiguration> NavigationOneConfigurations { get; private set; } = new List<NavigationOneConfiguration>();
-        public UpdateConfiguration UpdateConfiguration { get; private set; } = null!;
-        public InsertConfiguration InsertConfiguration { get; private set; } = null!;
-        public DeleteConfiguration DeleteConfiguration { get; private set; } = null!;
-        public IgnoreConfiguration IgnoreConfiguration { get; private set; } = null!;
-        public ForceUpdateIfConfiguration ForceUpdateIfConfiguration { get; private set; } = null!;
-        public ComparerConfiguration ComparerConfiguration { get; private set; } = null!;
+    public void SetNoKey()
+    {
+        NoKey = true;
+    }
 
-        internal EntityConfiguration(Type entityType)
-        {
-            EntityType = entityType;
-        }
+    public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
+    {
+        KeyConfiguration = new KeyConfiguration(EntityType, keyProperties.ToArray());
+        return KeyConfiguration;
+    }
 
-        public void SetNoKey()
-        {
-            NoKey = true;
-        }
+    public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties)
+    {
+        ValuesConfiguration = new ValuesConfiguration(EntityType, valuesProperties);
+        return ValuesConfiguration;
+    }
 
-        public KeyConfiguration SetKey(IEnumerable<PropertyInfo> keyProperties)
-        {
-            KeyConfiguration = new KeyConfiguration(EntityType, keyProperties.ToArray());
-            return KeyConfiguration;
-        }
+    public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
+    {
+        var navigationManyConfiguration = new NavigationManyConfiguration(EntityType, navigationManyProperty, navigationManyDestinationType);
+        NavigationManyConfigurations.Add(navigationManyConfiguration);
+        return navigationManyConfiguration;
+    }
 
-        public ValuesConfiguration SetValues(IEnumerable<PropertyInfo> valuesProperties)
-        {
-            ValuesConfiguration = new ValuesConfiguration(EntityType, valuesProperties);
-            return ValuesConfiguration;
-        }
+    public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty, Type navigationOneChildType)
+    {
+        var navigationOneConfiguration = new NavigationOneConfiguration(EntityType, navigationOneProperty, navigationOneChildType);
+        NavigationOneConfigurations.Add(navigationOneConfiguration);
+        return navigationOneConfiguration;
+    }
 
-        public NavigationManyConfiguration AddNavigationMany(PropertyInfo navigationManyProperty, Type navigationManyDestinationType)
-        {
-            var navigationManyConfiguration = new NavigationManyConfiguration(EntityType, navigationManyProperty, navigationManyDestinationType);
-            NavigationManyConfigurations.Add(navigationManyConfiguration);
-            return navigationManyConfiguration;
-        }
+    public UpdateConfiguration GetOrSetOnUpdate()
+    {
+        UpdateConfiguration ??= new UpdateConfiguration();
+        return UpdateConfiguration;
+    }
 
-        public NavigationOneConfiguration AddNavigationOne(PropertyInfo navigationOneProperty, Type navigationOneChildType)
-        {
-            var navigationOneConfiguration = new NavigationOneConfiguration(EntityType, navigationOneProperty, navigationOneChildType);
-            NavigationOneConfigurations.Add(navigationOneConfiguration);
-            return navigationOneConfiguration;
-        }
+    public InsertConfiguration GetOrSetOnInsert()
+    {
+        InsertConfiguration ??= new InsertConfiguration();
+        return InsertConfiguration;
+    }
 
-        public UpdateConfiguration GetOrSetOnUpdate()
-        {
-            UpdateConfiguration ??= new UpdateConfiguration();
-            return UpdateConfiguration;
-        }
+    public DeleteConfiguration GetOrSetOnDelete()
+    {
+        DeleteConfiguration ??= new DeleteConfiguration();
+        return DeleteConfiguration;
+    }
 
-        public InsertConfiguration GetOrSetOnInsert()
-        {
-            InsertConfiguration ??= new InsertConfiguration();
-            return InsertConfiguration;
-        }
+    public ComparerConfiguration GetOrSetWithComparer()
+    {
+        ComparerConfiguration ??= new ComparerConfiguration();
+        return ComparerConfiguration;
+    }
 
-        public DeleteConfiguration GetOrSetOnDelete()
-        {
-            DeleteConfiguration ??= new DeleteConfiguration();
-            return DeleteConfiguration;
-        }
+    public IgnoreConfiguration GetOrSetIgnore()
+    {
+        IgnoreConfiguration ??= new IgnoreConfiguration();
+        return IgnoreConfiguration;
+    }
 
-        public ComparerConfiguration GetOrSetWithComparer()
-        {
-            ComparerConfiguration ??= new ComparerConfiguration();
-            return ComparerConfiguration;
-        }
+    public ForceUpdateIfConfiguration GetOrSetForceUpdateIf()
+    {
+        ForceUpdateIfConfiguration ??= new ForceUpdateIfConfiguration();
+        return ForceUpdateIfConfiguration;
+    }
 
-        public IgnoreConfiguration GetOrSetIgnore()
-        {
-            IgnoreConfiguration ??= new IgnoreConfiguration();
-            return IgnoreConfiguration;
-        }
-
-        public ForceUpdateIfConfiguration GetOrSetForceUpdateIf()
-        {
-            ForceUpdateIfConfiguration ??= new ForceUpdateIfConfiguration();
-            return ForceUpdateIfConfiguration;
-        }
-
-        public void CreateComparers()
-        {
-            if (!NoKey)
-                KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
-            ValuesConfiguration?.CreateComparers(EntityType, ComparerConfiguration);
-        }
+    public void CreateComparers()
+    {
+        if (!NoKey)
+            KeyConfiguration.CreateComparers(EntityType, ComparerConfiguration);
+        ValuesConfiguration?.CreateComparers(EntityType, ComparerConfiguration);
     }
 }

@@ -1,15 +1,6 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class AbstractEntityConfigurationException(Type entityType) : Exception($"Configuration found for abstract type {entityType}")
 {
-    public class AbstractEntityConfigurationException : Exception
-    {
-        public Type EntityType { get; }
-
-        public AbstractEntityConfigurationException(Type entityType)
-            : base($"Configuration found for abstract type {entityType}")
-        {
-            EntityType = entityType;
-        }
-    }
+    public Type EntityType { get; } = entityType;
 }

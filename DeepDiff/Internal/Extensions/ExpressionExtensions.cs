@@ -1,115 +1,111 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DeepDiff.Internal.Extensions
+namespace DeepDiff.Internal.Extensions;
+
+internal static class ExpressionExtensions
 {
-    internal static class ExpressionExtensions
+    public static PropertyPath GetSimplePropertyAccess(this LambdaExpression propertyAccessExpression)
     {
-        public static PropertyPath GetSimplePropertyAccess(this LambdaExpression propertyAccessExpression)
+        var propertyPath = propertyAccessExpression
+                .Parameters
+                .Single()
+                .MatchSimplePropertyAccess(propertyAccessExpression.Body);
+
+        return propertyPath ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The expression '{0}' is not a valid property expression. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'.", propertyAccessExpression));
+    }
+
+    public static PropertyPath[] GetSimplePropertyAccessList(this LambdaExpression propertyAccessExpression)
+    {
+        var propertyPaths = propertyAccessExpression.MatchPropertyAccessList((p, e) => e.MatchSimplePropertyAccess(p));
+
+        return propertyPaths ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The properties expression '{0}' is not valid. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'. When specifying multiple properties use an anonymous type: C#: 't => new {{ t.MyProperty1, t.MyProperty2 }}'  VB.Net: 'Function(t) New With {{ t.MyProperty1, t.MyProperty2 }}'.", propertyAccessExpression));
+    }
+
+    private static PropertyPath[]? MatchPropertyAccessList(this LambdaExpression lambdaExpression, Func<Expression, Expression, PropertyPath?> propertyMatcher)
+    {
+        if (lambdaExpression.Body.RemoveConvert() is NewExpression newExpression)
         {
-            var propertyPath = propertyAccessExpression
-                    .Parameters
-                    .Single()
-                    .MatchSimplePropertyAccess(propertyAccessExpression.Body);
+            var parameterExpression = lambdaExpression.Parameters.Single();
 
-            return propertyPath ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The expression '{0}' is not a valid property expression. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'.", propertyAccessExpression));
-        }
+            var propertyPaths = newExpression.Arguments
+                               .Select(a => propertyMatcher(a, parameterExpression))
+                               .Where(p => p is not null)
+                               .Select(p => p!)
+                               .ToArray();
 
-        public static PropertyPath[] GetSimplePropertyAccessList(this LambdaExpression propertyAccessExpression)
-        {
-            var propertyPaths = propertyAccessExpression.MatchPropertyAccessList((p, e) => e.MatchSimplePropertyAccess(p));
-
-            return propertyPaths ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The properties expression '{0}' is not valid. The expression should represent a property: C#: 't => t.MyProperty'  VB.Net: 'Function(t) t.MyProperty'. When specifying multiple properties use an anonymous type: C#: 't => new {{ t.MyProperty1, t.MyProperty2 }}'  VB.Net: 'Function(t) New With {{ t.MyProperty1, t.MyProperty2 }}'.", propertyAccessExpression));
-        }
-
-        private static PropertyPath[]? MatchPropertyAccessList(this LambdaExpression lambdaExpression, Func<Expression, Expression, PropertyPath?> propertyMatcher)
-        {
-            if (lambdaExpression.Body.RemoveConvert() is NewExpression newExpression)
+            if (propertyPaths.Length == newExpression.Arguments.Count)
             {
-                var parameterExpression = lambdaExpression.Parameters.Single();
+                return newExpression.HasDefaultMembersOnly(propertyPaths)
+                    ? propertyPaths
+                    : null;
+            }
+        }
 
-                var propertyPaths = newExpression.Arguments
-                                   .Select(a => propertyMatcher(a, parameterExpression))
-                                   .Where(p => p is not null)
-                                   .Select(p => p!)
-                                   .ToArray();
+        var propertyPath = propertyMatcher(lambdaExpression.Body, lambdaExpression.Parameters.Single());
 
-                if (propertyPaths.Length == newExpression.Arguments.Count)
-                {
-                    return newExpression.HasDefaultMembersOnly(propertyPaths)
-                        ? propertyPaths
-                        : null;
-                }
+        return propertyPath is not null
+            ? [propertyPath]
+            : null;
+    }
+
+    private static PropertyPath? MatchSimplePropertyAccess(this Expression parameterExpression, Expression propertyAccessExpression)
+    {
+        var propertyPath = parameterExpression.MatchPropertyAccess(propertyAccessExpression);
+
+        return propertyPath is not null && propertyPath.Count == 1
+            ? propertyPath
+            : null;
+    }
+
+    private static Expression RemoveConvert(this Expression expression)
+    {
+        while (expression.NodeType == ExpressionType.Convert
+            || expression.NodeType == ExpressionType.ConvertChecked)
+        {
+            expression = ((UnaryExpression)expression).Operand;
+        }
+
+        return expression;
+    }
+
+    private static bool HasDefaultMembersOnly(this NewExpression newExpression, PropertyPath[] propertyPaths)
+    {
+        return newExpression.Members == null
+               || !newExpression.Members
+                   .Where((t, i) => !string.Equals(t.Name, propertyPaths.ElementAt(i).Last().Name, StringComparison.Ordinal))
+                   .Any();
+    }
+
+    private static PropertyPath? MatchPropertyAccess(this Expression parameterExpression, Expression? propertyAccessExpression)
+    {
+        var propertyInfos = new List<PropertyInfo>();
+
+        MemberExpression? memberExpression;
+
+        do
+        {
+            memberExpression = propertyAccessExpression?.RemoveConvert() as MemberExpression;
+
+            if (memberExpression == null)
+            {
+                return null;
             }
 
-            var propertyPath = propertyMatcher(lambdaExpression.Body, lambdaExpression.Parameters.Single());
+            var propertyInfo = memberExpression.Member as PropertyInfo;
 
-            return propertyPath is not null
-                ? new[] { propertyPath }
-                : null;
-        }
-
-        private static PropertyPath? MatchSimplePropertyAccess(this Expression parameterExpression, Expression propertyAccessExpression)
-        {
-            var propertyPath = parameterExpression.MatchPropertyAccess(propertyAccessExpression);
-
-            return propertyPath is not null && propertyPath.Count == 1
-                ? propertyPath
-                : null;
-        }
-
-        private static Expression RemoveConvert(this Expression expression)
-        {
-            while (expression.NodeType == ExpressionType.Convert
-                || expression.NodeType == ExpressionType.ConvertChecked)
+            if (propertyInfo == null)
             {
-                expression = ((UnaryExpression)expression).Operand;
+                return null;
             }
 
-            return expression;
+            propertyInfos.Insert(0, propertyInfo);
+
+            propertyAccessExpression = memberExpression.Expression;
         }
+        while (memberExpression.Expression != parameterExpression);
 
-        private static bool HasDefaultMembersOnly(this NewExpression newExpression, PropertyPath[] propertyPaths)
-        {
-            return newExpression.Members == null
-                   || !newExpression.Members
-                       .Where((t, i) => !string.Equals(t.Name, propertyPaths.ElementAt(i).Last().Name, StringComparison.Ordinal))
-                       .Any();
-        }
-
-        private static PropertyPath? MatchPropertyAccess(this Expression parameterExpression, Expression? propertyAccessExpression)
-        {
-            var propertyInfos = new List<PropertyInfo>();
-
-            MemberExpression? memberExpression;
-
-            do
-            {
-                memberExpression = propertyAccessExpression?.RemoveConvert() as MemberExpression;
-
-                if (memberExpression == null)
-                {
-                    return null;
-                }
-
-                var propertyInfo = memberExpression.Member as PropertyInfo;
-
-                if (propertyInfo == null)
-                {
-                    return null;
-                }
-
-                propertyInfos.Insert(0, propertyInfo);
-
-                propertyAccessExpression = memberExpression.Expression;
-            }
-            while (memberExpression.Expression != parameterExpression);
-
-            return new PropertyPath(propertyInfos);
-        }
+        return new PropertyPath(propertyInfos);
     }
 }

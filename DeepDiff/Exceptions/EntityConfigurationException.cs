@@ -1,15 +1,6 @@
-using System;
+namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public abstract class EntityConfigurationException(string message, Type entityType) : Exception(message)
 {
-    public abstract class EntityConfigurationException : Exception
-    {
-        public Type EntityType { get; }
-
-        public EntityConfigurationException(string message, Type entityType)
-            : base(message)
-        {
-            EntityType = entityType;
-        }
-    }
+    public Type EntityType { get; } = entityType;
 }

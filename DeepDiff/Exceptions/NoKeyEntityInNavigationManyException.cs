@@ -1,15 +1,6 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class NoKeyEntityInNavigationManyException(Type entityType) : Exception($"NoKey set on type {entityType} but used in a HasMany configuration")
 {
-    public class NoKeyEntityInNavigationManyException : Exception
-    {
-        public Type EntityType { get; }
-
-        public NoKeyEntityInNavigationManyException(Type entityType)
-            : base($"NoKey set on type {entityType} but used in a HasMany configuration")
-        {
-            EntityType = entityType;
-        }
-    }
+    public Type EntityType { get; } = entityType;
 }

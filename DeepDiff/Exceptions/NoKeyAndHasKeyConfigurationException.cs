@@ -1,12 +1,5 @@
-﻿using System;
+﻿namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public class NoKeyAndHasKeyConfigurationException(Type entityType) : EntityConfigurationException($"HasKey and NoKey both configured for {entityType}", entityType)
 {
-    public class NoKeyAndHasKeyConfigurationException : EntityConfigurationException
-    {
-        public NoKeyAndHasKeyConfigurationException(Type entityType)
-            : base($"HasKey and NoKey both configured for {entityType}", entityType)
-        {
-        }
-    }
 }

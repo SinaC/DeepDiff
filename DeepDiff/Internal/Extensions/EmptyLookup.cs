@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿namespace DeepDiff.Internal.Extensions;
 
-namespace DeepDiff.Internal.Extensions
+internal static class EmptyLookup<TKey, TElement>
 {
-    internal static class EmptyLookup<TKey, TElement>
-    {
-        private static Lazy<ILookup<TKey, TElement>> Lazy { get; } = new Lazy<ILookup<TKey, TElement>>(() => Enumerable.Empty<TElement>().ToLookup(x => default(TKey)!));
+    private static Lazy<ILookup<TKey, TElement>> Lazy { get; } = new Lazy<ILookup<TKey, TElement>>(() => Enumerable.Empty<TElement>().ToLookup(x => default(TKey)!));
 
-        public static ILookup<TKey, TElement> Instance
-            => Lazy.Value;
-    }
+    public static ILookup<TKey, TElement> Instance
+        => Lazy.Value;
 }

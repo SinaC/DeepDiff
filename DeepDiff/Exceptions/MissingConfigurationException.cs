@@ -1,15 +1,6 @@
-using System;
+namespace DeepDiff.Exceptions;
 
-namespace DeepDiff.Exceptions
+public sealed class MissingConfigurationException(Type entityType) : Exception($"No configuration found for type {entityType}")
 {
-    public sealed class MissingConfigurationException : Exception
-    {
-        public Type EntityType { get; }
-
-        public MissingConfigurationException(Type entityType)
-            : base($"No configuration found for type {entityType}")
-        {
-            EntityType = entityType;
-        }
-    }
+    public Type EntityType { get; } = entityType;
 }
