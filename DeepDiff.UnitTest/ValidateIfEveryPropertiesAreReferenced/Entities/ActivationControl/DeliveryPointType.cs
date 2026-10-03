@@ -1,8 +1,7 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl;
+
+public enum DeliveryPointType : byte
 {
-    public enum DeliveryPointType : byte
-    {
-        ProvidingGroup = 1,
-        SingleUnit = 2,
-    }
+    ProvidingGroup = 1,
+    SingleUnit = 2,
 }

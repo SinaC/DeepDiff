@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace TestAppNet8.Entities.ActivationControl;
+namespace TestAppNet10.Entities.ActivationControl;
 
 [DebuggerDisplay("{DebuggerDisplay, nq}")]
 public class ActivationControlDetail : PersistEntity

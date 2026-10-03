@@ -1,7 +1,7 @@
 using DeepDiff.Configuration;
-using TestAppNet8.Entities;
+using TestAppNet10.Entities;
 
-namespace TestAppNet8.Profile;
+namespace TestAppNet10.Profile;
 
 public static class IDiffConfigurationExtensions
 {

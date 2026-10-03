@@ -3,73 +3,72 @@ using DeepDiff.Exceptions;
 using DeepDiff.UnitTest.Entities.Simple;
 using Xunit;
 
-namespace DeepDiff.UnitTest.Exceptions
+namespace DeepDiff.UnitTest.Exceptions;
+
+public class NoKeyEntityInNavigationManyExceptionTests
 {
-    public class NoKeyEntityInNavigationManyExceptionTests
+    [Fact]
+    public void MergeMany()
     {
-        [Fact]
-        public void MergeMany()
+        var diffConfiguration = new DeepDiffConfiguration();
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
+            .NoKey();
+        var deepDiff = diffConfiguration.CreateDeepDiff();
+
+        var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
         {
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.ConfigureEntity<EntityLevel1>()
-                .NoKey();
-            var deepDiff = diffConfiguration.CreateDeepDiff();
+            Index = x,
 
-            var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
-            {
-                Index = x,
+            Timestamp = DateTime.Now.AddMinutes(15 * x),
 
-                Timestamp = DateTime.Now.AddMinutes(15 * x),
+            Power = x,
+            Price = 2 * x
+        }).ToArray();
 
-                Power = x,
-                Price = 2 * x
-            }).ToArray();
-
-            var newEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
-            {
-                Index = x,
-
-                Timestamp = DateTime.Now.AddMinutes(15 * x),
-
-                Power = x + 1,
-                Price = 2 * x + 1
-            }).ToArray();
-
-            Assert.Throws<NoKeyEntityInNavigationManyException>(() => deepDiff.MergeMany(existingEntities, newEntities));
-        }
-
-        [Fact]
-        public void MergeSingle()
+        var newEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
         {
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.ConfigureEntity<EntityLevel1>()
-                .HasValues(x => new { x.Power, x.Price })
-                .NoKey();
-            var deepDiff = diffConfiguration.CreateDeepDiff();
+            Index = x,
 
-            var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
-            {
-                Index = x,
+            Timestamp = DateTime.Now.AddMinutes(15 * x),
 
-                Timestamp = DateTime.Now.AddMinutes(15 * x),
+            Power = x + 1,
+            Price = 2 * x + 1
+        }).ToArray();
 
-                Power = x,
-                Price = 2 * x
-            }).ToArray();
+        Assert.Throws<NoKeyEntityInNavigationManyException>(() => deepDiff.MergeMany(existingEntities, newEntities));
+    }
 
-            var newEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
-            {
-                Index = x,
+    [Fact]
+    public void MergeSingle()
+    {
+        var diffConfiguration = new DeepDiffConfiguration();
+        diffConfiguration.ConfigureEntity<EntityLevel1>()
+            .HasValues(x => new { x.Power, x.Price })
+            .NoKey();
+        var deepDiff = diffConfiguration.CreateDeepDiff();
 
-                Timestamp = DateTime.Now.AddMinutes(15 * x),
+        var existingEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
+        {
+            Index = x,
 
-                Power = x + 1,
-                Price = 2 * x + 1
-            }).ToArray();
+            Timestamp = DateTime.Now.AddMinutes(15 * x),
 
-            var result = deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
+            Power = x,
+            Price = 2 * x
+        }).ToArray();
 
-            Assert.NotNull(result);
-        }
+        var newEntities = Enumerable.Range(0, 10).Select(x => new EntityLevel1
+        {
+            Index = x,
+
+            Timestamp = DateTime.Now.AddMinutes(15 * x),
+
+            Power = x + 1,
+            Price = 2 * x + 1
+        }).ToArray();
+
+        var result = deepDiff.MergeSingle(existingEntities[0], newEntities[0]);
+
+        Assert.NotNull(result);
     }
 }

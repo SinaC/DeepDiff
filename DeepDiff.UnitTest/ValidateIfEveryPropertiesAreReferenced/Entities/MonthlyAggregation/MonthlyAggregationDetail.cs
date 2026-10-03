@@ -1,19 +1,18 @@
 ﻿using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.MonthlyAggregation
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.MonthlyAggregation;
+
+public class MonthlyAggregationDetail<TMonthlyAggregationValues> : AuditEntity
+    where TMonthlyAggregationValues : MonthlyAggregationValues
 {
-    public class MonthlyAggregationDetail<TMonthlyAggregationValues> : AuditEntity
-        where TMonthlyAggregationValues : MonthlyAggregationValues
-    {
-        public string ModuleKey { get; set; } = null!;
+    public string ModuleKey { get; set; } = null!;
 
-        public AggregatedStatus Status { get; set; }
+    public AggregatedStatus Status { get; set; }
 
-        // one-to-many
-        public List<TMonthlyAggregationValues> MonthlyAggregationValues { get; set; } = null!;
+    // one-to-many
+    public List<TMonthlyAggregationValues> MonthlyAggregationValues { get; set; } = null!;
 
-        // FK
-        public Guid MonthlyAggregationId { get; set; }
-        public MonthlyAggregation<TMonthlyAggregationValues> MonthlyAggregation { get; set; } = null!;
-    }
+    // FK
+    public Guid MonthlyAggregationId { get; set; }
+    public MonthlyAggregation<TMonthlyAggregationValues> MonthlyAggregation { get; set; } = null!;
 }

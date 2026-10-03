@@ -20,8 +20,8 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<EntityLevel1>
-                {
+                SubEntities =
+                [
                     new EntityLevel1
                     {
                         Index = 0,
@@ -29,7 +29,7 @@ public class SimpleEntityNavigationManyTests
                         Timestamp = DateTime.Today,
                         Power = 1
                     }
-                }
+                ]
             }
         };
 
@@ -43,7 +43,7 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<EntityLevel1>()
+                SubEntities = []
             }
         };
 
@@ -86,7 +86,7 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<EntityLevel1>()
+                SubEntities = []
             }
         };
 
@@ -100,8 +100,8 @@ public class SimpleEntityNavigationManyTests
                 Direction = Direction.Up,
                 RequestedPower = 1,
 
-                SubEntities = new List<EntityLevel1>
-                {
+                SubEntities =
+                [
                     new EntityLevel1
                     {
                         Index = 0,
@@ -109,11 +109,11 @@ public class SimpleEntityNavigationManyTests
                         Timestamp = DateTime.Today,
                         Power = 1
                     }
-                }
+                ]
             }
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

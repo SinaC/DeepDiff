@@ -163,7 +163,7 @@ public class SimpleEntityNoConfigTests
         Assert.Equal(4, operations.OfType<UpdateDiffOperation>().Count());
     }
 
-    private (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities()
+    private static (EntityLevel0 existingEntity, EntityLevel0 newEntity) GenerateEntities()
     {
         var existingEntity = new EntityLevel0
         {

@@ -21,7 +21,7 @@ internal static class ComparerExpressionGenerator
         ToHashCodeMethod = hashCodeType.GetMethod(nameof(HashCode.ToHashCode), BindingFlags.Public | BindingFlags.Instance)!;
         // List<CompareByPropertyResultDetail>
         var listOfCompareByPropertyResultDetail = typeof(List<CompareByPropertyResultDetail>);
-        AddListOfCompareByPropertyResultDetailCodeMethod = listOfCompareByPropertyResultDetail.GetMethod(nameof(List<CompareByPropertyResultDetail>.Add), BindingFlags.Public | BindingFlags.Instance)!;
+        AddListOfCompareByPropertyResultDetailCodeMethod = listOfCompareByPropertyResultDetail.GetMethod(nameof(List<>.Add), BindingFlags.Public | BindingFlags.Instance)!;
     }
 
     // Equals
@@ -47,7 +47,7 @@ internal static class ComparerExpressionGenerator
             var equalityExpression = GenerateEqualityExpression(leftValue, rightValue, propertyInfo, typeSpecificComparers, propertySpecificComparers);
             equals.Add(equalityExpression);
         }
-        var ands = equals.Aggregate((left, right) => Expression.AndAlso(left, right));
+        var ands = equals.Aggregate(Expression.AndAlso);
         var andEquals = Expression.Lambda<EqualsFunc<T>>(ands, left, right).Compile();
         return andEquals;
     }
@@ -55,6 +55,38 @@ internal static class ComparerExpressionGenerator
     // Compare
     internal static CompareFunc<T> GenerateCompareFunc<T>(IReadOnlyCollection<PropertyInfo> propertyInfos, IReadOnlyDictionary<Type, object>? typeSpecificComparers, IReadOnlyDictionary<PropertyInfo, object>? propertySpecificComparers)
     {
+        // generate the equivalent of
+        //foreach (var propertyInfo in PropertyExts)
+        //{
+        //    var isEqualByProperty = true; // equal by default
+        //    var oldValue = propertyInfo.GetValue(left);
+        //    var newValue = propertyInfo.GetValue(right);
+
+        //    if (PropertySpecificComparers?.TryGetValue(propertyInfo.PropertyInfo, out var propertySpecificComparer) == true)
+        //    {
+        //        if (!PropertyEquals(propertyInfo.PropertyInfo, propertySpecificComparer, oldValue, newValue))
+        //            isEqualByProperty = false;
+        //    }
+        //    else if (TypeSpecificComparers?.TryGetValue(propertyInfo.PropertyType, out var propertyTypeSpecificComparer) == true)
+        //    {
+        //        if (!PropertyEquals(propertyInfo.PropertyInfo, propertyTypeSpecificComparer, oldValue, newValue))
+        //            isEqualByProperty = false;
+        //    }
+        //    else if (propertyInfo.PropertyType.IsValueType)
+        //    {
+        //        if (!object.Equals(oldValue, newValue))
+        //            isEqualByProperty = false;
+        //    }
+        //    else
+        //    {
+        //        if (!ReferenceEquals(oldValue, newValue) && (oldValue == null || !oldValue.Equals(newValue)))
+        //            isEqualByProperty = false;
+        //    }
+        //    if (!isEqualByProperty)
+        //        details.Add(new CompareByPropertyResultDetail { PropertyInfo = propertyInfo.PropertyInfo, OldValue = oldValue, NewValue = newValue });
+        //}
+        //return new CompareByPropertyResult(details);
+
         var compareByPropertyResultDetailType = typeof(CompareByPropertyResultDetail);
 
         var left = Expression.Parameter(typeof(T), "left");
@@ -105,7 +137,7 @@ internal static class ComparerExpressionGenerator
         var block = Expression.Block
         (
             typeof(CompareByPropertyResult),
-            new[] { detailsParam, resultVariable },
+            [detailsParam, resultVariable],
             statements
         );
 
@@ -144,7 +176,7 @@ internal static class ComparerExpressionGenerator
 
             var block = Expression.Block(
                 typeof(int),
-                new ParameterExpression[] { hashCode },
+                [hashCode],
                 body);
 
             var hasher = Expression.Lambda<Func<T, int>>(block, obj).Compile();

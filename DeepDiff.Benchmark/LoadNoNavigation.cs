@@ -56,7 +56,9 @@ public class LoadNoNavigation
     [Benchmark]
     public void MergeMany()
     {
-        var results = DeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
+#pragma warning disable CA1806
+        DeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
+#pragma warning restore CA1806
     }
 
     private void GenerateIdentical()
@@ -85,7 +87,7 @@ public class LoadNoNavigation
 
     private void GenerateNoExisting()
     {
-        ExistingEntities = Array.Empty<NoNavigationEntity>();
+        ExistingEntities = [];
         NewEntities = Enumerable.Range(0, N)
             .Select(x => new NoNavigationEntity
             {
@@ -110,7 +112,7 @@ public class LoadNoNavigation
                 Penalty = 2 * x,
                 Volume = x
             }).ToArray();
-        NewEntities = Array.Empty<NoNavigationEntity>();
+        NewEntities = [];
     }
 
     private void GenerateRandom()

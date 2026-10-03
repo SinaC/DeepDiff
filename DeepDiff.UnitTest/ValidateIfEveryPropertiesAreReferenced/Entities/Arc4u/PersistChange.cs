@@ -1,10 +1,9 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
+
+public enum PersistChange
 {
-    public enum PersistChange
-    {
-        None,
-        Delete,
-        Insert,
-        Update
-    }
+    None,
+    Delete,
+    Insert,
+    Update
 }

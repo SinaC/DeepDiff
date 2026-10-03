@@ -1,6 +1,6 @@
 ﻿namespace DeepDiff.Internal.Configuration;
 
-internal sealed class DiffEngineConfiguration
+internal sealed class EngineConfiguration
 {
     public int HashtableThreshold { get; private set; } = 15;
     public bool ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel { get; private set; }

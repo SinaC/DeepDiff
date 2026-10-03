@@ -4,7 +4,7 @@ namespace DeepDiff.UnitTest;
 
 internal class StoreAllOperationListener : IOperationListener
 {
-    public ConcurrentBag<DiffOperationBase> Operations { get; } = new();
+    public ConcurrentBag<DiffOperationBase> Operations { get; } = [];
 
     public void OnInsert(string entityName, Func<Dictionary<string, object?>?> getKeysFunc, Func<Dictionary<string, Dictionary<string, object?>?>> getNavigationParentKeysFunc)
     {
@@ -33,15 +33,15 @@ internal class StoreAllOperationListener : IOperationListener
             EntityName = entityName,
             Keys = getKeysFunc()?.ToDictionary(x => x.Key, x => x.Value?.ToString())!,
             NavigationParentKeys = getNavigationParentKeysFunc().ToDictionary(x => x.Key, x => x.Value?.ToDictionary(y => y.Key, y => y.Value?.ToString())),
-            UpdatedProperties = new List<UpdateDiffOperationPropertyInfo>
-            {
+            UpdatedProperties =
+            [
                 new UpdateDiffOperationPropertyInfo
                 {
                     PropertyName = propertyName,
                     ExistingValue = getOriginalValueFunc()?.ToString(),
                     NewValue = getNewValueFunc()?.ToString()
                 }
-            }
+            ]
         });
     }
 }

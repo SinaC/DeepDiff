@@ -67,7 +67,7 @@ public class SimpleEntityNoNavigationTests
         }).ToArray();
 
         // index 2 is missing -> will be marked as deleted
-        var newEntities = Enumerable.Range(0, 5).Except(new[] { 2 }).Select(x => new EntityLevel0
+        var newEntities = Enumerable.Range(0, 5).Except([2]).Select(x => new EntityLevel0
         {
             Index = x,
 
@@ -160,7 +160,7 @@ public class SimpleEntityNoNavigationTests
 
         // index 2 is missing -> will be marked as deleted
         // index 5 doesn't exist in existing collection -> will be marked as inserted
-        var newEntities = Enumerable.Range(0, 6).Except(new[] { 2 }).Select(x => new EntityLevel0
+        var newEntities = Enumerable.Range(0, 6).Except([2]).Select(x => new EntityLevel0
         {
             Index = x,
 

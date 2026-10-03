@@ -1,8 +1,7 @@
-namespace TestAppNet8.Entities.Simple
+namespace TestAppNet10.Entities.Simple;
+
+internal enum Direction
 {
-    internal enum Direction
-    {
-        Up = 1,
-        Down = 2
-    }
+    Up = 1,
+    Down = 2
 }

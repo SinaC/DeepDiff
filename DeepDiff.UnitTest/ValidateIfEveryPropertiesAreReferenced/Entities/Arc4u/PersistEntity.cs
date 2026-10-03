@@ -1,27 +1,23 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
+
+public abstract class PersistEntity : IPersistEntity
 {
-    public abstract class PersistEntity : IPersistEntity
+    public virtual PersistChange PersistChange { get; set; }
+
+    protected PersistEntity()
+        : this(PersistChange.None)
     {
-        public virtual PersistChange PersistChange { get; set; }
+    }
 
-        protected PersistEntity()
-            : this(PersistChange.None)
-        {
-        }
+    protected PersistEntity(PersistChange persistChange)
+    {
+        PersistChange = persistChange;
+    }
 
-        protected PersistEntity(PersistChange persistChange)
-        {
-            PersistChange = persistChange;
-        }
+    protected PersistEntity(PersistEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
 
-        protected PersistEntity(PersistEntity entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-
-            PersistChange = entity.PersistChange;
-        }
+        PersistChange = entity.PersistChange;
     }
 }

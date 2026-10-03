@@ -2,17 +2,16 @@ using DeepDiff.Configuration;
 using DeepDiff.Exceptions;
 using Xunit;
 
-namespace DeepDiff.UnitTest.Exceptions
-{
-    public class MissingConfigurationExceptionTests
-    {
-        [Fact]
-        public void MissingConfigurationException()
-        {
-            var diffConfiguration = new DeepDiffConfiguration();
-            var deepDiff = diffConfiguration.CreateDeepDiff();
+namespace DeepDiff.UnitTest.Exceptions;
 
-            Assert.Throws<MissingConfigurationException>(() => deepDiff.MergeMany(Enumerable.Range(0, 1).Select(x => new Entities.Simple.EntityLevel0()), Enumerable.Range(0, 1).Select(x => new Entities.Simple.EntityLevel0())).ToArray());
-        }
+public class MissingConfigurationExceptionTests
+{
+    [Fact]
+    public void MissingConfigurationException()
+    {
+        var diffConfiguration = new DeepDiffConfiguration();
+        var deepDiff = diffConfiguration.CreateDeepDiff();
+
+        Assert.Throws<MissingConfigurationException>(() => deepDiff.MergeMany(Enumerable.Range(0, 1).Select(x => new Entities.Simple.EntityLevel0()), Enumerable.Range(0, 1).Select(x => new Entities.Simple.EntityLevel0())).ToArray());
     }
 }

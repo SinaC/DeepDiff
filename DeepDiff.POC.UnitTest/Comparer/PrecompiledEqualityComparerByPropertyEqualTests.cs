@@ -1,501 +1,499 @@
 ﻿using DeepDiff.POC.UnitTest.Entities.Simple;
 using System.Reflection;
-using Xunit;
 
-namespace DeepDiff.POC.UnitTest.Comparer
+namespace DeepDiff.POC.UnitTest.Comparer;
+
+public class PrecompiledEqualityComparerByPropertyEqualTests
 {
-    public class PrecompiledEqualityComparerByPropertyEqualTests
+    [Fact]
+    public void Decimal_Equal()
     {
-        [Fact]
-        public void Decimal_Equal()
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
+
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
-
-            var existingEntity = new EntityLevel1
-            {
-                Power = 7
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 7
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void Decimal_Different()
+            Power = 7
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
+            Power = 7
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Power = 7
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 10
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.True(isEqual);
+    }
 
-            Assert.False(isEqual);
-        }
+    [Fact]
+    public void Decimal_Different()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power);
 
-        [Fact]
-        public void NullableDecimal_Equal_NonNull()
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal_Equal_Null()
+            Power = 7
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            Power = 10
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Price = null
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = null
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.False(isEqual);
+    }
 
-            Assert.True(isEqual);
-        }
+    [Fact]
+    public void NullableDecimal_Equal_NonNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
 
-        [Fact]
-        public void NullableDecimal_Different_LeftNull()
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = null
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.False(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal_Different_RightNull()
+            Price = 7
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+            Price = 7
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = null
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.True(isEqual);
+    }
 
-            Assert.False(isEqual);
+    [Fact]
+    public void NullableDecimal_Equal_Null()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
 
-        }
-
-        [Fact]
-        public void NullableDecimal_Different_NonNull()
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 9
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.False(isEqual);
-        }
-
-        //
-        [Fact]
-        public void String_Equal_NonNull()
+            Price = null
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            Price = null
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Comment = "7"
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Comment = "7"
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.True(isEqual);
+    }
 
-            Assert.True(isEqual);
-        }
+    [Fact]
+    public void NullableDecimal_Different_LeftNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
 
-        [Fact]
-        public void String_Equal_Null()
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
-
-            var existingEntity = new EntityLevel1
-            {
-                Comment = null!
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Comment = null!
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void String_Different_LeftNull()
+            Price = null
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            Price = 7
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Comment = null!
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Comment = "7"
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.False(isEqual);
+    }
 
-            Assert.False(isEqual);
-        }
+    [Fact]
+    public void NullableDecimal_Different_RightNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
 
-        [Fact]
-        public void String_Different_RightNull()
+        var existingEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
-
-            var existingEntity = new EntityLevel1
-            {
-                Comment = "7"
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Comment = null!
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.False(isEqual);
-
-        }
-
-        [Fact]
-        public void String_Different_NonNull()
+            Price = 7
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
+            Price = null
+        };
 
-            var existingEntity = new EntityLevel1
-            {
-                Comment = "7"
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Comment = "9"
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        Assert.False(isEqual);
 
-            Assert.False(isEqual);
-        }
+    }
 
-        [Fact]
-        public void Decimal6_Different()
+    [Fact]
+    public void NullableDecimal_Different_NonNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price);
+
+        var existingEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal), new DecimalComparer(6) }
-            };
-
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power, typeSpecificComparers, null!);
-
-            var existingEntity = new EntityLevel1
-            {
-                Power = 7.123456999m
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 7.123456789m
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal6_DifferentAfterSixthDecimal()
+            Price = 7
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) }
-            };
+            Price = 9
+        };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7.123456999m
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7.123456789m
-            };
+        Assert.False(isEqual);
+    }
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+    //
+    [Fact]
+    public void String_Equal_NonNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
 
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal6_EqualNull()
+        var existingEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) }
-            };
-
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = null
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = null
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal6_LeftNull()
+            Comment = "7"
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) }
-            };
+            Comment = "7"
+        };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var existingEntity = new EntityLevel1
-            {
-                Price = null
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7.5m
-            };
+        Assert.True(isEqual);
+    }
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+    [Fact]
+    public void String_Equal_Null()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
 
-            Assert.False(isEqual);
-        }
-
-        [Fact]
-        public void NullableDecimal6_RightNull()
+        var existingEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) }
-            };
-
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7.5m
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = null
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.False(isEqual);
-        }
-
-        [Fact]
-        public void MultipleValues_Different()
+            Comment = null!
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) }
-            };
+            Comment = null!
+        };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var existingEntity = new EntityLevel1
-            {
-                Power = 9.123456789m,
-                Price = 7.15m
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 9.1234567777m,
-                Price = null
-            };
+        Assert.True(isEqual);
+    }
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+    [Fact]
+    public void String_Different_LeftNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
 
-            Assert.False(isEqual);
-        }
-
-        [Fact]
-        public void MultipleValues_Equal()
+        var existingEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) },
-                { typeof(decimal), new DecimalComparer(6) }
-            };
-
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
-
-            var existingEntity = new EntityLevel1
-            {
-                Power = 9.123456789m,
-                Price = 7.15m
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 9.1234567777m,
-                Price = 7.15m
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.True(isEqual);
-        }
-
-        [Fact]
-        public void MultipleValues_DifferentAtSeventhDecimalsAndNoSpecificComparer()
+            Comment = null!
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) },
-            };
+            Comment = "7"
+        };
 
-            var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var existingEntity = new EntityLevel1
-            {
-                Power = 9.123456789m, // will not used NullableDecimalComparer (should have added DecimalComparer at init)
-                Price = 7.123456789m, // will use NullableDecimalComparer
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Power = 9.1234567777m, // will be considered as different
-                Price = 7.1234567777m // will be considered as same
-            };
+        Assert.False(isEqual);
+    }
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+    [Fact]
+    public void String_Different_RightNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
 
-            Assert.False(isEqual);
-        }
-
-        [Fact]
-        public void TypeAndPropertyInfoSpecificComparer_3Decimals()
+        var existingEntity = new EntityLevel1
         {
-            var comparerFactory = new ComparerFactory<EntityLevel1>();
-
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(3) },
-            };
-
-            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
-            {
-                { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(6) }
-            };
-
-            var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
-
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7.1234500000m,
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7.1234599999m
-            };
-
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
-
-            Assert.False(isEqual); // Price specific comparer (decimal 6) will have priority on decimal? specific comparer (decimal 3) and 6th decimal is different
-        }
-
-        [Fact]
-        public void TypeAndPropertyInfoSpecificComparer_6Decimals()
+            Comment = "7"
+        };
+        var calculatedEntity = new EntityLevel1
         {
-            var comparerFactory = new ComparerFactory<EntityLevel1>();
+            Comment = null!
+        };
 
-            var typeSpecificComparers = new Dictionary<Type, object>
-            {
-                { typeof(decimal?), new NullableDecimalComparer(6) },
-            };
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
 
-            var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
-            {
-                { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(3) }
-            };
+        Assert.False(isEqual);
 
-            var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
+    }
 
-            var existingEntity = new EntityLevel1
-            {
-                Price = 7.1234500000m,
-            };
-            var calculatedEntity = new EntityLevel1
-            {
-                Price = 7.1234599999m
-            };
+    [Fact]
+    public void String_Different_NonNull()
+    {
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Comment);
 
-            var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+        var existingEntity = new EntityLevel1
+        {
+            Comment = "7"
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Comment = "9"
+        };
 
-            Assert.True(isEqual); // Price specific comparer (decimal 3) will have priority on decimal? specific comparer (decimal 6) and 6th decimal is different but 3rd is the same
-        }
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual);
+    }
+
+    [Fact]
+    public void Decimal6_Different()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal), new DecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Power, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Power = 7.123456999m
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Power = 7.123456789m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.True(isEqual);
+    }
+
+    [Fact]
+    public void NullableDecimal6_DifferentAfterSixthDecimal()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = 7.123456999m
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = 7.123456789m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.True(isEqual);
+    }
+
+    [Fact]
+    public void NullableDecimal6_EqualNull()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = null
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = null
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.True(isEqual);
+    }
+
+    [Fact]
+    public void NullableDecimal6_LeftNull()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = null
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = 7.5m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual);
+    }
+
+    [Fact]
+    public void NullableDecimal6_RightNull()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = 7.5m
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = null
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual);
+    }
+
+    [Fact]
+    public void MultipleValues_Different()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Power = 9.123456789m,
+            Price = 7.15m
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Power = 9.1234567777m,
+            Price = null
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual);
+    }
+
+    [Fact]
+    public void MultipleValues_Equal()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) },
+            { typeof(decimal), new DecimalComparer(6) }
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Power = 9.123456789m,
+            Price = 7.15m
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Power = 9.1234567777m,
+            Price = 7.15m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.True(isEqual);
+    }
+
+    [Fact]
+    public void MultipleValues_DifferentAtSeventhDecimalsAndNoSpecificComparer()
+    {
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) },
+        };
+
+        var comparer = new ComparerFactory<EntityLevel1>().CreatePrecompiledComparer(x => new { x.Power, x.Price }, typeSpecificComparers, null!);
+
+        var existingEntity = new EntityLevel1
+        {
+            Power = 9.123456789m, // will not used NullableDecimalComparer (should have added DecimalComparer at init)
+            Price = 7.123456789m, // will use NullableDecimalComparer
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Power = 9.1234567777m, // will be considered as different
+            Price = 7.1234567777m // will be considered as same
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual);
+    }
+
+    [Fact]
+    public void TypeAndPropertyInfoSpecificComparer_3Decimals()
+    {
+        var comparerFactory = new ComparerFactory<EntityLevel1>();
+
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(3) },
+        };
+
+        var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
+        {
+            { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(6) }
+        };
+
+        var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = 7.1234500000m,
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = 7.1234599999m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.False(isEqual); // Price specific comparer (decimal 6) will have priority on decimal? specific comparer (decimal 3) and 6th decimal is different
+    }
+
+    [Fact]
+    public void TypeAndPropertyInfoSpecificComparer_6Decimals()
+    {
+        var comparerFactory = new ComparerFactory<EntityLevel1>();
+
+        var typeSpecificComparers = new Dictionary<Type, object>
+        {
+            { typeof(decimal?), new NullableDecimalComparer(6) },
+        };
+
+        var propertyInfoSpecificComparers = new Dictionary<PropertyInfo, object>
+        {
+            { comparerFactory.GetPropertyInfo(x => x.Price), new NullableDecimalComparer(3) }
+        };
+
+        var comparer = comparerFactory.CreatePrecompiledComparer(x => x.Price, typeSpecificComparers, propertyInfoSpecificComparers);
+
+        var existingEntity = new EntityLevel1
+        {
+            Price = 7.1234500000m,
+        };
+        var calculatedEntity = new EntityLevel1
+        {
+            Price = 7.1234599999m
+        };
+
+        var isEqual = comparer.Equals(existingEntity, calculatedEntity);
+
+        Assert.True(isEqual); // Price specific comparer (decimal 3) will have priority on decimal? specific comparer (decimal 6) and 6th decimal is different but 3rd is the same
     }
 }

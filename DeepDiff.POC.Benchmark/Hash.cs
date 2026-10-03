@@ -60,7 +60,7 @@ public class Hash
     {
         foreach (var entity in Entities)
         {
-            var hashCode = comparer.GetHashCode(entity);
+            comparer.GetHashCode(entity);
         }
     }
 

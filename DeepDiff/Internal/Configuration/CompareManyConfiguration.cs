@@ -4,24 +4,24 @@ namespace DeepDiff.Internal.Configuration;
 
 internal sealed class CompareManyConfiguration : ICompareManyConfiguration
 {
-    public DiffEngineConfiguration Configuration { get; }
+    public EngineConfiguration EngineConfiguration { get; }
 
     public CompareManyConfiguration()
     {
-        Configuration = new DiffEngineConfiguration();
-        Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(false);
-        Configuration.SetCompareOnly(true);
+        EngineConfiguration = new EngineConfiguration();
+        EngineConfiguration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(false);
+        EngineConfiguration.SetCompareOnly(true);
     }
 
     public ICompareManyConfiguration HashtableThreshold(int threshold = 15)
     {
-        Configuration.SetHashtableThreshold(threshold);
+        EngineConfiguration.SetHashtableThreshold(threshold);
         return this;
     }
 
     public ICompareManyConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
     {
-        Configuration.SetCheckDuplicateKeys(checkDuplicateKeys);
+        EngineConfiguration.SetCheckDuplicateKeys(checkDuplicateKeys);
         return this;
     }
 }

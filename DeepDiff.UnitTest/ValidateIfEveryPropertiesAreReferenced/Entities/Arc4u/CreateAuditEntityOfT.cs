@@ -1,26 +1,25 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
+
+public abstract class CreateAuditEntity<TId, TCreatedBy, TCreatedOn> : IdEntity<TId>, ICreateAuditEntity<TCreatedBy, TCreatedOn>
 {
-    public abstract class CreateAuditEntity<TId, TCreatedBy, TCreatedOn> : IdEntity<TId>, ICreateAuditEntity<TCreatedBy, TCreatedOn>
+    public virtual TCreatedBy CreatedBy { get; set; } = default!;
+
+    public virtual TCreatedOn CreatedOn { get; set; } = default!;
+
+    public CreateAuditEntity()
+        : this(PersistChange.None)
     {
-        public virtual TCreatedBy CreatedBy { get; set; } = default!;
+    }
 
-        public virtual TCreatedOn CreatedOn { get; set; } = default!;
+    public CreateAuditEntity(PersistChange persistChange)
+        : base(persistChange)
+    {
+    }
 
-        public CreateAuditEntity()
-            : this(PersistChange.None)
-        {
-        }
-
-        public CreateAuditEntity(PersistChange persistChange)
-            : base(persistChange)
-        {
-        }
-
-        protected CreateAuditEntity(CreateAuditEntity<TId, TCreatedBy, TCreatedOn> entity)
-            : base(entity)
-        {
-            CreatedBy = entity.CreatedBy;
-            CreatedOn = entity.CreatedOn;
-        }
+    protected CreateAuditEntity(CreateAuditEntity<TId, TCreatedBy, TCreatedOn> entity)
+        : base(entity)
+    {
+        CreatedBy = entity.CreatedBy;
+        CreatedOn = entity.CreatedOn;
     }
 }

@@ -1,18 +1,16 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using DeepDiff;
 using DeepDiff.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TestAppNet8.Entities;
 
-namespace TestAppNet8;
+namespace TestAppNet10;
 
 class Program
 {
     private const string LogFile = "TestApp.log";
 
-    static void Main(string[] args)
+    static void Main(string[] _)
     {
         ILogger logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
@@ -23,7 +21,7 @@ class Program
         var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.AddProfiles(typeof(Program).Assembly);
         var deepDiff = diffConfiguration.CreateDeepDiff();
-        serviceCollection.AddSingleton(typeof(IDeepDiff), deepDiff);
+        serviceCollection.AddSingleton(deepDiff);
         serviceCollection.AddSingleton(logger);
 
         var containerBuilder = new ContainerBuilder();
