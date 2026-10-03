@@ -1,12 +1,11 @@
 using DeepDiff;
 using DeepDiff.Configuration;
 using Serilog;
-using TestAppNet8.Entities;
-using TestAppNet8.Entities.ActivationControl;
-using TestAppNet8.Entities.Simple;
-using TestAppNet8.Profile;
+using TestAppNet10.Entities.ActivationControl;
+using TestAppNet10.Entities.Simple;
+using TestAppNet10.Profile;
 
-namespace TestAppNet8;
+namespace TestAppNet10;
 
 public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
 {
@@ -17,7 +16,9 @@ public class Calculate(ILogger logger, IDeepDiff deepDiff) : ICalculate
     {
         var (existingEntities, newEntities) = GenerateEntities(500);
         var deepDiff = CreateDeepDiff();
-        var results = deepDiff.MergeMany(existingEntities, newEntities).ToArray();
+#pragma warning disable CA1806
+        deepDiff.MergeMany(existingEntities, newEntities).ToArray();
+#pragma warning restore CA1806
     }
 
     public void Perform2(DateOnly deliveryDate)

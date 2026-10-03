@@ -39,7 +39,7 @@ internal sealed class DeepDiff : IDeepDiff
         var mergeSingleConfiguration = new MergeSingleConfiguration();
         mergeSingleConfigurationAction?.Invoke(mergeSingleConfiguration);
 
-        var mergedEntity = DeepDiffEngine.MergeSingle(DeepDiffConfiguration.EntityConfigurationByTypes, mergeSingleConfiguration.Configuration, operationListener, entityConfiguration, existingEntity, newEntity);
+        var mergedEntity = DeepDiffEngine.MergeSingle(DeepDiffConfiguration.EntityConfigurationByTypes, mergeSingleConfiguration.EngineConfiguration, operationListener, entityConfiguration, existingEntity, newEntity);
         return mergedEntity as TEntity;
     }
 
@@ -66,7 +66,7 @@ internal sealed class DeepDiff : IDeepDiff
         var mergeManyConfiguration = new MergeManyConfiguration();
         mergeManyConfigurationAction?.Invoke(mergeManyConfiguration);
 
-        var mergedEntities = DeepDiffEngine.MergeMany(DeepDiffConfiguration.EntityConfigurationByTypes, mergeManyConfiguration.Configuration, operationListener, entityConfiguration, existingEntities, newEntities);
+        var mergedEntities = DeepDiffEngine.MergeMany(DeepDiffConfiguration.EntityConfigurationByTypes, mergeManyConfiguration.EngineConfiguration, operationListener, entityConfiguration, existingEntities, newEntities);
         return mergedEntities.Cast<TEntity>();
     }
 
@@ -74,7 +74,7 @@ internal sealed class DeepDiff : IDeepDiff
        where TEntity : class
         => CompareSingle(existingEntity, newEntity, operationListener, null);
 
-    public void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration>? diffSingleConfigurationAction)
+    public void CompareSingle<TEntity>(TEntity existingEntity, TEntity newEntity, IOperationListener operationListener, Action<ICompareSingleConfiguration>? compareSingleConfigurationAction)
         where TEntity : class
     {
         if (operationListener == null)
@@ -84,17 +84,17 @@ internal sealed class DeepDiff : IDeepDiff
         if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
             throw new MissingConfigurationException(entityType);
 
-        var diffSingleConfiguration = new CompareSingleConfiguration();
-        diffSingleConfigurationAction?.Invoke(diffSingleConfiguration);
+        var compareSingleConfiguration = new CompareSingleConfiguration();
+        compareSingleConfigurationAction?.Invoke(compareSingleConfiguration);
 
-        DeepDiffEngine.MergeSingle(DeepDiffConfiguration.EntityConfigurationByTypes, diffSingleConfiguration.Configuration, operationListener, entityConfiguration, existingEntity, newEntity);
+        DeepDiffEngine.MergeSingle(DeepDiffConfiguration.EntityConfigurationByTypes, compareSingleConfiguration.EngineConfiguration, operationListener, entityConfiguration, existingEntity, newEntity);
     }
 
     public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener)
         where TEntity : class
         => CompareMany(existingEntities, newEntities, operationListener, null);
 
-    public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration>? diffManyConfigurationAction)
+    public void CompareMany<TEntity>(IEnumerable<TEntity> existingEntities, IEnumerable<TEntity> newEntities, IOperationListener operationListener, Action<ICompareManyConfiguration>? compareManyConfigurationAction)
         where TEntity : class
     {
         if (operationListener == null)
@@ -104,9 +104,9 @@ internal sealed class DeepDiff : IDeepDiff
         if (!DeepDiffConfiguration.EntityConfigurationByTypes.TryGetValue(entityType, out var entityConfiguration))
             throw new MissingConfigurationException(entityType);
 
-        var diffManyConfiguration = new CompareManyConfiguration();
-        diffManyConfigurationAction?.Invoke(diffManyConfiguration);
+        var compareManyConfiguration = new CompareManyConfiguration();
+        compareManyConfigurationAction?.Invoke(compareManyConfiguration);
 
-        DeepDiffEngine.MergeMany(DeepDiffConfiguration.EntityConfigurationByTypes, diffManyConfiguration.Configuration, operationListener, entityConfiguration, existingEntities, newEntities);
+        DeepDiffEngine.MergeMany(DeepDiffConfiguration.EntityConfigurationByTypes, compareManyConfiguration.EngineConfiguration, operationListener, entityConfiguration, existingEntities, newEntities);
     }
 }

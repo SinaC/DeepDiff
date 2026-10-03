@@ -9,29 +9,30 @@ namespace DeepDiff.Internal;
 internal sealed class DeepDiffEngine
 {
     private IReadOnlyDictionary<Type, EntityConfiguration> EntityConfigurationByTypes { get; }
-    private DiffEngineConfiguration DiffEngineConfiguration { get; }
+    private EngineConfiguration EngineConfiguration { get; }
     private IOperationListener? OperationListener { get; }
     private Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object? Entity)> EntityNavigationPath { get; } = new Stack<(EntityConfiguration EntityConfiguration, KeyConfiguration KeyConfiguration, object? Entity)>(10);
 
-    private DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener)
+    private DeepDiffEngine(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, EngineConfiguration engineConfiguration, IOperationListener? operationListener)
     {
         EntityConfigurationByTypes = entityConfigurationByTypes;
-        DiffEngineConfiguration = diffEngineConfiguration;
+        EngineConfiguration = engineConfiguration;
         OperationListener = operationListener;
     }
 
-    public static object? MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
+    public static object? MergeSingle(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, EngineConfiguration engineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, object existingEntity, object newEntity)
     {
-        var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
+        var engine = new DeepDiffEngine(entityConfigurationByTypes, engineConfiguration, operationListener);
         return engine.MergeSingleByType(entityConfiguration, existingEntity, newEntity);
     }
 
-    public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, DiffEngineConfiguration diffEngineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
+    public static List<object> MergeMany(IReadOnlyDictionary<Type, EntityConfiguration> entityConfigurationByTypes, EngineConfiguration engineConfiguration, IOperationListener? operationListener, EntityConfiguration entityConfiguration, IEnumerable<object> existingEntities, IEnumerable<object> newEntities)
     {
-        var engine = new DeepDiffEngine(entityConfigurationByTypes, diffEngineConfiguration, operationListener);
+        var engine = new DeepDiffEngine(entityConfigurationByTypes, engineConfiguration, operationListener);
         return engine.MergeManyByType(entityConfiguration, existingEntities, newEntities);
     }
 
+    //
     private object? MergeSingleByType(EntityConfiguration entityConfiguration, object? existingEntity, object? newEntity)
     {
         // no entity
@@ -59,7 +60,7 @@ internal sealed class DeepDiffEngine
             var keysComparer = entityConfiguration.KeyConfiguration.EqualityComparer;
 
             areKeysEqual = keysComparer.Equals(existingEntity, newEntity);
-            if (!areKeysEqual && !DiffEngineConfiguration.CompareOnly) // keys are different -> copy keys
+            if (!areKeysEqual && !EngineConfiguration.CompareOnly) // keys are different -> copy keys
                 entityConfiguration.KeyConfiguration.KeyProperties.CopyPropertyValues(existingEntity, newEntity);
         }
 
@@ -73,7 +74,7 @@ internal sealed class DeepDiffEngine
         }
 
         // perform merge on nested entities
-        var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity);
+        var modificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity);
 
         // check force update if equals
         var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
@@ -81,12 +82,12 @@ internal sealed class DeepDiffEngine
         //
         if (!areKeysEqual
             || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
-            || diffModificationsFound
+            || modificationsFound
             || forceOnUpdate) // update
         {
             if (!areKeysEqual
                 || (compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
-                || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
+                || (modificationsFound && (EngineConfiguration.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
                 || forceOnUpdate)
                 OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult);
             return existingEntity;
@@ -109,7 +110,7 @@ internal sealed class DeepDiffEngine
         // no existing entities -> return new as inserted
         if (existingEntities == null || !existingEntities.Any())
         {
-            if (DiffEngineConfiguration.CheckDuplicateKeys)
+            if (EngineConfiguration.CheckDuplicateKeys)
                 CheckDuplicateKeys(entityConfiguration.KeyConfiguration.EqualityComparer, newEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
             foreach (var newEntity in newEntities ?? [])
             {
@@ -122,7 +123,7 @@ internal sealed class DeepDiffEngine
         // no new entities -> return existing as deleted
         if (newEntities == null || !newEntities.Any())
         {
-            if (DiffEngineConfiguration.CheckDuplicateKeys)
+            if (EngineConfiguration.CheckDuplicateKeys)
                 CheckDuplicateKeys(entityConfiguration.KeyConfiguration.EqualityComparer, existingEntities, entityConfiguration, entityConfiguration.KeyConfiguration);
             foreach (var existingEntity in existingEntities ?? [])
             {
@@ -155,23 +156,21 @@ internal sealed class DeepDiffEngine
                 // compare values
                 CompareByPropertyResult? compareByPropertyResult = null;
                 if (valuesComparer != null)
-                {
                     compareByPropertyResult = valuesComparer.Compare(existingEntity, newEntity);
-                }
 
                 // perform merge on nested entities
-                var diffModificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity);
+                var modificationsFound = MergeUsingNavigation(entityConfiguration, existingEntity, newEntity);
 
                 // check force update if equals
                 var forceOnUpdate = CheckIfOnUpdateHasToBeForced(entityConfiguration, existingEntity);
 
                 //
                 if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
-                    || diffModificationsFound
+                    || modificationsFound
                     || forceOnUpdate) // update
                 {
                     if ((compareByPropertyResult != null && !compareByPropertyResult.IsEqual)
-                        || (diffModificationsFound && (DiffEngineConfiguration.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
+                        || (modificationsFound && (EngineConfiguration.ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel || entityConfiguration.ForceUpdateIfConfiguration?.NestedEntitiesModifiedEnabled == true))
                         || forceOnUpdate)
                         OnUpdate(entityConfiguration, existingEntity, newEntity, compareByPropertyResult);
                     results.Add(existingEntity);
@@ -223,7 +222,7 @@ internal sealed class DeepDiffEngine
         return results;
     }
     private bool CheckIfHashtablesShouldBeUsed(IEnumerable<object> existingEntities)
-        => existingEntities.Count() >= DiffEngineConfiguration.HashtableThreshold;
+        => existingEntities.Count() >= EngineConfiguration.HashtableThreshold;
 
     private static void CheckDuplicateKeys(IComparerByProperty keysComparer, IEnumerable<object>? entities, EntityConfiguration entityConfiguration, KeyConfiguration keyConfiguration)
     {
@@ -301,6 +300,7 @@ internal sealed class DeepDiffEngine
     {
         if (navigationManyConfiguration.NavigationProperty == null)
             return false;
+
         var childType = navigationManyConfiguration.NavigationChildType;
         if (childType == null)
             return false;
@@ -328,7 +328,7 @@ internal sealed class DeepDiffEngine
         foreach (var mergedChild in mergedChildren)
             list.Add(mergedChild);
         // set navigation many property to merged children
-        if (!DiffEngineConfiguration.CompareOnly)
+        if (!EngineConfiguration.CompareOnly)
             navigationManyConfiguration.NavigationProperty.SetValue(existingEntity, list);
         //
         if (list.Count > 0)
@@ -340,6 +340,7 @@ internal sealed class DeepDiffEngine
     {
         if (navigationOneConfiguration.NavigationProperty == null)
             return false;
+
         var childType = navigationOneConfiguration.NavigationChildType;
         if (childType == null)
             return false;
@@ -355,10 +356,10 @@ internal sealed class DeepDiffEngine
         var mergedChild = MergeSingleByType(childEntityConfiguration, existingEntityChild, newEntityChild);
 
         // set navigation one property to merged child
-        if (!DiffEngineConfiguration.CompareOnly)
+        if (!EngineConfiguration.CompareOnly)
             navigationOneConfiguration.NavigationProperty.SetValue(existingEntity, mergedChild);
 
-        // not insert/delete/update
+        // no insert/delete/update
         if (mergedChild == null)
             return false;
 
@@ -386,9 +387,9 @@ internal sealed class DeepDiffEngine
             foreach (var compareByPropertyResultDetail in compareByPropertyResult.Details?.Where(x => entityConfiguration.ValuesConfiguration.ValuesProperties.Any(y => y.PropertyInfo.Equals(x.PropertyInfo))) ?? []) // copy modified properties found in values configuration (modified properties will always be a subset of values but we are testing to be sure)
             {
                 // notify update
-                OperationListener?.OnUpdate(entityConfiguration.EntityType.Name, compareByPropertyResultDetail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => compareByPropertyResultDetail.OldValue, () => compareByPropertyResultDetail.NewValue, () => GenerateNavigationPathKeysForOperation());
+                OperationListener?.OnUpdate(entityConfiguration.EntityType.Name, compareByPropertyResultDetail.PropertyInfo.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => compareByPropertyResultDetail.OldValue, () => compareByPropertyResultDetail.NewValue, GenerateNavigationPathKeysForOperation);
                 //
-                if (!DiffEngineConfiguration.CompareOnly)
+                if (!EngineConfiguration.CompareOnly)
                     compareByPropertyResultDetail.PropertyInfo.SetValue(existingEntity, compareByPropertyResultDetail.NewValue);
             }
         }
@@ -396,7 +397,7 @@ internal sealed class DeepDiffEngine
 
     private void OnUpdateSetValue(UpdateConfiguration updateConfiguration, object existingEntity)
     {
-        if (updateConfiguration.SetValueConfigurations != null && updateConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
+        if (updateConfiguration.SetValueConfigurations != null && updateConfiguration.SetValueConfigurations.Count > 0 && !EngineConfiguration.CompareOnly)
         {
             foreach (var setValueConfiguration in updateConfiguration.SetValueConfigurations)
                 setValueConfiguration?.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
@@ -406,44 +407,49 @@ internal sealed class DeepDiffEngine
     private void OnUpdateCopyValues(UpdateConfiguration updateConfiguration, object existingEntity, object newEntity)
     {
         //
-        if (!DiffEngineConfiguration.CompareOnly)
+        if (!EngineConfiguration.CompareOnly)
             updateConfiguration.CopyValuesConfiguration?.CopyValuesProperties.CopyPropertyValues(existingEntity, newEntity);
     }
 
     private void OnInsertAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object? newEntity)
     {
         // notify insert
-        OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), () => GenerateNavigationPathKeysForOperation());
+        OperationListener?.OnInsert(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, newEntity), GenerateNavigationPathKeysForOperation);
+
         //
         if (entityConfiguration.InsertConfiguration != null)
         {
             var insertConfiguration = entityConfiguration.InsertConfiguration;
             // use SetValue from InsertConfiguration
-            if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
+            if (insertConfiguration.SetValueConfigurations != null && insertConfiguration.SetValueConfigurations.Count > 0 && !EngineConfiguration.CompareOnly)
             {
                 foreach (var setValueConfiguration in insertConfiguration.SetValueConfigurations)
                     setValueConfiguration.DestinationProperty.SetValue(newEntity, setValueConfiguration.Value);
             }
         }
 
+        // propagate insert to children
         PropagateUsingNavigation(entityConfiguration, newEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnInsertAndPropagateUsingNavigation(childEntityConfiguration, child));
     }
 
     private void OnDeleteAndPropagateUsingNavigation(EntityConfiguration entityConfiguration, object existingEntity)
     {
         // notify delete
-        OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), () => GenerateNavigationPathKeysForOperation());
+        OperationListener?.OnDelete(entityConfiguration.EntityType.Name, () => GenerateKeysForOperation(entityConfiguration, entityConfiguration.KeyConfiguration, existingEntity), GenerateNavigationPathKeysForOperation);
+
         //
         if (entityConfiguration.DeleteConfiguration != null)
         {
             var deleteConfiguration = entityConfiguration.DeleteConfiguration;
             // use SetValue from DeleteConfiguration
-            if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0 && !DiffEngineConfiguration.CompareOnly)
+            if (deleteConfiguration.SetValueConfigurations != null && deleteConfiguration.SetValueConfigurations.Count > 0 && !EngineConfiguration.CompareOnly)
             {
                 foreach (var setValueConfiguration in deleteConfiguration.SetValueConfigurations)
                     setValueConfiguration.DestinationProperty.SetValue(existingEntity, setValueConfiguration.Value);
             }
         }
+
+        // propagate delete to children
         PropagateUsingNavigation(entityConfiguration, existingEntity, (childEntityConfiguration, parentNavigationConfiguration, child, parent) => OnDeleteAndPropagateUsingNavigation(childEntityConfiguration, child));
     }
 
@@ -473,11 +479,13 @@ internal sealed class DeepDiffEngine
     {
         if (navigationManyConfiguration.NavigationProperty == null)
             return;
+
         var childrenValue = navigationManyConfiguration.NavigationProperty.GetValue(entity);
         if (childrenValue == null)
             return;
+
         var children = (IEnumerable<object>)childrenValue;
-        if (navigationManyConfiguration.UseDerivedTypes) // when derived types must be used, children must be grouped by type then type from each group must be used instead of collection child type
+        if (navigationManyConfiguration.UseDerivedTypes) // when derived types must be used, children must be grouped by type, then type from each group must be used instead of collection child type
         {
             var childrenByTypes = children?.ToLookup(x => x.GetType()) ?? EmptyLookup<Type, object>.Instance;
             foreach (var childrenByType in childrenByTypes)
@@ -497,6 +505,7 @@ internal sealed class DeepDiffEngine
     {
         if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
             throw new MissingConfigurationException(childType);
+
         foreach (var child in children)
             operation(childEntityConfiguration, navigationManyConfiguration, child, entity);
     }
@@ -505,14 +514,18 @@ internal sealed class DeepDiffEngine
     {
         if (navigationOneConfiguration.NavigationProperty == null)
             return;
+
         var child = navigationOneConfiguration.NavigationProperty.GetValue(entity);
         if (child == null)
             return;
+
         var childType = navigationOneConfiguration.NavigationChildType;
         if (childType == null)
             return;
+
         if (!EntityConfigurationByTypes.TryGetValue(childType, out var childEntityConfiguration))
             throw new MissingConfigurationException(childType);
+
         operation(childEntityConfiguration, navigationOneConfiguration, child, entity);
     }
 
@@ -520,7 +533,7 @@ internal sealed class DeepDiffEngine
     {
         if (entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations != null)
         {
-            foreach (var forceUpdateIfEqualsConfiguration in entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations ?? Enumerable.Empty<ForceUpdateIfEqualsConfiguration>())
+            foreach (var forceUpdateIfEqualsConfiguration in entityConfiguration.ForceUpdateIfConfiguration?.ForceUpdateIfEqualsConfigurations ?? [])
             {
                 var value = forceUpdateIfEqualsConfiguration.CompareToProperty.GetValue(entity);
                 if (Equals(value, forceUpdateIfEqualsConfiguration.CompareToValue))

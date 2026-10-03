@@ -76,7 +76,9 @@ public class LoadNavigation
     [Benchmark]
     public void MergeMany()
     {
-        var results = DeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
+#pragma warning disable CA1806
+        DeepDiff.MergeMany(ExistingEntities, NewEntities).ToList();
+#pragma warning restore CA1806
     }
 
     private void GenerateIdentical()
@@ -88,14 +90,14 @@ public class LoadNavigation
 
     private void GenerateNoExisting()
     {
-        ExistingEntities = Array.Empty<NavigationEntityLevel0>();
+        ExistingEntities = [];
         NewEntities = GenerateEntities(DateTime.Now, N).ToArray();
     }
 
     private void GenerateNoNew()
     {
         ExistingEntities = GenerateEntities(DateTime.Now, N).ToArray();
-        NewEntities = Array.Empty<NavigationEntityLevel0>();
+        NewEntities = [];
     }
 
     private void GenerateRandom()
@@ -120,9 +122,8 @@ public class LoadNavigation
         }
     }
 
-    private static IEnumerable<NavigationEntityLevel0> GenerateEntities(DateTime? now, int n)
-    {
-        return Enumerable.Range(0, n)
+    private static List<NavigationEntityLevel0> GenerateEntities(DateTime? now, int n)
+        => Enumerable.Range(0, n)
             .Select(x => new NavigationEntityLevel0
             {
                 Id = Guid.NewGuid(),
@@ -186,7 +187,6 @@ public class LoadNavigation
                             }).ToList()
                     }).ToList()
             }).ToList();
-    }
 
     public enum DataGenerationOptions
     {

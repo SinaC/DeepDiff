@@ -1,9 +1,8 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
-{
-    public interface ICreateAuditEntity<TCreatedBy, TCreatedOn>
-    {
-        TCreatedBy CreatedBy { get; set; }
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
 
-        TCreatedOn CreatedOn { get; set; }
-    }
+public interface ICreateAuditEntity<TCreatedBy, TCreatedOn>
+{
+    TCreatedBy CreatedBy { get; set; }
+
+    TCreatedOn CreatedOn { get; set; }
 }

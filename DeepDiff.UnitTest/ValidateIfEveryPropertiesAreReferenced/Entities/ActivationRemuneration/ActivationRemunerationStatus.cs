@@ -1,8 +1,7 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationRemuneration
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationRemuneration;
+
+public enum ActivationRemunerationStatus : byte
 {
-    public enum ActivationRemunerationStatus : byte
-    {
-        Calculated = 1,
-        Validated = 2
-    }
+    Calculated = 1,
+    Validated = 2
 }

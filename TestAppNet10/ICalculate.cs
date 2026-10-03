@@ -1,7 +1,6 @@
-﻿namespace TestAppNet8
+﻿namespace TestAppNet10;
+
+public interface ICalculate
 {
-    public interface ICalculate
-    {
-        void Perform(DateOnly deliverDate);
-    }
+    void Perform(DateOnly deliverDate);
 }

@@ -33,8 +33,7 @@ public class CapacityAvailabilityTests
             CapacityAvailabilityDetails = GenerateDetails(startDate, x).ToList()
         }).Concat
         (
-            new[]
-            {
+            [
                 new Entities.CapacityAvailability.CapacityAvailability
                 {
                     Day = startDate.AddDays(1),
@@ -42,7 +41,7 @@ public class CapacityAvailabilityTests
                     IsEnergyContrained = isEnergyContrained,
                     CapacityAvailabilityDetails = GenerateDetails(startDate, 1).ToList()
                 }
-            }
+            ]
         ).ToArray();
         AssignFK(newCapacityAvailabilities, false);
 

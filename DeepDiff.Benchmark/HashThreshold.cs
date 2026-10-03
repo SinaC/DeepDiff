@@ -91,14 +91,14 @@ public class HashThreshold
 
     private void GenerateNoExisting()
     {
-        ExistingEntities = Array.Empty<NavigationEntityLevel0>();
+        ExistingEntities = [];
         NewEntities = GenerateEntities(DateTime.Now, N).ToArray();
     }
 
     private void GenerateNoNew()
     {
         ExistingEntities = GenerateEntities(DateTime.Now, N).ToArray();
-        NewEntities = Array.Empty<NavigationEntityLevel0>();
+        NewEntities = [];
     }
 
     private void GenerateRandom()
@@ -117,15 +117,14 @@ public class HashThreshold
                 foreach (var entity2 in entity1.SubEntities)
                 {
                     if (Random.Next(5) == 0)
-                        entity2.DeliveryPointEan = entity2.DeliveryPointEan + "_MOD";
+                        entity2.DeliveryPointEan += "_MOD";
                 }
             }
         }
     }
 
-    private static IEnumerable<NavigationEntityLevel0> GenerateEntities(DateTime? now, int n)
-    {
-        return Enumerable.Range(0, n)
+    private static List<NavigationEntityLevel0> GenerateEntities(DateTime? now, int n)
+        => Enumerable.Range(0, n)
             .Select(x => new NavigationEntityLevel0
             {
                 Id = Guid.NewGuid(),
@@ -189,7 +188,6 @@ public class HashThreshold
                             }).ToList()
                     }).ToList()
             }).ToList();
-    }
 
     public enum DataGenerationOptions
     {

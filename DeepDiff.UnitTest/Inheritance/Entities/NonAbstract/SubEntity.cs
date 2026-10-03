@@ -1,9 +1,8 @@
 ﻿using DeepDiff.UnitTest.Entities;
 
-namespace DeepDiff.UnitTest.Inheritance.Entities.NonAbstract
+namespace DeepDiff.UnitTest.Inheritance.Entities.NonAbstract;
+
+public class SubEntity : PersistEntity
 {
-    public class SubEntity : PersistEntity
-    {
-        public int Key { get; set; }
-    }
+    public int Key { get; set; }
 }

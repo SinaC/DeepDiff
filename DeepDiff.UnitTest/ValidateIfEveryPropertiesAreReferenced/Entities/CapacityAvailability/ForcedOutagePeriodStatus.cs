@@ -1,9 +1,8 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.CapacityAvailability
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.CapacityAvailability;
+
+public enum ForcedOutagePeriodStatus : byte
 {
-    public enum ForcedOutagePeriodStatus : byte
-    {
-        NoPeriod = 1,
-        FirstPeriod = 2,
-        SecondPeriod = 3
-    }
+    NoPeriod = 1,
+    FirstPeriod = 2,
+    SecondPeriod = 3
 }

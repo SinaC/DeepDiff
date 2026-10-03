@@ -1,8 +1,7 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.ActivationControl;
+
+public enum ActivationControlStatus : byte
 {
-    public enum ActivationControlStatus : byte
-    {
-        Calculated = 1,
-        Validated = 2
-    }
+    Calculated = 1,
+    Validated = 2
 }

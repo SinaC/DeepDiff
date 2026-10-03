@@ -83,7 +83,7 @@ public class Compare
         {
             foreach (var newEntity in NewEntities)
             {
-                var compare = comparer.Equals(existingEntity, newEntity);
+                comparer.Equals(existingEntity, newEntity);
             }
         }
     }
@@ -110,7 +110,7 @@ public class Compare
 
     private void GenerateNoExisting()
     {
-        ExistingEntities = Array.Empty<NavigationEntityLevel1>();
+        ExistingEntities = [];
         NewEntities = Enumerable.Range(0, N)
             .Select(x => new NavigationEntityLevel1
             {
@@ -131,7 +131,7 @@ public class Compare
                 Power = x,
                 Comment = "Comment_" + (x % 1000),
             }).ToArray();
-        NewEntities = Array.Empty<NavigationEntityLevel1>();
+        NewEntities = [];
     }
 
     private void GenerateRandom()

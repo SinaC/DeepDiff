@@ -4,28 +4,28 @@ namespace DeepDiff.Internal.Configuration;
 
 internal sealed class MergeSingleConfiguration : IMergeSingleConfiguration
 {
-    public DiffEngineConfiguration Configuration { get; }
+    public EngineConfiguration EngineConfiguration { get; }
 
     public MergeSingleConfiguration()
     {
-        Configuration = new DiffEngineConfiguration();
+        EngineConfiguration = new EngineConfiguration();
     }
 
     public IMergeSingleConfiguration HashtableThreshold(int threshold = 15)
     {
-        Configuration.SetHashtableThreshold(threshold);
+        EngineConfiguration.SetHashtableThreshold(threshold);
         return this;
     }
 
     public IMergeSingleConfiguration ForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(bool force = false)
     {
-        Configuration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(force);
+        EngineConfiguration.SetForceOnUpdateWhenModificationsDetectedOnlyInNestedLevel(force);
         return this;
     }
 
     public IMergeSingleConfiguration SetCheckDuplicateKeys(bool checkDuplicateKeys = true)
     {
-        Configuration.SetCheckDuplicateKeys(checkDuplicateKeys);
+        EngineConfiguration.SetCheckDuplicateKeys(checkDuplicateKeys);
         return this;
     }
 }

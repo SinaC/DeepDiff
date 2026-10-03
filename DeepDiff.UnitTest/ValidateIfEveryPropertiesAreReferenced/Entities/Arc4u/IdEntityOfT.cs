@@ -1,58 +1,57 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
+
+public abstract class IdEntity<TId> : PersistEntity, IIdEntity<TId>, IEquatable<IdEntity<TId>>
 {
-    public abstract class IdEntity<TId> : PersistEntity, IIdEntity<TId>, IEquatable<IdEntity<TId>>
+    public virtual TId Id { get; set; } = default!;
+
+    public IdEntity()
+        : this(PersistChange.None)
     {
-        public virtual TId Id { get; set; } = default!;
+    }
 
-        public IdEntity()
-            : this(PersistChange.None)
+    protected IdEntity(PersistChange persistChange)
+        : base(persistChange)
+    {
+    }
+
+    protected IdEntity(IdEntity<TId> entity)
+        : base(entity)
+    {
+        Id = entity.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        if (!Equals(Id, default(TId)))
         {
+            return Id!.GetHashCode();
         }
 
-        protected IdEntity(PersistChange persistChange)
-            : base(persistChange)
+        return 0;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not IdEntity<TId>)
         {
+            return false;
         }
 
-        protected IdEntity(IdEntity<TId> entity)
-            : base(entity)
-        {
-            Id = entity.Id;
-        }
+        return Equals((IdEntity<TId>)obj);
+    }
 
-        public override int GetHashCode()
+    public bool Equals(IdEntity<TId>? other)
+    {
+        if (this != other)
         {
-            if (!Equals(Id, default(TId)))
+            if (other != null)
             {
-                return Id!.GetHashCode();
+                return Equals(Id, other.Id);
             }
 
-            return 0;
+            return false;
         }
 
-        public override bool Equals(object? obj)
-        {
-            if (!(obj is IdEntity<TId>))
-            {
-                return false;
-            }
-
-            return Equals((IdEntity<TId>)obj);
-        }
-
-        public bool Equals(IdEntity<TId>? other)
-        {
-            if (this != other)
-            {
-                if (other != null)
-                {
-                    return Equals(Id, other.Id);
-                }
-
-                return false;
-            }
-
-            return true;
-        }
+        return true;
     }
 }

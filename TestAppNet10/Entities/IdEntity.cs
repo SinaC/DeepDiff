@@ -1,4 +1,4 @@
-namespace TestAppNet8.Entities;
+namespace TestAppNet10.Entities;
 
 public abstract class IdEntity : PersistEntity
 {

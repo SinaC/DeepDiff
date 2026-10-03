@@ -56,7 +56,7 @@ public class MergeSingleTests
             }).ToList(),
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -131,7 +131,7 @@ public class MergeSingleTests
             }).ToList(),
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -206,7 +206,7 @@ public class MergeSingleTests
             }).ToList(),
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
@@ -282,7 +282,7 @@ public class MergeSingleTests
             }).ToList(),
         };
 
-        DeepDiffConfiguration diffConfiguration = new DeepDiffConfiguration();
+        var diffConfiguration = new DeepDiffConfiguration();
         diffConfiguration.ConfigureEntity<EntityLevel0>()
             .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
             .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))

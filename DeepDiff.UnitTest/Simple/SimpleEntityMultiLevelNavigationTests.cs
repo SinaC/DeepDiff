@@ -330,9 +330,8 @@ public class SimpleEntityMultiLevelNavigationTests
         return diff;
     }
 
-    private static IEnumerable<EntityLevel0> GenerateEntities(DateTime? now)
-    {
-        return Enumerable.Range(0, 5)
+    private static List<EntityLevel0> GenerateEntities(DateTime? now)
+        => Enumerable.Range(0, 5)
             .Select(x => new EntityLevel0
             {
                 Index = x,
@@ -408,5 +407,4 @@ public class SimpleEntityMultiLevelNavigationTests
                             }).ToList()
                     }).ToList()
             }).ToList();
-    }
 }

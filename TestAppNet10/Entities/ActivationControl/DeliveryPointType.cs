@@ -1,4 +1,4 @@
-namespace TestAppNet8.Entities.ActivationControl;
+namespace TestAppNet10.Entities.ActivationControl;
 
 public enum DeliveryPointType : byte
 {

@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using TestAppNet10.Entities;
 
-namespace TestAppNet8.Entities.ActivationControl;
+namespace TestAppNet10.Entities.ActivationControl;
 
 [DebuggerDisplay("{DebuggerDisplay, nq}")]
 public class ActivationControlTimestampDetail : PersistEntity, IAuditEntity<string, DateTime>

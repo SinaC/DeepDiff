@@ -1,9 +1,8 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities;
+
+public enum SupplierStatus : byte
 {
-    public enum SupplierStatus : byte
-    {
-        ToBeValidated = 1,
-        Rejected = 2,
-        Validated = 3
-    }
+    ToBeValidated = 1,
+    Rejected = 2,
+    Validated = 3
 }

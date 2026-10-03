@@ -1,7 +1,6 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
+
+public interface IIdEntity<TId>
 {
-    public interface IIdEntity<TId>
-    {
-        TId Id { get; }
-    }
+    TId Id { get; }
 }

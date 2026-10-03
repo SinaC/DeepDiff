@@ -23,8 +23,6 @@ internal sealed class CheckEveryPropertiesAreReferencedValidator : ValidatorBase
     {
         foreach (var property in propertiesToCheck)
         {
-            if (property.Name == "PersistChange")
-                Debugger.Break();
             // check key properties
             var found = CheckIfPropertyFound(property, entityConfiguration);
             if (!found)

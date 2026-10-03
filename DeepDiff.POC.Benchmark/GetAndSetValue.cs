@@ -34,7 +34,7 @@ public class GetAndSetValue
     {
         foreach (var entity in Entities)
         {
-            var value = TimestampProperty.GetValue(entity);
+            TimestampProperty.GetValue(entity);
         }
     }
 
@@ -43,7 +43,7 @@ public class GetAndSetValue
     {
         foreach (var entity in Entities)
         {
-            var value = TimestampPropertyExt.GetValue(entity);
+            TimestampPropertyExt.GetValue(entity);
         }
     }
 

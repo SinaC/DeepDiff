@@ -1,8 +1,7 @@
-﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities
+﻿namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities;
+
+public enum Direction : byte
 {
-    public enum Direction : byte
-    {
-        Up = 1,
-        Down = 2,
-    }
+    Up = 1,
+    Down = 2,
 }

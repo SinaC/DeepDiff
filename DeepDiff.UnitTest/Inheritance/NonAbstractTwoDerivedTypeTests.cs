@@ -3,309 +3,308 @@ using DeepDiff.UnitTest.Entities;
 using DeepDiff.UnitTest.Inheritance.Entities.NonAbstract;
 using Xunit;
 
-namespace DeepDiff.UnitTest.Inheritance
+namespace DeepDiff.UnitTest.Inheritance;
+
+public class NonAbstractTwoDerivedTypeTests
 {
-    public class NonAbstractTwoDerivedTypeTests
+    [Fact]
+    public void Identical()
     {
-        [Fact]
-        public void Identical()
+        var existingEntity = new Entity
         {
-            var existingEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
-                }
-            };
-
-            var newEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity2
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
-
-            Assert.Null(result);
-            Assert.Empty(operations);
-        }
-
-        [Fact]
-        public void InsertEntity()
+        var newEntity = new Entity
         {
-            var existingEntity = (Entity)null!;
-
-            var newEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity1
-                    {
-                        Key = 12,
-                        Name1 = "12"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
 
-            Assert.NotNull(result);
-            Assert.Equal(4, operations.Count);
-            Assert.Equal(PersistChange.Insert, result.PersistChange);
-            Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Insert, x.PersistChange));
-        }
+        Assert.Null(result);
+        Assert.Empty(operations);
+    }
 
-        [Fact]
-        public void InsertSubEntity()
+    [Fact]
+    public void InsertEntity()
+    {
+        var existingEntity = (Entity)null!;
+
+        var newEntity = new Entity
         {
-            var existingEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
-                }
-            };
-
-            var newEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity1 // <-- new one
-                    {
-                        Key = 12,
-                        Name1 = "12"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
+                    Key = 12,
+                    Name1 = "12"
+                },
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
 
-            Assert.NotNull(result);
-            Assert.Single(operations);
-            Assert.Equal(PersistChange.None, result.PersistChange);
-            Assert.Equal(PersistChange.Insert, result.SubEntities.Single().PersistChange);
-            Assert.Equal(12, result.SubEntities.Single().Key);
-        }
+        Assert.NotNull(result);
+        Assert.Equal(4, operations.Count);
+        Assert.Equal(PersistChange.Insert, result.PersistChange);
+        Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Insert, x.PersistChange));
+    }
 
-        [Fact]
-        public void DeleteEntity()
+    [Fact]
+    public void InsertSubEntity()
+    {
+        var existingEntity = new Entity
         {
-            var existingEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var newEntity = (Entity)null!;
-
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
-
-            Assert.NotNull(result);
-            Assert.Equal(3, operations.Count);
-            Assert.Equal(PersistChange.Delete, result.PersistChange);
-            Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
-        }
-
-        [Fact]
-        public void DeleteSubEntity()
+        var newEntity = new Entity
         {
-            var existingEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 11,
-                        Name1 = "11"
-                    },
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
-                }
-            };
-
-            var newEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity1 // <-- new one
                 {
-                    new SubEntity2
-                    {
-                        Key = 21,
-                        Name2 = "21"
-                    }
+                    Key = 12,
+                    Name1 = "12"
+                },
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
 
-            Assert.NotNull(result);
-            Assert.Single(operations);
-            Assert.Equal(PersistChange.None, result.PersistChange);
-            Assert.Equal(PersistChange.Delete, result.SubEntities.Single().PersistChange);
-            Assert.Equal(11, result.SubEntities.Single().Key);
-        }
+        Assert.NotNull(result);
+        Assert.Single(operations);
+        Assert.Equal(PersistChange.None, result.PersistChange);
+        Assert.Equal(PersistChange.Insert, result.SubEntities.Single().PersistChange);
+        Assert.Equal(12, result.SubEntities.Single().Key);
+    }
 
-        [Fact]
-        public void UpdateSubEntity()
+    [Fact]
+    public void DeleteEntity()
+    {
+        var existingEntity = new Entity
         {
-            var existingEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
                 {
-                    new SubEntity1
-                    {
-                        Key = 1001,
-                        Name1 = "1001"
-                    }
-                }
-            };
-
-            var newEntity = new Entity
-            {
-                Key = 1,
-                Name = "1",
-                SubEntities = new List<SubEntity>
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity2
                 {
-                    new SubEntity1
-                    {
-                        Key = 1001,
-                        Name1 = "new 1001"
-                    }
+                    Key = 21,
+                    Name2 = "21"
                 }
-            };
+            ]
+        };
 
-            var deepDiff = CreateDeepDiff();
-            var listener = new StoreAllOperationListener();
-            var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
-            var operations = listener.Operations;
+        var newEntity = (Entity)null!;
 
-            Assert.NotNull(result);
-            Assert.Single(operations);
-            Assert.Equal(PersistChange.None, result.PersistChange);
-            Assert.Equal(PersistChange.Update, result.SubEntities.Single().PersistChange);
-            Assert.Equal(1001, result.SubEntities.Single().Key);
-            Assert.Equal("new 1001", result.SubEntities.OfType<SubEntity1>().Single().Name1);
-        }
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
 
-        private static IDeepDiff CreateDeepDiff()
+        Assert.NotNull(result);
+        Assert.Equal(3, operations.Count);
+        Assert.Equal(PersistChange.Delete, result.PersistChange);
+        Assert.All(result.SubEntities, x => Assert.Equal(PersistChange.Delete, x.PersistChange));
+    }
+
+    [Fact]
+    public void DeleteSubEntity()
+    {
+        var existingEntity = new Entity
         {
-            var diffConfiguration = new DeepDiffConfiguration();
-            diffConfiguration.ConfigureEntity<Entity>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Key)
-                .HasValues(x => x.Name)
-                .HasMany(x => x.SubEntities, opt => opt.UseDerivedTypes(true));
-            diffConfiguration.ConfigureEntity<SubEntity1>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Key)
-                .HasValues(x => x.Name1);
-            diffConfiguration.ConfigureEntity<SubEntity2>()
-                .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
-                .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
-                .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
-                .HasKey(x => x.Key)
-                .HasValues(x => x.Name2);
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
+                {
+                    Key = 11,
+                    Name1 = "11"
+                },
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
+                }
+            ]
+        };
 
-            return diffConfiguration.CreateDeepDiff();
-        }
+        var newEntity = new Entity
+        {
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity2
+                {
+                    Key = 21,
+                    Name2 = "21"
+                }
+            ]
+        };
+
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
+
+        Assert.NotNull(result);
+        Assert.Single(operations);
+        Assert.Equal(PersistChange.None, result.PersistChange);
+        Assert.Equal(PersistChange.Delete, result.SubEntities.Single().PersistChange);
+        Assert.Equal(11, result.SubEntities.Single().Key);
+    }
+
+    [Fact]
+    public void UpdateSubEntity()
+    {
+        var existingEntity = new Entity
+        {
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
+                {
+                    Key = 1001,
+                    Name1 = "1001"
+                }
+            ]
+        };
+
+        var newEntity = new Entity
+        {
+            Key = 1,
+            Name = "1",
+            SubEntities =
+            [
+                new SubEntity1
+                {
+                    Key = 1001,
+                    Name1 = "new 1001"
+                }
+            ]
+        };
+
+        var deepDiff = CreateDeepDiff();
+        var listener = new StoreAllOperationListener();
+        var result = deepDiff.MergeSingle(existingEntity, newEntity, listener);
+        var operations = listener.Operations;
+
+        Assert.NotNull(result);
+        Assert.Single(operations);
+        Assert.Equal(PersistChange.None, result.PersistChange);
+        Assert.Equal(PersistChange.Update, result.SubEntities.Single().PersistChange);
+        Assert.Equal(1001, result.SubEntities.Single().Key);
+        Assert.Equal("new 1001", result.SubEntities.OfType<SubEntity1>().Single().Name1);
+    }
+
+    private static IDeepDiff CreateDeepDiff()
+    {
+        var diffConfiguration = new DeepDiffConfiguration();
+        diffConfiguration.ConfigureEntity<Entity>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+            .HasKey(x => x.Key)
+            .HasValues(x => x.Name)
+            .HasMany(x => x.SubEntities, opt => opt.UseDerivedTypes(true));
+        diffConfiguration.ConfigureEntity<SubEntity1>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+            .HasKey(x => x.Key)
+            .HasValues(x => x.Name1);
+        diffConfiguration.ConfigureEntity<SubEntity2>()
+            .OnInsert(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Insert))
+            .OnUpdate(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Update))
+            .OnDelete(cfg => cfg.SetValue(x => x.PersistChange, PersistChange.Delete))
+            .HasKey(x => x.Key)
+            .HasValues(x => x.Name2);
+
+        return diffConfiguration.CreateDeepDiff();
     }
 }

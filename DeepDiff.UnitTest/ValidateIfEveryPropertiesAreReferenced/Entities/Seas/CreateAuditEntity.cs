@@ -1,12 +1,11 @@
 ﻿using DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Arc4u;
 
-namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas
+namespace DeepDiff.UnitTest.ValidateIfEveryPropertiesAreReferenced.Entities.Seas;
+
+public class CreateAuditEntity : CreateAuditEntity<Guid, string, DateTime>
 {
-    public class CreateAuditEntity : CreateAuditEntity<Guid, string, DateTime>
+    public CreateAuditEntity()
     {
-        public CreateAuditEntity()
-        {
-            Id = Guid.NewGuid();
-        }
+        Id = Guid.NewGuid();
     }
 }
